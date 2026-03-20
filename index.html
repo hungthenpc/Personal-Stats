@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spotify Stats - Personal Stats</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1DB954;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .btn-spotify {
+            background: #1DB954;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-spotify:hover {
+            transform: scale(1.05);
+        }
+        
+        .track {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        
+        .track:hover {
+            background: #f8f9fa;
+        }
+        
+        .track img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .track-artist {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .rank {
+            font-size: 20px;
+            font-weight: bold;
+            width: 40px;
+            color: #1DB954;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1DB954;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+        
+        .user-name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .track img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-card" class="card">
+            <h1>🎵 Spotify Stats</h1>
+            <p>Xem thống kê nghe nhạc Spotify của bạn</p>
+            <p style="color: #666; margin-top: 10px; font-size: 14px;">
+                📊 Xem top bài hát yêu thích<br>
+                🎤 Thống kê nghệ sĩ<br>
+                🕐 Lịch sử nghe gần đây
+            </p>
+            <button class="btn-spotify" onclick="loginToSpotify()">
+                🔐 Đăng nhập với Spotify
+            </button>
+        </div>
+        
+        <div id="dashboard" style="display: none;">
+            <div class="card">
+                <div id="user-info"></div>
+                <div style="display: flex; justify-content: flex-end;">
+                    <button class="logout-btn" onclick="logout()">Đăng xuất</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Thống kê nhanh</h2>
+                <div id="quick-stats"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🏆 Top 10 bài hát yêu thích</h2>
+                <div id="top-tracks"></div>
+            </div>
+            
+            <div class="card">
+                <h2>🕐 10 bài hát vừa nghe</h2>
+                <div id="recent-tracks"></div>
+            </div>
+        </div>
+        
+        <div id="loading" style="display: none;" class="card loading">
+            <div class="spinner"></div>
+            <p>Đang tải dữ liệu từ Spotify...</p>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">Vui lòng chờ trong giây lát</p>
+        </div>
+        
+        <div class="footer">
+            Made with 🎵 by Spotify Stats
+        </div>
+    </div>
+
+    <script>
+        // ========== CẤU HÌNH ==========
+        // Client ID của bạn từ Spotify Developer Dashboard
+        const CLIENT_ID = 'cd0524eb368f45ceb21721b9543bd5d6';
+        
+        // Redirect URI - URL GitHub Pages của bạn
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        
+        // ========== CODE CHÍNH ==========
+        
+        // Kiểm tra xem đã đăng nhập chưa (từ URL hash)
+        const urlParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = urlParams.get('access_token');
+        
+        if (accessToken) {
+            // Lưu token vào localStorage
+            localStorage.setItem('spotify_token', accessToken);
+            // Xóa token khỏi URL để trông đẹp hơn
+            window.history.replaceState({}, document.title, window.location.pathname);
+            loadDashboard();
+        } else {
+            // Kiểm tra token cũ trong localStorage
+            const savedToken = localStorage.getItem('spotify_token');
+            if (savedToken) {
+                loadDashboard();
+            } else {
+                document.getElementById('login-card').style.display = 'block';
+            }
+        }
+        
+        async function loginToSpotify() {
+            // Các quyền cần xin
+            const scope = 'user-read-recently-played user-top-read user-read-private';
+            
+            // Tạo URL đăng nhập Spotify
+            const authUrl = `https://accounts.spotify.com/authorize?` + 
+                `client_id=${CLIENT_ID}` +
+                `&response_type=token` +
+                `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+                `&scope=${encodeURIComponent(scope)}` +
+                `&show_dialog=true`;
+            
+            // Chuyển hướng đến trang đăng nhập Spotify
+            window.location.href = authUrl;
+        }
+        
+        async function loadDashboard() {
+            const token = localStorage.getItem('spotify_token');
+            if (!token) {
+                logout();
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                // 1. Lấy thông tin người dùng
+                const userResponse = await fetch('https://api.spotify.com/v1/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!userResponse.ok) {
+                    throw new Error('Token hết hạn hoặc không hợp lệ');
+                }
+                
+                const userData = await userResponse.json();
+                
+                // 2. Lấy top tracks (bài hát yêu thích)
+                const topResponse = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const topData = await topResponse.json();
+                
+                // 3. Lấy recently played (bài hát vừa nghe)
+                const recentResponse = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=10', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const recentData = await recentResponse.json();
+                
+                // Hiển thị tất cả
+                displayUserInfo(userData);
+                displayStats(topData, recentData);
+                displayTopTracks(topData);
+                displayRecentTracks(recentData);
+                
+                // Ẩn login, hiện dashboard
+                document.getElementById('login-card').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Lỗi:', error);
+                showError('Không thể tải dữ liệu. Vui lòng đăng nhập lại.');
+                logout();
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        function displayUserInfo(user) {
+            let userInfoHtml = `
+                <div class="user-info">
+            `;
+            
+            if (user.images && user.images[0]) {
+                userInfoHtml += `<img class="user-avatar" src="${user.images[0].url}" alt="Avatar">`;
+            } else {
+                userInfoHtml += `<div style="width: 60px; height: 60px; background: #1DB954; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">🎵</div>`;
+            }
+            
+            userInfoHtml += `
+                    <div>
+                        <div class="user-name">${user.display_name || user.id}</div>
+                        <div style="color: #666; font-size: 14px;">${user.email || ''}</div>
+                        <div style="color: #1DB954; font-size: 12px; margin-top: 5px;">Đã kết nối Spotify</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('user-info').innerHTML = userInfoHtml;
+        }
+        
+        function displayStats(topData, recentData) {
+            const topTracks = topData.items || [];
+            const recentTracks = recentData.items || [];
+            
+            // Tính tổng số bài hát độc nhất trong top tracks
+            const uniqueTracks = new Set(topTracks.map(t => t.id)).size;
+            
+            // Tìm top nghệ sĩ
+            const artistCount = {};
+            topTracks.forEach(track => {
+                const artist = track.artists[0].name;
+                artistCount[artist] = (artistCount[artist] || 0) + 1;
+            });
+            const topArtist = Object.entries(artistCount).sort((a, b) => b[1] - a[1])[0];
+            
+            // Tính tổng thời gian nghe gần đây
+            let totalDurationMs = 0;
+            recentTracks.forEach(item => {
+                totalDurationMs += item.track.duration_ms;
+            });
+            const totalMinutes = Math.floor(totalDurationMs / 60000);
+            
+            const statsHtml = `
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">🏆 Bài hát yêu thích</div>
+                        <div class="stat-number">${topTracks.length}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">🎵 Bài hát độc nhất</div>
+                        <div class="stat-number">${uniqueTracks}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">🕐 Vừa nghe gần đây</div>
+                        <div class="stat-number">${recentTracks.length}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">⭐ Nghệ sĩ yêu thích</div>
+                        <div class="stat-number" style="font-size: 18px;">${topArtist ? topArtist[0] : 'Chưa có'}</div>
+                        <div class="stat-label">${topArtist ? topArtist[1] + ' bài' : ''}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">⏱️ Thời gian nghe gần đây</div>
+                        <div class="stat-number">${totalMinutes}</div>
+                        <div class="stat-label">phút</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('quick-stats').innerHTML = statsHtml;
+        }
+        
+        function displayTopTracks(data) {
+            const tracks = data.items || [];
+            
+            if (tracks.length === 0) {
+                document.getElementById('top-tracks').innerHTML = '<p style="color: #666;">Chưa có dữ liệu. Hãy nghe nhạc nhiều hơn!</p>';
+                return;
+            }
+            
+            let html = '';
+            tracks.forEach((track, index) => {
+                const albumArt = track.album.images[0]?.url || '';
+                html += `
+                    <div class="track">
+                        <div class="rank">#${index + 1}</div>
+                        ${albumArt ? `<img src="${albumArt}" alt="${track.name}">` : '<div style="width: 50px;"></div>'}
+                        <div class="track-info">
+                            <div class="track-name">${escapeHtml(track.name)}</div>
+                            <div class="track-artist">${escapeHtml(track.artists[0].name)}</div>
+                            <div style="font-size: 12px; color: #1DB954;">🔥 Độ phổ biến: ${track.popularity}/100</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('top-tracks').innerHTML = html;
+        }
+        
+        function displayRecentTracks(data) {
+            const items = data.items || [];
+            
+            if (items.length === 0) {
+                document.getElementById('recent-tracks').innerHTML = '<p style="color: #666;">Chưa có dữ liệu. Hãy nghe nhạc trên Spotify!</p>';
+                return;
+            }
+            
+            let html = '';
+            items.forEach((item) => {
+                const track = item.track;
+                const albumArt = track.album.images[0]?.url || '';
+                const playedAt = new Date(item.played_at);
+                const timeAgo = getTimeAgo(playedAt);
+                
+                html += `
+                    <div class="track">
+                        ${albumArt ? `<img src="${albumArt}" alt="${track.name}">` : '<div style="width: 50px;"></div>'}
+                        <div class="track-info">
+                            <div class="track-name">${escapeHtml(track.name)}</div>
+                            <div class="track-artist">${escapeHtml(track.artists[0].name)}</div>
+                            <div style="font-size: 12px; color: #999;">🎧 Nghe ${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('recent-tracks').innerHTML = html;
+        }
+        
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'vừa xong';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} phút trước`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)} giờ trước`;
+            if (seconds < 604800) return `${Math.floor(seconds / 86400)} ngày trước`;
+            return `${Math.floor(seconds / 604800)} tuần trước`;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function logout() {
+            localStorage.removeItem('spotify_token');
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('login-card').style.display = 'block';
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.innerHTML = `❌ ${message}`;
+            const container = document.querySelector('.container');
+            container.insertBefore(errorDiv, container.firstChild);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

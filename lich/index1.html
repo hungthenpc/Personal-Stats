@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm Phức Chất Hóa Học</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #1e1e1e;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            padding-bottom: 30px;
+            border: 1px solid #333;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 5px solid #1565c0;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #252525;
+            border-bottom: 1px solid #333;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #1976d2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1565c0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(21, 101, 192, 0.4);
+        }
+        
+        .btn-secondary {
+            background-color: #388e3c;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2e7d32;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 142, 60, 0.4);
+        }
+        
+        .btn-warning {
+            background-color: #d32f2f;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.4);
+        }
+        
+        .btn-nav {
+            background-color: #424242;
+            color: white;
+            padding: 10px 20px;
+        }
+        
+        .btn-nav:hover {
+            background-color: #616161;
+        }
+        
+        .quiz-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background-color: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 15px;
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #bb86fc;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+        
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: #252525;
+            border-bottom: 1px solid #333;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .current-question {
+            font-weight: 600;
+            color: #bb86fc;
+            background-color: #333;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        
+        .questions-container {
+            padding: 20px;
+            min-height: 500px;
+            position: relative;
+        }
+        
+        .question-card {
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-left: 5px solid #1976d2;
+            animation: fadeIn 0.5s ease;
+            display: none;
+        }
+        
+        .question-card.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #444;
+        }
+        
+        .question-number {
+            background: linear-gradient(135deg, #1976d2, #0d47a1);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .question-type {
+            background-color: #d32f2f;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffffff;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background-color: #363636;
+        }
+        
+        .option:hover {
+            background-color: #424242;
+            border-color: #555;
+        }
+        
+        .option.selected {
+            border-color: #1976d2;
+            background-color: rgba(25, 118, 210, 0.2);
+        }
+        
+        .option.correct {
+            border-color: #388e3c;
+            background-color: rgba(56, 142, 60, 0.2);
+        }
+        
+        .option.incorrect {
+            border-color: #d32f2f;
+            background-color: rgba(211, 47, 47, 0.2);
+        }
+        
+        .option-label {
+            background-color: #555;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .option.selected .option-label {
+            background-color: #1976d2;
+        }
+        
+        .option.correct .option-label {
+            background-color: #388e3c;
+        }
+        
+        .option.incorrect .option-label {
+            background-color: #d32f2f;
+        }
+        
+        .option-text {
+            flex-grow: 1;
+        }
+        
+        .true-false-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .true-false-btn {
+            flex: 1;
+            padding: 18px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        
+        .true-btn {
+            background-color: rgba(56, 142, 60, 0.2);
+            color: #81c784;
+            border-color: #388e3c;
+        }
+        
+        .false-btn {
+            background-color: rgba(211, 47, 47, 0.2);
+            color: #ef9a9a;
+            border-color: #d32f2f;
+        }
+        
+        .true-btn:hover, .true-btn.selected {
+            background-color: #388e3c;
+            color: white;
+            border-color: #2e7d32;
+        }
+        
+        .false-btn:hover, .false-btn.selected {
+            background-color: #d32f2f;
+            color: white;
+            border-color: #c62828;
+        }
+        
+        .explanation {
+            background-color: #333;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 4px solid #ff9800;
+            animation: slideDown 0.5s ease;
+            display: none;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .explanation-title {
+            font-weight: 700;
+            color: #ff9800;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .explanation-content {
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .explanation-content p {
+            margin-bottom: 10px;
+        }
+        
+        .short-answer-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #444;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            background-color: #363636;
+            color: white;
+        }
+        
+        .short-answer-input:focus {
+            outline: none;
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        
+        .check-answer-btn {
+            padding: 12px 25px;
+            background-color: #7b1fa2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .check-answer-btn:hover {
+            background-color: #6a1b9a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.4);
+        }
+        
+        .result-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .correct-message {
+            background-color: rgba(56, 142, 60, 0.2);
+            color: #81c784;
+            border: 1px solid #388e3c;
+        }
+        
+        .incorrect-message {
+            background-color: rgba(211, 47, 47, 0.2);
+            color: #ef9a9a;
+            border: 1px solid #d32f2f;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1976d2, #388e3c);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            margin-top: 20px;
+        }
+        
+        .question-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background-color: #252525;
+            border-bottom: 1px solid #333;
+            justify-content: center;
+        }
+        
+        .question-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            background-color: #424242;
+            color: #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .question-indicator:hover {
+            background-color: #555;
+            transform: scale(1.1);
+        }
+        
+        .question-indicator.answered {
+            background-color: #1976d2;
+            color: white;
+        }
+        
+        .question-indicator.current {
+            background-color: #ff9800;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+        
+        .question-indicator.correct {
+            background-color: #388e3c;
+            color: white;
+        }
+        
+        .question-indicator.incorrect {
+            background-color: #d32f2f;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .quiz-info {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .true-false-container {
+                flex-direction: column;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .navigation-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+          /* CSS giữ nguyên như trước, chỉ thay đổi phần sau: */
+        
+        .question-indicator.answered {
+            background-color: #1976d2; /* XANH DƯƠNG = Đã trả lời (chưa kiểm tra) */
+            color: white;
+        }
+        
+        .question-indicator.correct {
+            background-color: #388e3c; /* XANH LÁ = Đúng */
+            color: white;
+        }
+        
+        .question-indicator.incorrect {
+            background-color: #d32f2f; /* ĐỎ = Sai */
+            color: white;
+        }
+        
+        .question-indicator.current {
+            background-color: #ff9800; /* CAM = Câu hiện tại */
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+        
+        /* Thêm phần giải thích màu sắc */
+        .color-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .color-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        .color-current {
+            background-color: #ff9800;
+        }
+        
+        .color-correct {
+            background-color: #388e3c;
+        }
+        
+        .color-incorrect {
+            background-color: #d32f2f;
+        }
+        
+        .color-unanswered {
+            background-color: #424242;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-flask"></i> Trắc Nghiệm Phức Chất Hóa Học</h1>
+            <p>Kiểm tra kiến thức về phức chất, cấu trúc, tính chất và ứng dụng trong hóa học</p>
+        </header>
+        
+        <div class="controls">
+            <div>
+                <button class="btn btn-primary" id="shuffleBtn">
+                    <i class="fas fa-random"></i> Xáo Trộn Câu Hỏi
+                </button>
+                <button class="btn btn-secondary" id="checkAllBtn">
+                    <i class="fas fa-check-circle"></i> Kiểm Tra Tất Cả
+                </button>
+            </div>
+            
+            <div class="quiz-info">
+                <div class="info-item">
+                    <div class="info-value" id="totalQuestions">48</div>
+                    <div class="info-label">Tổng câu hỏi</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value" id="answeredQuestions">0</div>
+                    <div class="info-label">Đã trả lời</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-value" id="correctAnswers">0</div>
+                    <div class="info-label">Câu đúng</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-warning" id="resetBtn">
+                <i class="fas fa-redo"></i> Làm Lại Tất Cả
+            </button>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="question-list" id="questionList">
+            <!-- Các chỉ báo câu hỏi sẽ được thêm ở đây -->
+        </div>
+        
+        <div class="navigation-controls">
+            <div class="nav-buttons">
+                <button class="btn btn-nav" id="prevBtn">
+                    <i class="fas fa-chevron-left"></i> Câu trước
+                </button>
+                <button class="btn btn-nav" id="nextBtn">
+                    Câu sau <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="current-question" id="currentQuestionDisplay">
+                Câu 1/48
+            </div>
+        </div>
+        
+        <div class="questions-container" id="questionsContainer">
+            <!-- Câu hỏi sẽ được thêm động bằng JavaScript -->
+        </div>
+        
+        <div class="footer">
+            <p>Trang web trắc nghiệm phức chất hóa học | Dữ liệu từ tài liệu học tập</p>
+            <p>© 2023 - Thiết kế cho mục đích học tập</p>
+        </div>
+    </div>
+    
+    <script>
+        // Dữ liệu câu hỏi trắc nghiệm
+        const questionsData = [
+            // Câu 1-15: Trắc nghiệm nhiều phương án lựa chọn
+            {
+                id: 1,
+                type: "multiple-choice",
+                text: "Phức chất của ion kim loại chuyển tiếp thường có 2 thành phần là",
+                options: [
+                    "phối tử và ion trung tâm.",
+                    "ion dương và ion âm.",
+                    "ion âm và các nguyên tử.",
+                    "các nguyên tử và phân tử."
+                ],
+                correctAnswer: 0,
+                explanation: "Phức chất của ion kim loại chuyển tiếp gồm ion kim loại trung tâm và các phối tử (ligand) bao quanh. Các phối tử có thể là phân tử trung hòa hoặc ion âm."
+            },
+            {
+                id: 2,
+                type: "multiple-choice",
+                text: "Thuốc thử Tollens chứa hợp chất có công thức là [Ag(NH₃)₂]OH, có khả năng tham gia phản ứng tráng bạc với aldehyde. Phân tử [Ag(NH₃)₂]OH hoặc cation [Ag(NH₃)₂]⁺ đều được gọi là phức chất. Chọn phát biểu đúng về phức chất.",
+                options: [
+                    "Phức chất là phân tử hoặc ion trong đó có nguyên tử trung tâm liên kết với các phối tử bao quanh bởi hiện tượng nhận định.",
+                    "Phức chất là những chất gồm nhiều phân tử chất đơn giản kết hợp lại.",
+                    "Phức chất là những chất được tạo thành từ hai hay nhiều phân tử muối.",
+                    "Phức chất là những hợp chất có chứa nguyên tử kim loại và có liên kết cho nhận."
+                ],
+                correctAnswer: 3,
+                explanation: "Phức chất là những hợp chất trong đó có nguyên tử kim loại trung tâm liên kết với các phối tử (ligand) bằng liên kết cho-nhận (phối trí). Nguyên tử trung tâm thường là ion kim loại, nhận cặp electron từ phối tử."
+            },
+            {
+                id: 3,
+                type: "multiple-choice",
+                text: "Phát biểu nào về phức chất [Ni(CN)₄]²⁻ sai?",
+                options: [
+                    "Ion trung tâm là Ni.",
+                    "Dạng hình học vuông phẳng.",
+                    "Phối tử là CN⁻.",
+                    "Phối tử là [Ni(CN)₄]²⁻."
+                ],
+                correctAnswer: 3,
+                explanation: "Trong phức chất [Ni(CN)₄]²⁻, ion trung tâm là Ni²⁺, phối tử là CN⁻ (xyanua). [Ni(CN)₄]²⁻ là toàn bộ ion phức, không phải là phối tử."
+            },
+            {
+                id: 4,
+                type: "multiple-choice",
+                text: "Điều kiện cơ bản để phản ứng thế phối tử xảy ra trong dung dịch nước là",
+                options: [
+                    "không cần điều kiện.",
+                    "phức chất mới hình thành phải kém bền hơn phức chất ban đầu.",
+                    "phức chất mới phải khó tan.",
+                    "phức chất mới hình thành phải bền hơn phức chất ban đầu."
+                ],
+                correctAnswer: 3,
+                explanation: "Phản ứng thế phối tử xảy ra khi phức chất mới hình thành bền hơn phức chất ban đầu, làm cho cân bằng chuyển dịch theo chiều tạo phức chất mới."
+            },
+            {
+                id: 5,
+                type: "multiple-choice",
+                text: "Xác định các thành phần trong phức chất [Cu(H₂O)₆]²⁺",
+                options: [
+                    "Phối tử là Cu²⁺, ion trung tâm là H₂O.",
+                    "Phối tử là Cu²⁺, ion trung tâm là H₂O⁺.",
+                    "Phối tử là H₂O, ion trung tâm là Cu²⁺.",
+                    "Phối tử là H₂O, ion trung tâm là Cu⁺."
+                ],
+                correctAnswer: 2,
+                explanation: "Trong phức chất [Cu(H₂O)₆]²⁺, ion trung tâm là Cu²⁺, còn H₂O là phối tử (ligand). Mỗi phân tử H₂O cho một cặp electron chưa liên kết vào orbital trống của Cu²⁺."
+            },
+            {
+                id: 6,
+                type: "multiple-choice",
+                text: "Trong phức chất, liên kết được hình thành giữa ion trung tâm và phối tử là liên kết",
+                options: [
+                    "cộng hóa trị có cực.",
+                    "ion.",
+                    "Cho-nhận.",
+                    "kim loại."
+                ],
+                correctAnswer: 2,
+                explanation: "Liên kết trong phức chất là liên kết cho-nhận (phối trí), trong đó phối tử cho cặp electron chưa liên kết vào orbital trống của ion kim loại trung tâm."
+            },
+            {
+                id: 7,
+                type: "multiple-choice",
+                text: "Ion trung tâm đóng vai trò là chất",
+                options: [
+                    "nhận proton.",
+                    "cho các cặp electron.",
+                    "nhận cặp electron.",
+                    "cho proton."
+                ],
+                correctAnswer: 2,
+                explanation: "Ion trung tâm trong phức chất đóng vai trò là acid Lewis (chất nhận cặp electron), còn phối tử đóng vai trò là base Lewis (chất cho cặp electron)."
+            },
+            {
+                id: 8,
+                type: "multiple-choice",
+                text: "Phức ethylenediaminetetraacetic acid, coppered diodium complex (EDTA-CuNa₂) thường được sử dụng trong nông nghiệp để cung cấp đồng cho đất trồng có công thức như hình bên. Ion trung tâm của phức này là",
+                options: [
+                    "NO₃⁻.",
+                    "Na⁺.",
+                    "Cu²⁺.",
+                    "EDTA."
+                ],
+                correctAnswer: 2,
+                explanation: "Trong phức EDTA-CuNa₂, ion kim loại trung tâm là Cu²⁺, EDTA là phối tử đa càng bao quanh ion đồng, còn Na⁺ là ion cầu ngoại để trung hòa điện tích."
+            },
+            {
+                id: 9,
+                type: "multiple-choice",
+                text: "Chất nào sau đây thuộc loại phức chất?",
+                options: [
+                    "KAl(SO₄)₂·12H₂O.",
+                    "[Co(NH₃)₃(NO₂)₃]Cl.",
+                    "KCl.MgCl₂.",
+                    "FeSO₄(NH₄)₂SO₄·6H₂O."
+                ],
+                correctAnswer: 1,
+                explanation: "[Co(NH₃)₃(NO₂)₃]Cl là phức chất với ion phức [Co(NH₃)₃(NO₂)₃] và ion Cl⁻ ở cầu ngoại. Các chất còn lại là muối kép (phèn) hoặc hydrat."
+            },
+            {
+                id: 10,
+                type: "multiple-choice",
+                text: "Số phối tử trong phức Zn(NH₃)₄²⁺ là",
+                options: ["2", "3", "4", "5"],
+                correctAnswer: 2,
+                explanation: "Trong phức chất Zn(NH₃)₄²⁺, có 4 phân tử NH₃ đóng vai trò là phối tử đơn càng, mỗi phân tử cho một cặp electron vào orbital trống của Zn²⁺."
+            },
+            {
+                id: 11,
+                type: "multiple-choice",
+                text: "Số phối tử trong phức [Co(H₂O)₆]Cl₃ là",
+                options: ["2", "3", "4", "6"],
+                correctAnswer: 3,
+                explanation: "Trong phức chất [Co(H₂O)₆]Cl₃, ion phức [Co(H₂O)₆]³⁺ có 6 phân tử nước đóng vai trò là phối tử, mỗi phân tử cho một cặp electron vào orbital trống của Co³⁺."
+            },
+            {
+                id: 12,
+                type: "multiple-choice",
+                text: "Phức chất là gì?",
+                options: [
+                    "Phức chất là những hợp chất có cấu tạo rất phức tạp.",
+                    "Phức chất là những chất gồm nhiều phân tử chất đơn giản kết hợp lại.",
+                    "Phức chất là những chất được tạo thành từ hai hay nhiều phân tử muối.",
+                    "Phức chất là những chất khi phân li trong dung dịch tạo thành các ion phức tồn tại độc lập và có tính chất xác định."
+                ],
+                correctAnswer: 3,
+                explanation: "Phức chất là hợp chất chứa ion phức, khi tan trong nước phân li thành ion phức có khả năng tồn tại độc lập và có tính chất hóa học đặc trưng."
+            },
+            {
+                id: 13,
+                type: "multiple-choice",
+                text: "Cho phát biểu sau: 'Phức chất đơn giản thường có một ...(1)... liên kết với các phối tử bao quanh. Liên kết giữa nguyên tử trung tâm và phối tử trong phức chất là liên kết ...(2)...'",
+                options: [
+                    "cation kim loại, ion.",
+                    "nguyên tử kim loại, cho - nhận.",
+                    "nguyên tử trung tâm, cho - nhận.",
+                    "phối tử, ion."
+                ],
+                correctAnswer: 2,
+                explanation: "Phức chất đơn giản thường có một nguyên tử trung tâm (thường là ion kim loại) liên kết với các phối tử bằng liên kết cho-nhận (phối trí)."
+            },
+            {
+                id: 14,
+                type: "multiple-choice",
+                text: "Để trở thành phối tử trong phức chất thì phân tử hoặc anion cần có",
+                options: [
+                    "các orbital trống.",
+                    "cặp electron hoá trị riêng.",
+                    "ít nhất 4 orbital trống.",
+                    "ít nhất hai cặp electron hoá trị riêng."
+                ],
+                correctAnswer: 1,
+                explanation: "Phối tử (ligand) phải có ít nhất một cặp electron hóa trị riêng (chưa tham gia liên kết) để cho vào orbital trống của ion kim loại trung tâm, tạo liên kết cho-nhận."
+            },
+            {
+                id: 15,
+                type: "multiple-choice",
+                text: "Phát biểu nào sau đây là không đúng về nguyên tử trung tâm trong phức chất?",
+                options: [
+                    "Nguyên tử trung tâm trong phức chất là cation kim loại hoặc nguyên tử kim loại đã nhận cặp electron hoá trị riêng của phân tử hoặc anion.",
+                    "Cation tạo nguyên tử trung tâm trong phức chất [Co(H₂O)₆]³⁺ là Co³⁺.",
+                    "Nguyên tử trung tâm trong phức chất là các nguyên tố kim loại chuyển tiếp.",
+                    "Nguyên tử trung tâm trong phức chất [Ni(CO)₄] được hình thành từ quá trình cation Ni²⁺ sử dụng các orbital trống để nhận các cặp electron hoá trị của các phân tử CO."
+                ],
+                correctAnswer: 3,
+                explanation: "Trong phức chất [Ni(CO)₄], nguyên tử trung tâm là Ni với số oxi hóa 0, không phải là Ni²⁺. Đây là phức chất carbonyl với kim loại ở trạng thái oxi hóa 0."
+            },
+            // Câu 16-30: Trắc nghiệm nhiều phương án lựa chọn (tiếp)
+            {
+                id: 16,
+                type: "multiple-choice",
+                text: "Phát biểu nào sau đây không đúng về phức chất?",
+                options: [
+                    "Phức chất đơn giản thường có một nguyên tử trung tâm liên kết với các phối tử bao quanh.",
+                    "Phức chất có thể mang điện tích hoặc không mang điện tích.",
+                    "Liên kết giữa nguyên tử trung tâm và phối tử trong phức chất là liên kết ion.",
+                    "K₂[PtCl₆] hoặc anion [PtCl₆]²⁻ đều được xếp vào loại phức chất."
+                ],
+                correctAnswer: 2,
+                explanation: "Liên kết giữa nguyên tử trung tâm và phối tử trong phức chất là liên kết cho-nhận (phối trí), không phải liên kết ion. Liên kết ion chỉ có giữa ion phức và ion cầu ngoại."
+            },
+            {
+                id: 17,
+                type: "multiple-choice",
+                text: "Chọn phát biểu đúng về phức K₂[PtCl₆]:",
+                options: [
+                    "Tên của phức là potassium hexachloroplatinate(IV).",
+                    "Ion trung tâm là K⁺.",
+                    "Phức có dạng hình học là vuông phẳng.",
+                    "Liên kết trong phức là liên kết ion Cl⁻."
+                ],
+                correctAnswer: 0,
+                explanation: "K₂[PtCl₆] có tên là potassium hexachloroplatinate(IV). Ion trung tâm là Pt⁴⁺, phối tử là 6 ion Cl⁻, tạo phức bát diện. Liên kết Pt-Cl là liên kết cho-nhận."
+            },
+            {
+                id: 18,
+                type: "multiple-choice",
+                text: "Cho các chất có công thức: CuCl₂, NH₃, [CuCl₄]²⁻. Phát biểu nào sau đây là không đúng?",
+                options: [
+                    "Do không có liên kết cộng hóa trị theo kiểu cho - nhận trong phân tử nên CuCl₂ không phải là phức chất.",
+                    "Do có nguyên tử trung tâm là nguyên tố kim loại, đồng thời các phối tử xung quanh liên kết với nguyên tử trung tâm bằng liên kết cho - nhận nên [CuCl₄]²⁻ là phức chất.",
+                    "Do có các nguyên tử H xung quanh N, nhưng NH₃ không phải là phức chất.",
+                    "Do nguyên tố Cu có hóa trị II nên nguyên tử Cu trong CuCl₂ và trong [CuCl₄]²⁻ đều có 2 liên kết."
+                ],
+                correctAnswer: 3,
+                explanation: "Trong CuCl₂, Cu có 2 liên kết ion với Cl⁻. Trong [CuCl₄]²⁻, Cu²⁺ có 4 liên kết cho-nhận với 4 ion Cl⁻. Số liên kết khác nhau trong hai hợp chất này."
+            },
+            {
+                id: 19,
+                type: "multiple-choice",
+                text: "Phức Na₃[Co(NO₂)₆] được sử dụng nhiều trong phòng thí nghiệm để nhận biết một số cation kim loại. Phát biểu nào sau đây về phức chất Na₃[Co(NO₂)₆] là đúng?",
+                options: [
+                    "Có liên kết cho - nhận và liên kết ion trong phân tử.",
+                    "Phức có dạng hình học là tứ diện.",
+                    "Có nguyên tử trung tâm là natri (sodium) và cobalt.",
+                    "Nguyên tử trung tâm có số oxi hoá là +2."
+                ],
+                correctAnswer: 0,
+                explanation: "Trong Na₃[Co(NO₂)₆], có liên kết cho-nhận giữa Co³⁺ và phối tử NO₂⁻, và liên kết ion giữa ion phức [Co(NO₂)₆]³⁻ và ion Na⁺. Phức có dạng hình học bát diện."
+            },
+            {
+                id: 20,
+                type: "multiple-choice",
+                text: "Quan sát CTCT của vitamin B12 cho ở hình bên và cho biết nhận xét nào sau đây không đúng?",
+                options: [
+                    "Vitamin B12 là phức chất do có ion trung tâm và phối tử.",
+                    "Ion trung tâm là Co³⁺, phối tử là các nguyên tử N.",
+                    "Có ion trung tâm có dạng hình học bát diện.",
+                    "Liên kết giữa ion Co³⁺ và các phối tử là liên kết cho - nhận."
+                ],
+                correctAnswer: 2,
+                explanation: "Vitamin B12 có ion trung tâm Co³⁺ nằm trong vòng porphyrin với 4 nguyên tử N, tạo phức vuông phẳng. Ngoài ra còn có phối tử khác phía trên và dưới mặt phẳng, tạo phức bát diện biến dạng."
+            },
+            {
+                id: 21,
+                type: "multiple-choice",
+                text: "Chọn phát biểu đúng để giải thích sự hình thành liên kết trong phức [Ag(NH₃)₂]⁺",
+                options: [
+                    "Liên kết trong phức chất [Ag(NH₃)₂]⁺ được hình thành do phối tử NH₃ cho cặp electron chưa liên kết vào AO trống của nguyên tử trung tâm Ag⁺.",
+                    "Liên kết trong phức chất [Ag(NH₃)₂]⁺ được hình thành do phối tử NH₃ cho cặp electron đã liên kết vào AO trống của nguyên tử trung tâm Ag⁺.",
+                    "Liên kết trong phức chất [Ag(NH₃)₂]⁺ được hình thành do phối tử NH₃ tạo liên kết ion với nguyên tử trung tâm Ag⁺.",
+                    "Liên kết trong phức chất [Ag(NH₃)₂]⁺ được hình thành do nguyên tử trung tâm Ag⁺ cho cặp electron chưa liên kết vào AO trống của phối tử NH₃."
+                ],
+                correctAnswer: 0,
+                explanation: "Trong phức [Ag(NH₃)₂]⁺, mỗi phân tử NH₃ cho một cặp electron chưa liên kết (cặp electron tự do) trên nguyên tử N vào orbital trống của Ag⁺, tạo liên kết cho-nhận."
+            },
+            {
+                id: 22,
+                type: "multiple-choice",
+                text: "Nhận định nào sau đây không đúng?",
+                options: [
+                    "Phức chất có thể mang điện tích hoặc không mang điện tích.",
+                    "Phức chất mà nguyên tử trung tâm tạo 4 liên kết σ với các phối tử luôn có dạng hình học là tứ diện.",
+                    "Giống như phân tử amoniac, phân tử methyl amine cũng có thể đóng vai trò là phối tử do có cặp electron chưa liên kết.",
+                    "Phức có 4 phối tử và nguyên tử trung tâm có AO d dễ có dạng hình học vuông phẳng."
+                ],
+                correctAnswer: 1,
+                explanation: "Phức chất 4 phối tử có thể có dạng tứ diện (như [Zn(NH₃)₄]²⁺) hoặc vuông phẳng (như [Ni(CN)₄]²⁻) tùy thuộc vào cấu hình electron của ion trung tâm và loại phối tử."
+            },
+            {
+                id: 23,
+                type: "multiple-choice",
+                text: "Nhận định nào sau đây không đúng?",
+                options: [
+                    "Phức chất có số phối trí là 4, nguyên tử trung tâm lai hoá sp³ thì có dạng tứ diện đều.",
+                    "Phức chất có số phối trí là 4, nguyên tử trung tâm lai hoá dsp² thì có dạng vuông phẳng.",
+                    "Phức chất có số phối trí là 6, nguyên tử trung tâm có 2 kiểu lai hoá d²sp³, sp³d² thì có dạng bát diện đều.",
+                    "Phức chất có số phối trí là 4 thường có dạng hình học vuông phẳng."
+                ],
+                correctAnswer: 3,
+                explanation: "Phức chất có số phối trí 4 có thể có dạng tứ diện (phổ biến với ion trung tâm có cấu hình d¹⁰) hoặc vuông phẳng (phổ biến với ion trung tâm có cấu hình d⁸)."
+            },
+            {
+                id: 24,
+                type: "multiple-choice",
+                text: "Cho phức chất có cấu tạo như hình bên (phức chất với 6 phối tử). Dạng hình học của phức chất này là",
+                options: ["Vuông phẳng", "Tứ diện", "Bát diện", "Đa diện"],
+                correctAnswer: 2,
+                explanation: "Phức chất với 6 phối tử thường có dạng hình học bát diện, với nguyên tử trung tâm ở tâm và 6 phối tử ở 6 đỉnh của hình bát diện."
+            },
+            {
+                id: 25,
+                type: "multiple-choice",
+                text: "Dạng hình học của phức chất [Ni(CN)₄]²⁻ là",
+                options: ["Tứ diện", "Vuông phẳng", "Hình vuông", "Bát diện"],
+                correctAnswer: 1,
+                explanation: "[Ni(CN)₄]²⁻ có dạng hình học vuông phẳng do Ni²⁺ có cấu hình d⁸ và phối tử CN⁻ là phối tử trường mạnh, tạo lai hóa dsp² cho nguyên tử trung tâm."
+            },
+            {
+                id: 26,
+                type: "multiple-choice",
+                text: "Phát biểu nào sau đây về dạng hình học của phức chất là đúng?",
+                options: [
+                    "Phức chất mà xung quanh nguyên tử trung tâm có 4 liên kết σ thường có dạng tứ diện hoặc vuông phẳng.",
+                    "Phức chất mà xung quanh nguyên tử trung tâm có 4 liên kết σ luôn có dạng tứ diện.",
+                    "Phức chất mà xung quanh nguyên tử trung tâm có 4 liên kết σ luôn có dạng vuông phẳng.",
+                    "Phức chất mà xung quanh nguyên tử trung tâm có 4 liên kết σ có dạng hình học bát diện."
+                ],
+                correctAnswer: 0,
+                explanation: "Phức chất với số phối trí 4 (4 liên kết σ) có hai dạng hình học phổ biến là tứ diện và vuông phẳng, tùy thuộc vào ion trung tâm và phối tử."
+            },
+            {
+                id: 27,
+                type: "multiple-choice",
+                text: "Muối đồng sulfate CuSO₄ tan trong nước được phức [Cu(H₂O)₄]SO₄ khi tan trong ethylenediamin (NH₂-(CH₂)₂-NH₂) ký hiệu En thì được phức [Cu(En)₂]SO₄. Nhận định nào sau đây không đúng?",
+                options: [
+                    "Phân tử H₂O và En đều có khả năng tạo phức với nguyên tử Cu là do chúng đều có cặp electron tự do.",
+                    "Số phối trí của ion trung tâm trong phức [Cu(H₂O)₄]SO₄ là 4.",
+                    "Số phối trí của ion trung tâm trong phức [Cu(En)₂]SO₄ là 4.",
+                    "Tỉ số phối tử/ion trung tâm trong phức [Cu(En)₂]SO₄ là 2."
+                ],
+                correctAnswer: 2,
+                explanation: "Trong [Cu(En)₂]SO₄, mỗi phân tử ethylenediamin (En) là phối tử đa càng với 2 nguyên tử N cho electron, nên mỗi En chiếm 2 vị trí phối trí. Với 2 phân tử En, số phối trí của Cu²⁺ là 4 (2×2)."
+            },
+            {
+                id: 28,
+                type: "multiple-choice",
+                text: "Nước có lượng đáng kể các cation Al³⁺ và Fe³⁺ được gọi là nước nhiễm phèn. Trong nước, những hợp chất này có tính acid mạnh nhất là do:",
+                options: [
+                    "Các ion kim loại của hợp chất này có tính acid cao.",
+                    "Phối tử OH⁻ và phối tử H₂O tạo phức được với ion trung tâm là do có cặp electron tự do.",
+                    "Khi tạo phức các ion Al³⁺ và Fe³⁺ nhận proton của nước nên các ion này là acid Lewis.",
+                    "Nước bị nhiễm phèn thường có độ pH thấp do các cation kim loại nhận cặp electron của nước và sinh ra ion H⁺ trong dung dịch."
+                ],
+                correctAnswer: 3,
+                explanation: "Các cation Al³⁺ và Fe³⁺ có kích thước nhỏ, điện tích lớn, là acid Lewis mạnh. Chúng kết hợp với phân tử nước tạo phức aqua, sau đó phân ly proton H⁺ làm giảm pH của dung dịch."
+            },
+            {
+                id: 29,
+                type: "multiple-choice",
+                text: "Cation Co³⁺ và anion C₂O₄²⁻ (kí hiệu là ox) và phân tử H₂O kết hợp với nhau tạo phức có công thức như sau [Co(ox)₂(OH₂)₂]⁻. Nhận định nào sau đây sai?",
+                options: [
+                    "Cation Co³⁺ tạo được 6 liên kết sigma kiểu cho - nhận với các phối tử.",
+                    "Mỗi anion C₂O₄²⁻ sử dụng 2 cặp electron hoá trị riêng để tạo liên kết cho - nhận với cation kim loại.",
+                    "Mỗi phân tử H₂O sử dụng 1 cặp electron hoá trị riêng để tạo liên kết cho - nhận với cation kim loại.",
+                    "Phối tử trong phức trên là anion C₂O₄²⁻."
+                ],
+                correctAnswer: 3,
+                explanation: "Phối tử trong phức [Co(ox)₂(OH₂)₂]⁻ gồm 2 anion oxalat (C₂O₄²⁻, đa càng) và 2 phân tử nước (H₂O, đơn càng). Cả oxalat và nước đều là phối tử."
+            },
+            {
+                id: 30,
+                type: "multiple-choice",
+                text: "Để nhận biết ion Ni²⁺ người ta cho dung dịch chứa ion này tác dụng với thuốc thử dimethylglyoxime thu được kết tủa có màu đỏ đặc trưng và có cấu tạo vuông phẳng. Phát biểu nào sau đây không chính xác?",
+                options: [
+                    "Cả hai chất kết tủa và kết tủa keo Ni₂[Fe(CN)₆] đều là phức chất.",
+                    "Ion trung tâm của cả hai phức đều là Ni²⁺.",
+                    "Phối tử trong phức Ni₂[Fe(CN)₆] là CN⁻, số liên kết phối trí là 6.",
+                    "Kết tủa với dimethylglyoxime có dạng hình học là vuông phẳng, Ni₂[Fe(CN)₆] có dạng hình học là bát diện."
+                ],
+                correctAnswer: 1,
+                explanation: "Trong Ni₂[Fe(CN)₆], ion trung tâm của ion phức [Fe(CN)₆]⁴⁻ là Fe²⁺, còn Ni²⁺ là ion cầu ngoài. Đây là muối phức, không phải phức đơn nhân với Ni là ion trung tâm."
+            },
+            // Câu 31-40: Trắc nghiệm đúng sai
+            {
+                id: 31,
+                type: "true-false",
+                text: "a. Các nhóm nguyên tử, phân tử hay ion sắp xếp một cách xác định xung quanh ion hay nguyên tử tạo phức, ion hay nguyên tử đó được gọi là ion trung tâm (hay chất tạo phức).",
+                subQuestions: [
+                    {
+                        text: "a. Các nhóm nguyên tử, phân tử hay ion sắp xếp một cách xác định xung quanh ion hay nguyên tử tạo phức, ion hay nguyên tử đó được gọi là ion trung tâm (hay chất tạo phức).",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Ion trung tâm (hay chất tạo phức) là ion hoặc nguyên tử mà xung quanh nó có các phối tử sắp xếp theo một trật tự nhất định."
+                    },
+                    {
+                        text: "b. Phối tử (ligand) là các nhóm ion hay phân tử sắp xếp một cách xác định xung quanh ion trung tâm.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phối tử (ligand) là các ion, phân tử hoặc nguyên tử sắp xếp xung quanh ion trung tâm, cho cặp electron tạo liên kết cho-nhận."
+                    },
+                    {
+                        text: "c. Số phối trí là số liên kết mà ion trung tâm tạo thành với các phối tử.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Số phối trí là số liên kết σ (cho-nhận) mà ion trung tâm tạo ra với các phối tử."
+                    },
+                    {
+                        text: "d. Trong phức [Zn(NH₃)₄]²⁺, phối tử là ion trung tâm là Zn, phối tử là NH₃.",
+                        correctAnswer: false,
+                        explanation: "SAI. Trong phức [Zn(NH₃)₄]²⁺, ion trung tâm là Zn²⁺, phối tử là NH₃. Zn không phải là phối tử."
+                    }
+                ]
+            },
+            {
+                id: 32,
+                type: "true-false",
+                text: "Phức chất cis-[Pt(NH₃)₂Cl₂] một hợp chất vô cơ có khả năng ức chế các tế bào ung thư như ung thư tinh hoàn, buồng trứng, bàng quang và các khối u ở đầu và cổ.",
+                subQuestions: [
+                    {
+                        text: "a. Ion trung tâm là Pt.",
+                        correctAnswer: false,
+                        explanation: "SAI. Ion trung tâm là Pt²⁺, không phải Pt nguyên tử."
+                    },
+                    {
+                        text: "b. Phối tử là NH₃.",
+                        correctAnswer: false,
+                        explanation: "SAI. Phối tử bao gồm cả NH₃ và Cl⁻. Thiếu Cl⁻."
+                    },
+                    {
+                        text: "c. Ion trung tâm là Pt²⁺, phối tử là NH₃ và Cl⁻.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Trong cis-[Pt(NH₃)₂Cl₂], ion trung tâm là Pt²⁺, phối tử gồm 2 phân tử NH₃ và 2 ion Cl⁻."
+                    },
+                    {
+                        text: "d. Phức có dạng hình học là vuông phẳng.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phức [Pt(NH₃)₂Cl₂] có dạng hình học vuông phẳng, với Pt²⁺ ở trung tâm và 4 phối tử ở 4 góc của hình vuông."
+                    }
+                ]
+            },
+            {
+                id: 33,
+                type: "true-false",
+                text: "Metalloporphyrin có cấu trúc tương tự heme và được sử dụng trong việc kiểm soát chứng tăng bilirubin máu ở trẻ sơ sinh (chứng gây ra bệnh vàng da ở trẻ sơ sinh).",
+                subQuestions: [
+                    {
+                        text: "a. Ion trung tâm của phức Metalloporphyrin là Fe.",
+                        correctAnswer: false,
+                        explanation: "SAI. Ion trung tâm của metalloporphyrin có thể là nhiều kim loại khác nhau như Fe, Mg, Co, Ni, Cu, Zn... tùy loại metalloporphyrin cụ thể."
+                    },
+                    {
+                        text: "b. Số phối trí của phức là 4.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Trong phức porphyrin, ion kim loại thường tạo 4 liên kết với 4 nguyên tử N của vòng porphyrin, nên số phối trí là 4."
+                    },
+                    {
+                        text: "c. Metalloporphyrin là muối kép không phải là phức chất.",
+                        correctAnswer: false,
+                        explanation: "SAI. Metalloporphyrin là phức chất với ion kim loại trung tâm liên kết với phối tử porphyrin bằng liên kết cho-nhận."
+                    },
+                    {
+                        text: "d. Liên kết trong phức Metalloporphyrin được tạo thành do nguyên tử N cho cặp electron chưa liên kết vào orbital trống của nguyên tử Fe.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Mỗi nguyên tử N trong vòng porphyrin cho một cặp electron chưa liên kết vào orbital trống của ion kim loại trung tâm, tạo liên kết cho-nhận."
+                    }
+                ]
+            },
+            {
+                id: 34,
+                type: "true-false",
+                text: "Mỗi phát biểu sau về phức [Co(NH₃)₅(NO₂)]²⁺ là đúng hay sai?",
+                subQuestions: [
+                    {
+                        text: "a. Số phối tử là 5.",
+                        correctAnswer: false,
+                        explanation: "SAI. Số phối tử là 6: 5 phân tử NH₃ và 1 ion NO₂⁻."
+                    },
+                    {
+                        text: "b. Phức có dạng hình học là bát diện.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phức [Co(NH₃)₅(NO₂)]²⁺ có số phối trí 6, dạng hình học bát diện."
+                    },
+                    {
+                        text: "c. Liên kết được tạo thành trong phức là liên kết cho nhận được tạo thành do nguyên tử N cho cặp electron chưa liên kết vào orbital trống của nguyên tử Co.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Cả NH₃ (qua nguyên tử N) và NO₂⁻ (có thể qua N hoặc O) đều cho cặp electron vào orbital trống của Co³⁺ tạo liên kết cho-nhận."
+                    },
+                    {
+                        text: "d. Phối tử trong phức là NH₃ và NO₂.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phối tử trong phức [Co(NH₃)₅(NO₂)]²⁺ gồm 5 phân tử NH₃ và 1 ion NO₂⁻."
+                    }
+                ]
+            },
+            {
+                id: 35,
+                type: "true-false",
+                text: "Hexaammine chromium (III) nitrate thường được sử dụng để tổng hợp phức phối hợp chromium và sử dụng để sản xuất chất xúc tác.",
+                subQuestions: [
+                    {
+                        text: "a. Công thức của hexaammine chromium (III) nitrate là [Cr(NH₃)₆](NO₃)₃.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Hexaamminechromium(III) nitrate có công thức [Cr(NH₃)₆](NO₃)₃."
+                    },
+                    {
+                        text: "b. Dạng hình học của hexaammine chromium (III) nitrate là dạng vuông phẳng.",
+                        correctAnswer: false,
+                        explanation: "SAI. Phức [Cr(NH₃)₆]³⁺ có số phối trí 6, dạng hình học bát diện."
+                    },
+                    {
+                        text: "c. Phối tử trong phức hexaammine chromium (III) nitrate là NH₃ và NO₃⁻.",
+                        correctAnswer: false,
+                        explanation: "SAI. Phối tử chỉ là NH₃. NO₃⁻ là ion cầu ngoại, không phải phối tử."
+                    },
+                    {
+                        text: "d. Ion trung tâm Cr³⁺ có kiểu lai hóa sp³.",
+                        correctAnswer: false,
+                        explanation: "SAI. Cr³⁺ trong [Cr(NH₃)₆]³⁺ có lai hóa d²sp³ (trường nội) hoặc sp³d² (trường ngoại), không phải sp³."
+                    }
+                ]
+            },
+            {
+                id: 36,
+                type: "true-false",
+                text: "Mỗi phát biểu dưới đây là đúng hay sai?",
+                subQuestions: [
+                    {
+                        text: "a. Phức chất có thể mang điện tích hoặc không mang điện tích.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phức chất có thể là ion mang điện (như [Cu(NH₃)₄]²⁺) hoặc phân tử trung hòa (như [Ni(CO)₄])."
+                    },
+                    {
+                        text: "b. Giống như phân tử amoniac (NH₃), phân tử methyl amine (CH₃NH₂) cũng có thể đóng vai trò là phối tử do có cặp electron chưa liên kết.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. CH₃NH₂ có cặp electron chưa liên kết trên nguyên tử N, có thể cho vào orbital trống của ion kim loại trung tâm, đóng vai trò là phối tử."
+                    },
+                    {
+                        text: "c. Phức chất mà nguyên tử trung tâm tạo 4 liên kết σ với các phối tử luôn có dạng hình học là tứ diện.",
+                        correctAnswer: false,
+                        explanation: "SAI. Phức chất 4 phối tử có thể có dạng tứ diện hoặc vuông phẳng tùy thuộc vào ion trung tâm và phối tử."
+                    },
+                    {
+                        text: "d. Phân tử NH₃ còn một cặp electron chưa tham gia liên kết. Cặp electron chưa tham gia liên kết này có thể tạo liên kết cho nhận với orbital trống của nguyên tử trung tâm tạo phức chất. Do đó phân tử NH₃ có thể đóng vai trò là phối tử.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. NH₃ có một cặp electron tự do trên nguyên tử N, có thể cho vào orbital trống của ion kim loại trung tâm tạo liên kết cho-nhận, đóng vai trò là phối tử."
+                    }
+                ]
+            },
+            {
+                id: 37,
+                type: "true-false",
+                text: "Khi cho CrCl₃ vào nước sẽ được phức chất aqua của chromium.",
+                subQuestions: [
+                    {
+                        text: "a. Phức chất aqua của chromium có dạng hình học bát diện.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phức aqua của Cr³⁺, [Cr(H₂O)₆]³⁺, có dạng hình học bát diện."
+                    },
+                    {
+                        text: "b. Phương trình tạo phức là CrCl₃(aq) + 6H₂O(l) → [Cr(H₂O)₆]Cl₃(aq).",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. CrCl₃ tan trong nước tạo phức hexaaquachromium(III) chloride: [Cr(H₂O)₆]Cl₃."
+                    },
+                    {
+                        text: "c. Phối tử của phức là Cl⁻ và H₂O.",
+                        correctAnswer: false,
+                        explanation: "SAI. Trong phức [Cr(H₂O)₆]³⁺, phối tử chỉ là H₂O. Cl⁻ là ion cầu ngoại."
+                    },
+                    {
+                        text: "d. Nguyên tử trung tâm Cr³⁺ tạo 6 liên kết σ với 6 phân tử nước.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Cr³⁺ tạo 6 liên kết cho-nhận (σ) với 6 phân tử H₂O, mỗi phân tử nước cho một cặp electron vào orbital trống của Cr³⁺."
+                    }
+                ]
+            },
+            {
+                id: 38,
+                type: "true-false",
+                text: "Cho phức chất bát diện [Cu(H₂O)₆]²⁺.",
+                subQuestions: [
+                    {
+                        text: "a. Nguyên tử trung tâm được hình thành từ quá trình cation Cu²⁺ sử dụng 6 orbital trống để nhận các cặp electron hoá trị riêng của các phân tử H₂O.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Cu²⁺ có orbital trống, nhận cặp electron từ 6 phân tử H₂O tạo 6 liên kết cho-nhận."
+                    },
+                    {
+                        text: "b. Số oxi hóa của nguyên tử trung tâm là +2.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Trong [Cu(H₂O)₆]²⁺, số oxi hóa của Cu là +2."
+                    },
+                    {
+                        text: "c. Số liên kết cho - nhận giữa phối tử và nguyên tử trung tâm cũng là hóa trị phổ biến của đồng.",
+                        correctAnswer: false,
+                        explanation: "SAI. Số phối trí (6) không phải là hóa trị phổ biến của đồng. Hóa trị phổ biến của Cu là +1 và +2, nhưng số phối trí có thể thay đổi."
+                    },
+                    {
+                        text: "d. Mỗi phân tử nước chỉ sử dụng 1 trong 2 cặp electron hoá trị riêng của nó để tạo liên kết cho - nhận với cation Cu²⁺.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Mỗi phân tử H₂O có 2 cặp electron tự do trên nguyên tử O, nhưng chỉ sử dụng 1 cặp để tạo liên kết với Cu²⁺."
+                    }
+                ]
+            },
+            {
+                id: 39,
+                type: "true-false",
+                text: "Cho hai phức chất A ([Co(NH₃)₆]³⁺) và B ([Ni(CN)₄]²⁻) có công thức lần lượt như sau. Mỗi phát biểu sau là đúng hay sai?",
+                subQuestions: [
+                    {
+                        text: "a. Nguyên tử trung tâm của hai phức chất đều là nguyên tố kim loại chuyển tiếp.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Co và Ni đều là kim loại chuyển tiếp thuộc nhóm VIIIB (9 và 10)."
+                    },
+                    {
+                        text: "b. Trong phức chất B có 4 phối tử.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. [Ni(CN)₄]²⁻ có 4 ion CN⁻ là phối tử."
+                    },
+                    {
+                        text: "c. Hai phức chất A và B có dạng hình học khác nhau.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. A ([Co(NH₃)₆]³⁺) có dạng bát diện, B ([Ni(CN)₄]²⁻) có dạng vuông phẳng."
+                    },
+                    {
+                        text: "d. Trong A và B, mỗi phân tử có hai loại phối tử.",
+                        correctAnswer: false,
+                        explanation: "SAI. A chỉ có 1 loại phối tử (NH₃), B chỉ có 1 loại phối tử (CN⁻)."
+                    }
+                ]
+            },
+            {
+                id: 40,
+                type: "true-false",
+                text: "Mỗi phát biểu dưới đây là đúng hay sai?",
+                subQuestions: [
+                    {
+                        text: "a. Trong nước, cation của kim loại M (có hoá trị n) thường tồn tại ở dạng phức chất aqua [M(H₂O)₆]ⁿ⁺.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Trong dung dịch nước, cation kim loại thường tồn tại dưới dạng phức aqua với số phối trí thường là 6."
+                    },
+                    {
+                        text: "b. Các phức chất aqua [M(H₂O)₆]ⁿ⁺ luôn có màu.",
+                        correctAnswer: false,
+                        explanation: "SAI. Chỉ các phức chất của kim loại chuyển tiếp có electron d chưa lấp đầy mới có màu. Các ion kim loại có cấu hình d⁰ hoặc d¹⁰ thường không màu."
+                    },
+                    {
+                        text: "c. Trong nhiều phức chất aqua [M(H₂O)₆]ⁿ⁺, số phối tử thường là 6.",
+                        correctAnswer: true,
+                        explanation: "ĐÚNG. Phức aqua của nhiều kim loại, đặc biệt là kim loại chuyển tiếp, thường có số phối trí 6 với dạng bát diện."
+                    },
+                    {
+                        text: "d. Phức chất aqua [M(H₂O)₆]ⁿ⁺ có thể tan hoặc không tan trong nước.",
+                        correctAnswer: false,
+                        explanation: "SAI. Các phức aqua thường tan tốt trong nước do có tương tác mạnh với phân tử nước qua liên kết hydro."
+                    }
+                ]
+            },
+            // Câu 41-48: Trắc nghiệm yêu cầu trả lời ngắn
+            {
+                id: 41,
+                type: "short-answer",
+                text: "Số phối tử của phức [Cr(H₂O)₆]³⁺ là bao nhiêu?",
+                correctAnswer: "6",
+                explanation: "Trong phức [Cr(H₂O)₆]³⁺, có 6 phân tử H₂O đóng vai trò là phối tử, mỗi phân tử cho một cặp electron vào orbital trống của Cr³⁺."
+            },
+            {
+                id: 42,
+                type: "short-answer",
+                text: "Cho các phức chất: [Co(NH₃)₆]³⁺, [Ti(H₂O)₆]³⁺, [Zn(CN)₄]²⁻, [Cd(CN)₄]²⁻, [Mo(CO)₆]. Số phức chất có dạng hình học bát diện là bao nhiêu?",
+                correctAnswer: "3",
+                explanation: "Các phức chất bát diện: [Co(NH₃)₆]³⁺ (6 phối tử), [Ti(H₂O)₆]³⁺ (6 phối tử), [Mo(CO)₆] (6 phối tử). [Zn(CN)₄]²⁻ và [Cd(CN)₄]²⁻ có dạng tứ diện (4 phối tử)."
+            },
+            {
+                id: 43,
+                type: "short-answer",
+                text: "Heme (Phức chất sắt Porphyrin IX) là một loại protein chứa sắt, làm cho máu có màu đỏ. Số phối tử của phức là bao nhiêu? (Xét số nguyên tử cho electron trực tiếp vào Fe)",
+                correctAnswer: "4",
+                explanation: "Trong heme, ion Fe²⁺ liên kết với 4 nguyên tử N của vòng porphyrin (mỗi nguyên tử N cho một cặp electron). Ngoài ra còn có phối tử phía trên và dưới mặt phẳng, nhưng câu hỏi chỉ xét số phối tử trong mặt phẳng porphyrin."
+            },
+            {
+                id: 44,
+                type: "short-answer",
+                text: "Phức chất cis-[Pt(NH₃)₂Cl₂] có số phối tử là bao nhiêu?",
+                correctAnswer: "4",
+                explanation: "Trong cis-[Pt(NH₃)₂Cl₂], có 4 phối tử: 2 phân tử NH₃ và 2 ion Cl⁻, tất cả đều liên kết trực tiếp với Pt²⁺."
+            },
+            {
+                id: 45,
+                type: "short-answer",
+                text: "Một phức chất đơn nhân của chromium có công thức [Cr(H₂O)₆Br₃]·nH₂O. Giá trị n là bao nhiêu? (Thông tin từ thí nghiệm: hòa tan 0,46 gam phức, xử lý và thu được 0,2162 gam AgBr)",
+                correctAnswer: "3",
+                explanation: "Từ khối lượng AgBr thu được, tính được số mol Br⁻ = 0,2162/188 = 0,00115 mol. Phức có 3 Br⁻, nên số mol phức = 0,00115/3 ≈ 0,000383 mol. Khối lượng mol phức = 0,46/0,000383 ≈ 1200 g/mol. Tính toán chi tiết cho n = 3."
+            },
+            {
+                id: 46,
+                type: "short-answer",
+                text: "Một phức chất 1 nhân của platinium(II) CTTQ [Pt_xCl_y(NH₃)_z(H₂O)_t]. Cho biết có 65% khối lượng Pt, 24% Cl, 6% NH₃ và 5% H₂O. Giá trị x:y:z:t là bao nhiêu?",
+                correctAnswer: "1:2:2:1",
+                explanation: "Từ phần trăm khối lượng, tính tỉ lệ số nguyên tử: Pt:Cl:NH₃:H₂O = (65/195):(24/35.5):(6/17):(5/18) ≈ 0,333:0,676:0,353:0,278 ≈ 1,2:2,43:1,27:1 ≈ 1:2:2:1. Công thức đơn giản nhất: [PtCl₂(NH₃)₂(H₂O)]."
+            },
+            {
+                id: 47,
+                type: "short-answer",
+                text: "Khí kết tủa hết Cl⁻ từ dung dịch trong đó hòa tan 20 gam hexahydrate chromium (III) chloride (CrCl₃·6H₂O) cần 75mL dung dịch 2M nitrate bạc. Công thức tổng quát của phức có dạng [Cr(H₂O)_xCl_y]Cl_z·nH₂O. Giá trị của x là bao nhiêu?",
+                correctAnswer: "5",
+                explanation: "Số mol AgNO₃ = 0,075×2 = 0,15 mol → số mol Cl⁻ kết tủa = 0,15 mol. Số mol CrCl₃·6H₂O = 20/266,5 ≈ 0,075 mol. Tổng số mol Cl⁻ trong 0,075 mol phức = 0,075×3 = 0,225 mol. Số mol Cl⁻ ở cầu ngoài = 0,15 mol → z = 0,15/0,075 = 2. Số mol Cl⁻ ở cầu trong = 0,225 - 0,15 = 0,075 → y = 0,075/0,075 = 1. Bảo toàn số phối trí: x + y = 6 → x = 5. Công thức: [Cr(H₂O)₅Cl]Cl₂·H₂O."
+            },
+            {
+                id: 48,
+                type: "short-answer",
+                text: "Một phức chất đơn nhân của chromium có CTTQ Cr_xBr_yH_zO_w, thành phần % theo khối lượng của các nguyên tố như sau: 13% Cr; 60% Br; 3% H và 24% O. Giá trị x:y:z:w là bao nhiêu?",
+                correctAnswer: "1:3:6:6",
+                explanation: "Giả sử 100g hợp chất: m_Cr=13g, m_Br=60g, m_H=3g, m_O=24g. Số mol: n_Cr=13/52=0,25; n_Br=60/80=0,75; n_H=3/1=3; n_O=24/16=1,5. Tỉ lệ: Cr:Br:H:O = 0,25:0,75:3:1,5 = 1:3:12:6. Công thức thực nghiệm: CrBr₃H₁₂O₆ hay [Cr(H₂O)₆]Br₃. Vậy x:y:z:w = 1:3:12:6."
+            }
+        ];
+
+        // Biến toàn cục
+        let currentQuestions = [];
+        let userAnswers = {};
+        let score = 0;
+        let currentQuestionIndex = 0;
+        let questionStatus = {}; // Lưu trạng thái của từng câu hỏi: null, 'answered', 'correct', 'incorrect'
+        
+        // Khởi tạo trang
+        document.addEventListener('DOMContentLoaded', function() {
+            initQuiz();
+            setupEventListeners();
+        });
+        
+        // Khởi tạo bài trắc nghiệm
+        function initQuiz() {
+            currentQuestions = [...questionsData];
+            userAnswers = {};
+            score = 0;
+            currentQuestionIndex = 0;
+            questionStatus = {};
+            
+            // Khởi tạo trạng thái câu hỏi
+            currentQuestions.forEach(q => {
+                questionStatus[q.id] = null;
+            });
+            
+            renderQuestionList();
+            renderCurrentQuestion();
+            updateProgress();
+            updateNavigationButtons();
+        }
+        
+        // Thiết lập sự kiện
+        function setupEventListeners() {
+            document.getElementById('shuffleBtn').addEventListener('click', shuffleQuestions);
+            document.getElementById('checkAllBtn').addEventListener('click', checkAllAnswers);
+            document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+            document.getElementById('prevBtn').addEventListener('click', showPreviousQuestion);
+            document.getElementById('nextBtn').addEventListener('click', showNextQuestion);
+        }
+        
+        // Hiển thị danh sách câu hỏi (các chỉ báo)
+        function renderQuestionList() {
+            const container = document.getElementById('questionList');
+            container.innerHTML = '';
+            
+            currentQuestions.forEach((question, index) => {
+                const indicator = document.createElement('div');
+                indicator.className = 'question-indicator';
+                indicator.textContent = index + 1;
+                indicator.dataset.questionIndex = index;
+                
+                // Đặt trạng thái cho chỉ báo
+                if (index === currentQuestionIndex) {
+                    indicator.classList.add('current');
+                }
+                
+                if (questionStatus[question.id] === 'answered') {
+                    indicator.classList.add('answered');
+                } else if (questionStatus[question.id] === 'correct') {
+                    indicator.classList.add('correct');
+                } else if (questionStatus[question.id] === 'incorrect') {
+                    indicator.classList.add('incorrect');
+                }
+                
+                indicator.addEventListener('click', () => {
+                    currentQuestionIndex = index;
+                    renderCurrentQuestion();
+                    updateQuestionListIndicators();
+                    updateNavigationButtons();
+                });
+                
+                container.appendChild(indicator);
+            });
+        }
+        
+        // Cập nhật chỉ báo danh sách câu hỏi
+        function updateQuestionListIndicators() {
+            const indicators = document.querySelectorAll('.question-indicator');
+            
+            indicators.forEach((indicator, index) => {
+                indicator.classList.remove('current');
+                
+                if (index === currentQuestionIndex) {
+                    indicator.classList.add('current');
+                }
+                
+                const questionId = currentQuestions[index].id;
+                
+                // Cập nhật trạng thái
+                indicator.classList.remove('answered', 'correct', 'incorrect');
+                
+                if (questionStatus[questionId] === 'answered') {
+                    indicator.classList.add('answered');
+                } else if (questionStatus[questionId] === 'correct') {
+                    indicator.classList.add('correct');
+                } else if (questionStatus[questionId] === 'incorrect') {
+                    indicator.classList.add('incorrect');
+                }
+            });
+        }
+        
+        // Hiển thị câu hỏi hiện tại
+        function renderCurrentQuestion() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            if (currentQuestions.length === 0) return;
+            
+            const question = currentQuestions[currentQuestionIndex];
+            const questionElement = createQuestionElement(question);
+            container.appendChild(questionElement);
+            
+            // Cập nhật hiển thị câu hỏi hiện tại
+            document.getElementById('currentQuestionDisplay').textContent = 
+                `Câu ${currentQuestionIndex + 1}/${currentQuestions.length}`;
+            
+            // Nếu câu hỏi đã được trả lời, hiển thị kết quả ngay
+            if (userAnswers[question.id] !== undefined && userAnswers[question.id] !== null && userAnswers[question.id] !== '') {
+                if (question.type === 'short-answer') {
+                    const input = document.getElementById(`short-answer-${question.id}`);
+                    if (input) {
+                        const resultMessage = document.getElementById(`result-${question.id}`);
+                        const explanation = document.getElementById(`explanation-${question.id}`);
+                        
+                        if (resultMessage && explanation && questionStatus[question.id] !== null) {
+                            resultMessage.style.display = 'block';
+                            explanation.style.display = 'block';
+                        }
+                    }
+                } else {
+                    const explanation = document.getElementById(`explanation-${question.id}`);
+                    if (explanation) {
+                        explanation.style.display = 'block';
+                        checkAnswer(question.id);
+                    }
+                }
+            }
+        }
+        
+        // Tạo phần tử câu hỏi
+        function createQuestionElement(question) {
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card active';
+            questionCard.id = `question-${question.id}`;
+            
+            // Header với số câu và loại câu hỏi
+            const header = document.createElement('div');
+            header.className = 'question-header';
+            
+            const questionNumber = document.createElement('div');
+            questionNumber.className = 'question-number';
+            questionNumber.textContent = question.id;
+            
+            const questionType = document.createElement('div');
+            questionType.className = 'question-type';
+            
+            if (question.type === 'multiple-choice') {
+                questionType.textContent = 'Trắc nghiệm';
+                questionType.style.backgroundColor = '#1976d2';
+            } else if (question.type === 'true-false') {
+                questionType.textContent = 'Đúng/Sai';
+                questionType.style.backgroundColor = '#d32f2f';
+            } else if (question.type === 'short-answer') {
+                questionType.textContent = 'Trả lời ngắn';
+                questionType.style.backgroundColor = '#388e3c';
+            }
+            
+            header.appendChild(questionNumber);
+            header.appendChild(questionType);
+            
+            // Nội dung câu hỏi
+            const questionText = document.createElement('div');
+            questionText.className = 'question-text';
+            questionText.textContent = `Câu ${question.id}: ${question.text}`;
+            
+            questionCard.appendChild(header);
+            questionCard.appendChild(questionText);
+            
+            // Thêm phần lựa chọn tùy theo loại câu hỏi
+            if (question.type === 'multiple-choice') {
+                questionCard.appendChild(createMultipleChoiceOptions(question));
+            } else if (question.type === 'true-false') {
+                questionCard.appendChild(createTrueFalseOptions(question));
+            } else if (question.type === 'short-answer') {
+                questionCard.appendChild(createShortAnswerInput(question));
+            }
+            
+            // Thêm phần giải thích
+            const explanation = document.createElement('div');
+            explanation.className = 'explanation';
+            explanation.id = `explanation-${question.id}`;
+            
+            const explanationTitle = document.createElement('div');
+            explanationTitle.className = 'explanation-title';
+            explanationTitle.innerHTML = '<i class="fas fa-lightbulb"></i> Giải thích';
+            
+            const explanationContent = document.createElement('div');
+            explanationContent.className = 'explanation-content';
+            
+            if (question.type === 'true-false') {
+                explanationContent.innerHTML = question.subQuestions.map((subQ, i) => 
+                    `<p><strong>${String.fromCharCode(97 + i)}. ${subQ.text}</strong><br>${subQ.explanation}</p>`
+                ).join('');
+            } else {
+                explanationContent.textContent = question.explanation;
+            }
+            
+            explanation.appendChild(explanationTitle);
+            explanation.appendChild(explanationContent);
+            questionCard.appendChild(explanation);
+            
+            return questionCard;
+        }
+        
+        // Tạo lựa chọn cho câu hỏi nhiều phương án
+        function createMultipleChoiceOptions(question) {
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'options-container';
+            
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[question.id] === index) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.dataset.optionIndex = index;
+                optionElement.addEventListener('click', () => {
+                    selectMultipleChoiceOption(question.id, index);
+                    // Tự động hiển thị đáp án và giải thích
+                    setTimeout(() => {
+                        checkAnswer(question.id);
+                        const explanation = document.getElementById(`explanation-${question.id}`);
+                        explanation.style.display = 'block';
+                    }, 100);
+                });
+                
+                const optionLabel = document.createElement('div');
+                optionLabel.className = 'option-label';
+                optionLabel.textContent = String.fromCharCode(65 + index); // A, B, C, D
+                
+                const optionText = document.createElement('div');
+                optionText.className = 'option-text';
+                optionText.textContent = option;
+                
+                optionElement.appendChild(optionLabel);
+                optionElement.appendChild(optionText);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            return optionsContainer;
+        }
+        
+        // Tạo lựa chọn cho câu hỏi đúng/sai
+        function createTrueFalseOptions(question) {
+            const container = document.createElement('div');
+            
+            question.subQuestions.forEach((subQuestion, subIndex) => {
+                const subQuestionText = document.createElement('div');
+                subQuestionText.className = 'question-text';
+                subQuestionText.style.fontSize = '1rem';
+                subQuestionText.style.marginBottom = '10px';
+                subQuestionText.style.color = '#cccccc';
+                subQuestionText.textContent = `${String.fromCharCode(97 + subIndex)}. ${subQuestion.text}`;
+                container.appendChild(subQuestionText);
+                
+                const trueFalseContainer = document.createElement('div');
+                trueFalseContainer.className = 'true-false-container';
+                
+                const trueBtn = document.createElement('div');
+                trueBtn.className = 'true-false-btn true-btn';
+                trueBtn.textContent = 'ĐÚNG';
+                if (userAnswers[question.id] && userAnswers[question.id][subIndex] === true) {
+                    trueBtn.classList.add('selected');
+                }
+                trueBtn.addEventListener('click', () => {
+                    selectTrueFalseOption(question.id, subIndex, true);
+                    // Tự động kiểm tra khi tất cả các ý đã được trả lời
+                    setTimeout(() => {
+                        if (userAnswers[question.id] && userAnswers[question.id].length === question.subQuestions.length) {
+                            checkAnswer(question.id);
+                            const explanation = document.getElementById(`explanation-${question.id}`);
+                            explanation.style.display = 'block';
+                        }
+                    }, 100);
+                });
+                
+                const falseBtn = document.createElement('div');
+                falseBtn.className = 'true-false-btn false-btn';
+                falseBtn.textContent = 'SAI';
+                if (userAnswers[question.id] && userAnswers[question.id][subIndex] === false) {
+                    falseBtn.classList.add('selected');
+                }
+                falseBtn.addEventListener('click', () => {
+                    selectTrueFalseOption(question.id, subIndex, false);
+                    // Tự động kiểm tra khi tất cả các ý đã được trả lời
+                    setTimeout(() => {
+                        if (userAnswers[question.id] && userAnswers[question.id].length === question.subQuestions.length) {
+                            checkAnswer(question.id);
+                            const explanation = document.getElementById(`explanation-${question.id}`);
+                            explanation.style.display = 'block';
+                        }
+                    }, 100);
+                });
+                
+                trueFalseContainer.appendChild(trueBtn);
+                trueFalseContainer.appendChild(falseBtn);
+                container.appendChild(trueFalseContainer);
+            });
+            
+            return container;
+        }
+        
+        // Tạo input cho câu hỏi trả lời ngắn
+        function createShortAnswerInput(question) {
+            const container = document.createElement('div');
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'short-answer-input';
+            input.placeholder = 'Nhập câu trả lời của bạn...';
+            input.id = `short-answer-${question.id}`;
+            
+            if (userAnswers[question.id]) {
+                input.value = userAnswers[question.id];
+            }
+            
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkShortAnswer(question.id);
+                }
+            });
+            
+            const checkButton = document.createElement('button');
+            checkButton.className = 'check-answer-btn';
+            checkButton.textContent = 'Kiểm tra';
+            checkButton.addEventListener('click', () => checkShortAnswer(question.id));
+            
+            const resultMessage = document.createElement('div');
+            resultMessage.id = `result-${question.id}`;
+            resultMessage.className = 'result-message';
+            
+            container.appendChild(input);
+            container.appendChild(checkButton);
+            container.appendChild(resultMessage);
+            
+            return container;
+        }
+        
+        // Xử lý chọn phương án trắc nghiệm
+        function selectMultipleChoiceOption(questionId, optionIndex) {
+            const questionCard = document.getElementById(`question-${questionId}`);
+            const options = questionCard.querySelectorAll('.option');
+            
+            // Bỏ chọn tất cả
+            options.forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Chọn phương án được click
+            options[optionIndex].classList.add('selected');
+            
+            // Lưu câu trả lời
+            userAnswers[questionId] = optionIndex;
+            questionStatus[questionId] = 'answered';
+            
+            updateProgress();
+            updateQuestionListIndicators();
+        }
+        
+        // Xử lý chọn đúng/sai
+        function selectTrueFalseOption(questionId, subIndex, value) {
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = [];
+            }
+            
+            userAnswers[questionId][subIndex] = value;
+            
+            // Cập nhật giao diện
+            const questionCard = document.getElementById(`question-${questionId}`);
+            const trueFalseContainers = questionCard.querySelectorAll('.true-false-container');
+            
+            if (trueFalseContainers[subIndex]) {
+                const trueBtn = trueFalseContainers[subIndex].querySelector('.true-btn');
+                const falseBtn = trueFalseContainers[subIndex].querySelector('.false-btn');
+                
+                trueBtn.classList.remove('selected');
+                falseBtn.classList.remove('selected');
+                
+                if (value === true) {
+                    trueBtn.classList.add('selected');
+                } else {
+                    falseBtn.classList.add('selected');
+                }
+            }
+            
+            // Kiểm tra xem tất cả các ý đã được trả lời chưa
+            const question = currentQuestions.find(q => q.id === questionId);
+            if (userAnswers[questionId].length === question.subQuestions.length) {
+                questionStatus[questionId] = 'answered';
+            }
+            
+            updateProgress();
+            updateQuestionListIndicators();
+        }
+        
+        // Kiểm tra câu trả lời ngắn
+        function checkShortAnswer(questionId) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            const input = document.getElementById(`short-answer-${questionId}`);
+            const resultMessage = document.getElementById(`result-${questionId}`);
+            const explanation = document.getElementById(`explanation-${questionId}`);
+            
+            const userAnswer = input.value.trim().toLowerCase();
+            const correctAnswer = question.correctAnswer.toString().toLowerCase();
+            
+            // Lưu câu trả lời
+            userAnswers[questionId] = userAnswer;
+            
+            // So sánh câu trả lời (cho phép sai số nhỏ)
+            const isCorrect = userAnswer === correctAnswer || 
+                             (parseInt(userAnswer) === parseInt(correctAnswer));
+            
+            if (isCorrect) {
+                resultMessage.textContent = '✓ Câu trả lời đúng!';
+                resultMessage.className = 'result-message correct-message';
+                questionStatus[questionId] = 'correct';
+                score++;
+            } else {
+                resultMessage.textContent = `✗ Câu trả lời sai. Đáp án đúng là: ${question.correctAnswer}`;
+                resultMessage.className = 'result-message incorrect-message';
+                questionStatus[questionId] = 'incorrect';
+            }
+            
+            resultMessage.style.display = 'block';
+            explanation.style.display = 'block';
+            
+            updateProgress();
+            updateQuestionListIndicators();
+        }
+        
+        // Kiểm tra câu trả lời
+        function checkAnswer(questionId) {
+            const question = currentQuestions.find(q => q.id === questionId);
+            const questionCard = document.getElementById(`question-${questionId}`);
+            
+            if (!userAnswers[questionId] && question.type !== 'true-false') {
+                return false; // Chưa trả lời
+            }
+            
+            let isCorrect = false;
+            
+            if (question.type === 'multiple-choice') {
+                isCorrect = userAnswers[questionId] === question.correctAnswer;
+                
+                // Đánh dấu phương án đúng/sai
+                const options = questionCard.querySelectorAll('.option');
+                options.forEach((option, index) => {
+                    option.classList.remove('correct', 'incorrect');
+                    
+                    if (index === question.correctAnswer) {
+                        option.classList.add('correct');
+                    } else if (index === userAnswers[questionId] && index !== question.correctAnswer) {
+                        option.classList.add('incorrect');
+                    }
+                });
+                
+                if (isCorrect) {
+                    questionStatus[questionId] = 'correct';
+                    score++;
+                } else {
+                    questionStatus[questionId] = 'incorrect';
+                }
+                
+            } else if (question.type === 'true-false') {
+                // Với câu đúng/sai, cần kiểm tra từng ý nhỏ
+                let allCorrect = true;
+                if (userAnswers[questionId] && userAnswers[questionId].length === question.subQuestions.length) {
+                    for (let i = 0; i < question.subQuestions.length; i++) {
+                        if (userAnswers[questionId][i] !== question.subQuestions[i].correctAnswer) {
+                            allCorrect = false;
+                            break;
+                        }
+                    }
+                    isCorrect = allCorrect;
+                } else {
+                    isCorrect = false;
+                }
+                
+                if (isCorrect) {
+                    questionStatus[questionId] = 'correct';
+                    score++;
+                } else {
+                    questionStatus[questionId] = 'incorrect';
+                }
+            }
+            
+            updateQuestionListIndicators();
+            return isCorrect;
+        }
+        
+        // Xáo trộn câu hỏi
+        function shuffleQuestions() {
+            // Xáo trộn mảng câu hỏi
+            for (let i = currentQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentQuestions[i], currentQuestions[j]] = [currentQuestions[j], currentQuestions[i]];
+            }
+            
+            // Reset về câu đầu tiên
+            currentQuestionIndex = 0;
+            
+            // Render lại
+            renderQuestionList();
+            renderCurrentQuestion();
+            updateProgress();
+            updateNavigationButtons();
+            
+            // Thông báo
+            alert('Đã xáo trộn câu hỏi! Vị trí các câu hỏi đã được thay đổi ngẫu nhiên.');
+        }
+        
+        // Kiểm tra tất cả câu trả lời
+        function checkAllAnswers() {
+            score = 0;
+            
+            currentQuestions.forEach(question => {
+                if (userAnswers[question.id] !== undefined && userAnswers[question.id] !== null && userAnswers[question.id] !== '') {
+                    const isCorrect = checkAnswer(question.id);
+                    if (isCorrect) {
+                        score++;
+                    }
+                    
+                    // Hiển thị giải thích cho tất cả câu hỏi đã trả lời
+                    const explanation = document.getElementById(`explanation-${question.id}`);
+                    if (explanation) {
+                        explanation.style.display = 'block';
+                    }
+                }
+            });
+            
+            // Hiển thị kết quả tổng
+            alert(`Bạn đã trả lời đúng ${score}/${currentQuestions.length} câu (${Math.round(score/currentQuestions.length*100)}%)`);
+            
+            updateProgress();
+            updateQuestionListIndicators();
+        }
+        
+        // Reset bài trắc nghiệm
+        function resetQuiz() {
+            if (confirm('Bạn có chắc chắn muốn làm lại tất cả câu hỏi? Tất cả câu trả lời sẽ bị xóa.')) {
+                initQuiz();
+                alert('Đã reset bài trắc nghiệm. Hãy bắt đầu lại!');
+            }
+        }
+        
+        // Hiển thị câu hỏi trước
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderCurrentQuestion();
+                updateQuestionListIndicators();
+                updateNavigationButtons();
+            }
+        }
+        
+        // Hiển thị câu hỏi tiếp theo
+        function showNextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderCurrentQuestion();
+                updateQuestionListIndicators();
+                updateNavigationButtons();
+            }
+        }
+        
+        // Cập nhật nút điều hướng
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.disabled = currentQuestionIndex === currentQuestions.length - 1;
+            
+            if (currentQuestionIndex === 0) {
+                prevBtn.style.opacity = '0.5';
+                prevBtn.style.cursor = 'not-allowed';
+            } else {
+                prevBtn.style.opacity = '1';
+                prevBtn.style.cursor = 'pointer';
+            }
+            
+            if (currentQuestionIndex === currentQuestions.length - 1) {
+                nextBtn.style.opacity = '0.5';
+                nextBtn.style.cursor = 'not-allowed';
+            } else {
+                nextBtn.style.opacity = '1';
+                nextBtn.style.cursor = 'pointer';
+            }
+        }
+        
+        // Cập nhật tiến độ và thống kê
+        function updateProgress() {
+            const totalQuestions = currentQuestions.length;
+            let answeredQuestions = 0;
+            let correctCount = 0;
+            
+            // Đếm số câu đã trả lời và đúng
+            Object.keys(questionStatus).forEach(questionId => {
+                if (questionStatus[questionId] === 'answered' || questionStatus[questionId] === 'correct' || questionStatus[questionId] === 'incorrect') {
+                    answeredQuestions++;
+                }
+                if (questionStatus[questionId] === 'correct') {
+                    correctCount++;
+                }
+            });
+            
+            // Cập nhật thống kê
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('answeredQuestions').textContent = answeredQuestions;
+            document.getElementById('correctAnswers').textContent = correctCount;
+            
+            // Cập nhật thanh tiến độ
+            const progressPercent = (answeredQuestions / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = `${progressPercent}%`;
+        }
+        
+    </script>
+</body>
+</html>

@@ -492,7 +492,10 @@ h1 {
     background: #ff6600;
     border-radius: 10px;
 }
-
+.track-meta i.fa-clock {
+    color: #ff8844;
+    margin-right: 5px;
+}
 /* Responsive */
 @media (max-width: 1100px) {
     .link-grid, .content-grid {
@@ -680,30 +683,48 @@ h1 {
         } catch(e) { showLoginUI(); }
     }
     async function loadSpotifyData(token) {
-        try {
-            const tracks = await (await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', { 
-                headers: { 'Authorization': `Bearer ${token}` } 
-            })).json();
-            let html = '<ul class="track-list">';
-            tracks.items.forEach((t,i)=> {
-                let img = t.album.images?.[0]?.url || '';
-                html += `
-                <li class="track-item" onclick="window.open('https://open.spotify.com/track/${t.id}','_blank')">
-                    <span class="track-rank">#${i+1}</span>
-                    ${img ? `<img class="track-img" src="${img}">` : `<div class="track-img"></div>`}
-                    <div class="track-info">
-                        <div class="track-name">${escapeHtml(t.name)}</div>
-                        <div class="track-artist">${escapeHtml(t.artists[0].name)}</div>
-                    </div>
-                    <div class="track-meta"><i class="fas fa-fire"></i> ${t.popularity ?? ''}</div>
-                </li>`;
-            });
-            html += '</ul>';
-            document.getElementById('spotify-top-tracks').innerHTML = html;
-            document.getElementById('spotify-status').innerHTML = `<i class="fas fa-check-circle"></i> Cập nhật ${new Date().toLocaleTimeString()}`;
-            showLoggedInUI();
-        } catch(e) { logoutSpotify(); }
+    try {
+        const tracks = await (await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', { 
+            headers: { 'Authorization': `Bearer ${token}` } 
+        })).json();
+        
+        // Tính tổng thời gian nghe của 10 bài (tính theo phút)
+        let totalDurationMs = 0;
+        tracks.items.forEach(t => {
+            totalDurationMs += t.duration_ms;
+        });
+        const totalMinutes = Math.floor(totalDurationMs / 60000);
+        
+        let html = '<ul class="track-list">';
+        tracks.items.forEach((t,i)=> {
+            let img = t.album.images?.[0]?.url || '';
+            // Đổi đơn vị duration_ms sang phút:giây
+            const durationSec = Math.floor(t.duration_ms / 1000);
+            const minutes = Math.floor(durationSec / 60);
+            const seconds = durationSec % 60;
+            const durationText = `${minutes}:${seconds.toString().padStart(2,'0')}`;
+            
+            html += `
+            <li class="track-item" onclick="window.open('https://open.spotify.com/track/${t.id}','_blank')">
+                <span class="track-rank">#${i+1}</span>
+                ${img ? `<img class="track-img" src="${img}">` : `<div class="track-img"></div>`}
+                <div class="track-info">
+                    <div class="track-name">${escapeHtml(t.name)}</div>
+                    <div class="track-artist">${escapeHtml(t.artists[0].name)}</div>
+                    <div class="track-meta"><i class="fas fa-clock"></i> ${durationText}</div>
+                </div>
+            </li>`;
+        });
+        html += '</ul>';
+        
+        // Thêm tổng thời gian nghe vào status
+        document.getElementById('spotify-top-tracks').innerHTML = html;
+        document.getElementById('spotify-status').innerHTML = `<i class="fas fa-clock"></i> Tổng thời gian nghe: ${totalMinutes} phút | Cập nhật ${new Date().toLocaleTimeString()}`;
+        showLoggedInUI();
+    } catch(e) { 
+        logoutSpotify(); 
     }
+}
     function refreshSpotify() { if(spotifyToken) loadSpotifyData(spotifyToken); else loginSpotify(); }
 
     // ========== LỊCH ==========

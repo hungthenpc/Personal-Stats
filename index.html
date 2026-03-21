@@ -165,7 +165,7 @@ h1 {
 
 .track-list {
     list-style: none;
-    max-height: 260px;
+    max-height: 350px;
     overflow-y: auto;
 }
 
@@ -465,15 +465,11 @@ h1 {
     <div class="content-grid">
         <!-- Top 10 Bài Hát -->
         <div class="card">
-            <div class="card-header"><div class="card-header-left">🎧 TOP 10 BÀI HÁT YÊU THÍCH</div></div>
-            <div id="spotify-user-info"></div>
-            <div id="spotify-top-tracks"><div class="loading"><div class="loading-spinner"></div><p>Đang kiểm tra đăng nhập...</p></div></div>
-            <div class="status" id="spotify-status"></div>
-            <div id="spotify-buttons">
-                <button class="btn" id="spotify-login-btn" onclick="loginSpotify()" style="display:none;">🔐 Đăng nhập Spotify</button>
-                <button class="btn btn-outline" id="spotify-refresh-btn" onclick="refreshSpotify()" style="display:none;">🔄 Cập nhật</button>
-                <button class="btn btn-outline" id="spotify-logout-btn" onclick="logoutSpotify()" style="display:none;">🚪 Đăng xuất</button>
+            <div class="card-header">
+                <div class="card-header-left">⚡ CODEFORCES SẮP DIỄN RA</div>
+                <div class="view-more" onclick="window.open('https://codeforces.com/contests', '_blank')">Xem thêm →</div>
             </div>
+            <div id="cf-contests-list"><div class="loading"><div class="loading-spinner"></div><p>Đang tải contest...</p></div></div>
         </div>
 
         <!-- Lịch 7 Ngày -->
@@ -499,14 +495,19 @@ h1 {
             </div>
             <div id="anime-list"><div class="loading"><div class="loading-spinner"></div><p>Đang tải anime...</p></div></div>
         </div>
-
         <div class="card">
-            <div class="card-header">
-                <div class="card-header-left">⚡ CODEFORCES SẮP DIỄN RA</div>
-                <div class="view-more" onclick="window.open('https://codeforces.com/contests', '_blank')">Xem thêm →</div>
+            <div class="card-header"><div class="card-header-left">🎧 TOP 10 BÀI HÁT YÊU THÍCH</div></div>
+            <div id="spotify-user-info"></div>
+            <div id="spotify-top-tracks"><div class="loading"><div class="loading-spinner"></div><p>Đang kiểm tra đăng nhập...</p></div></div>
+            <div class="status" id="spotify-status"></div>
+            <div id="spotify-buttons">
+                <button class="btn" id="spotify-login-btn" onclick="loginSpotify()" style="display:none;">🔐 Đăng nhập Spotify</button>
+                <button class="btn btn-outline" id="spotify-refresh-btn" onclick="refreshSpotify()" style="display:none;">🔄 Cập nhật</button>
+                <button class="btn btn-outline" id="spotify-logout-btn" onclick="logoutSpotify()" style="display:none;">🚪 Đăng xuất</button>
             </div>
-            <div id="cf-contests-list"><div class="loading"><div class="loading-spinner"></div><p>Đang tải contest...</p></div></div>
         </div>
+
+        
     </div>
 </div>
 

@@ -7,7 +7,7 @@
 
 <!-- Font Awesome 6 (miễn phí, icon đẹp) -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+<link rel="shortcut icon" href="favicon.ico">
 <style>
 * {
     margin: 0;
@@ -510,12 +510,46 @@ h1 {
         grid-template-columns: 1fr;
     }
 }
+.logo-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 8px;
+
+    color: #ffb066;
+    text-shadow: 0 0 20px rgba(255,120,0,0.3);
+    letter-spacing: 2px;
+}
+
+/* logo */
+.logo-title img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+
+    /* glow nhẹ cho hợp theme */
+    filter: drop-shadow(0 0 8px rgba(230,126,34,0.5));
+
+    transition: 0.3s;
+}
+
+/* hover cho xịn */
+.logo-title img:hover {
+    transform: scale(1.1) rotate(8deg);
+}
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>PERSONAL STATS</h1>
+    <h1 class="logo-title">
+    <img src="ChatGPT_Image_19_18_46_21_thg_3__2026-removebg-preview.png" alt="logo">
+    PERSONAL STATS
+</h1>
     <br><br>
     
 

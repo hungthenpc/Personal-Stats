@@ -2,1671 +2,950 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Lịch 2026 - Quản lý Ghi chú & Tag</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+     <link rel="shortcut icon" href="favicon.ico">
     <style>
-        :root {
-            /* Tông màu cam tối */
-            --primary-dark: #D84315;
-            --primary: #FF5722;
-            --primary-light: #FF8A65;
-            
-            /* Nền tối */
-            --bg-dark: #121212;
-            --bg-card: #1E1E1E;
-            --bg-card-light: #252525;
-            --bg-hover: #2D2D2D;
-            
-            /* Chữ */
-            --text-primary: #FFFFFF;
-            --text-secondary: #B0B0B0;
-            --text-muted: #888888;
-            
-            /* Border */
-            --border-dark: #333333;
-            --border-light: #444444;
-            
-            /* Weekend & Today */
-            --weekend-bg: #2A2A2A;
-            --today-bg: #332211;
-            --today-border: #FF5722;
-            
-            /* Tags màu */
-            --tag-study: #4CAF50;
-            --tag-work: #2196F3;
-            --tag-personal: #9C27B0;
-            --tag-important: #F44336;
-            --tag-event: #FF9800;
-            --tag-default: #795548;
-            
-            /* Search highlight */
-            --search-highlight: #FF9800;
-            --search-bg: #332200;
-        }
-
-        /* Reset & Base */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        /* Nút quay lại trang chủ */
-        .back-home {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .back-home:hover {
-            background: rgba(0,0,0,0.9);
-            transform: translateX(-5px);
-        }
-
-        /* Container */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background-color: var(--bg-card);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border-dark);
-        }
-
-        /* Header */
-        .app-header {
-            background: linear-gradient(90deg, var(--primary-dark) 0%, #BF360C 100%);
-            padding: 25px 35px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            border-bottom: 2px solid var(--border-dark);
-        }
-
-        .app-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .app-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .search-container {
-            position: relative;
-            width: 300px;
-        }
-
-        #global-search {
-            width: 100%;
-            padding: 12px 45px 12px 20px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-light);
-            border-radius: 30px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        #global-search::placeholder {
-            color: var(--text-muted);
-        }
-
-        #global-search:focus {
-            background-color: rgba(0, 0, 0, 0.4);
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
-        }
-
-        /* Controls */
-        .controls-panel {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 35px;
-            background-color: var(--bg-card-light);
-            border-bottom: 2px solid var(--border-dark);
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .view-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .view-btn {
-            padding: 10px 25px;
-            border: 2px solid var(--primary);
-            background-color: transparent;
-            color: var(--primary);
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .view-btn:hover {
-            background-color: var(--primary);
-            color: var(--text-primary);
-        }
-
-        .view-btn.active {
-            background-color: var(--primary);
-            color: var(--text-primary);
-        }
-
-        .month-navigation {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background-color: var(--bg-card);
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 1px solid var(--border-dark);
-        }
-
-        .nav-btn {
-            background-color: var(--primary);
-            color: var(--text-primary);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
-        }
-
-        #current-month-year {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--primary-light);
-            min-width: 220px;
-            text-align: center;
-        }
-
-        /* Tags Manager */
-        .tags-manager {
-            background-color: var(--bg-card-light);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 0 35px 20px;
-            border: 1px solid var(--border-dark);
-        }
-
-        .tags-manager h3 {
-            color: var(--primary-light);
-            margin-bottom: 15px;
-            font-size: 1.4rem;
-        }
-
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .tag-item {
-            padding: 8px 16px;
-            border-radius: 20px;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .tag-item:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
-        .delete-tag-btn {
-            background: rgba(0, 0, 0, 0.3);
-            border: none;
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .delete-tag-btn:hover {
-            background: rgba(0, 0, 0, 0.5);
-            transform: scale(1.1);
-        }
-
-        .tag-count {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.8rem;
-        }
-
-        .add-tag-form {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        #new-tag-name, #new-tag-color {
-            padding: 10px 15px;
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        #new-tag-name {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        #new-tag-color {
-            width: 80px;
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        #new-tag-name:focus, #new-tag-color:focus {
-            border-color: var(--primary);
-        }
-
-        #add-tag-btn {
-            padding: 10px 25px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        #add-tag-btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        /* Calendar Container */
-        .calendar-container {
-            padding: 0 35px 35px;
-        }
-
-        /* Month View */
-        .month-view {
-            display: none;
-        }
-
-        .month-view.active {
-            display: block;
-        }
-
-        .month-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background-color: var(--border-dark);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .day-header {
-            background-color: var(--primary-dark);
-            color: var(--text-primary);
-            text-align: center;
-            padding: 15px 5px;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .day-cell {
-            background-color: var(--bg-card);
-            padding: 15px;
-            min-height: 120px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-            border-bottom: 1px solid var(--border-dark);
-            border-right: 1px solid var(--border-dark);
-        }
-
-        .day-cell:hover {
-            background-color: var(--bg-hover);
-            transform: translateY(-2px);
-            z-index: 1;
-        }
-
-        .day-cell.weekend {
-            background-color: var(--weekend-bg);
-        }
-
-        .day-cell.other-month {
-            background-color: var(--bg-dark);
-            color: var(--text-muted);
-        }
-
-        .day-cell.today {
-            background-color: var(--today-bg);
-            border: 2px solid var(--today-border);
-        }
-
-        .day-cell.search-match {
-            animation: pulse 1s ease;
-            box-shadow: 0 0 0 3px var(--search-highlight);
-            background-color: var(--search-bg);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .day-number {
-            font-weight: 700;
-            font-size: 1.4rem;
-            color: var(--primary-light);
-            margin-bottom: 10px;
-        }
-
-        .day-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-            margin-bottom: 8px;
-        }
-
-        .day-tag {
-            font-size: 0.7rem;
-            padding: 3px 8px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 600;
-        }
-
-        .day-notes-preview {
-            max-height: 60px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .note-title {
-            font-weight: 600;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .note-content-preview {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            line-height: 1.3;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-clamp: 2;
-            max-height: 2.6em;
-        }
-
-        /* Year View */
-        .year-view {
-            display: none;
-        }
-
-        .year-view.active {
-            display: block;
-        }
-
-        .year-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-        }
-
-        .year-month {
-            background-color: var(--bg-card);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid var(--border-dark);
-            transition: transform 0.3s ease;
-        }
-
-        .year-month:hover {
-            transform: translateY(-3px);
-        }
-
-        .year-month-header {
-            background-color: var(--primary-dark);
-            color: var(--text-primary);
-            padding: 15px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-
-        .year-month-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background-color: var(--border-dark);
-            padding: 1px;
-        }
-
-        .year-day {
-            background-color: var(--bg-card-light);
-            padding: 8px 5px;
-            font-size: 0.85rem;
-            text-align: center;
-            min-height: 40px;
-            cursor: pointer;
-            position: relative;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .year-day.search-match {
-            background-color: var(--search-bg);
-            border: 2px solid var(--search-highlight);
-        }
-
-        .year-day.has-tag::after {
-            content: '';
-            position: absolute;
-            bottom: 2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-        }
-
-        .year-day.has-note::before {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 4px;
-            height: 4px;
-            background-color: var(--primary);
-            border-radius: 50%;
-        }
-
-        .year-day.weekend {
-            background-color: var(--weekend-bg);
-            color: var(--primary-light);
-        }
-
-        .year-day.today {
-            background-color: var(--today-bg);
-            color: var(--primary-light);
-            font-weight: bold;
-        }
-
-        /* Note Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: var(--bg-card);
-            width: 100%;
-            max-width: 600px;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid var(--border-dark);
-            animation: slideUp 0.4s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-header {
-            background: linear-gradient(90deg, var(--primary-dark) 0%, #BF360C 100%);
-            color: var(--text-primary);
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-dark);
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            font-size: 2rem;
-            cursor: pointer;
-            line-height: 1;
-            transition: transform 0.3s ease;
-        }
-
-        .close-modal:hover {
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 25px;
-        }
-
-        .selected-date {
-            font-size: 1.3rem;
-            color: var(--primary-light);
-            margin-bottom: 20px;
-            font-weight: 600;
-            text-align: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-dark);
-        }
-
-        .note-form-section {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            color: var(--primary-light);
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        #note-title {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--bg-card-light);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1.1rem;
-            font-weight: 600;
-            outline: none;
-            transition: border-color 0.3s ease;
-            margin-bottom: 15px;
-        }
-
-        #note-title:focus {
-            border-color: var(--primary);
-        }
-
-        #note-content {
-            width: 100%;
-            height: 180px;
-            padding: 12px;
-            background-color: var(--bg-card-light);
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            resize: vertical;
-            outline: none;
-            transition: border-color 0.3s ease;
-            line-height: 1.5;
-        }
-
-        #note-content:focus {
-            border-color: var(--primary);
-        }
-
-        .tags-selection {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .tag-option {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            color: white;
-        }
-
-        .tag-option:hover {
-            transform: translateY(-2px);
-            opacity: 0.9;
-        }
-
-        .tag-option.selected {
-            border: 2px solid white;
-            box-shadow: 0 0 0 2px var(--primary-dark);
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-dark);
-        }
-
-        .modal-btn {
-            padding: 10px 25px;
-            border-radius: 25px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-        }
-
-        .save-btn {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .save-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .cancel-btn {
-            background-color: var(--bg-card-light);
-            color: var(--text-secondary);
-            border: 1px solid var(--border-light);
-        }
-
-        .cancel-btn:hover {
-            background-color: var(--bg-hover);
-        }
-
-        .delete-btn {
-            background-color: #C62828;
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background-color: #B71C1C;
-        }
-
-        /* Search Results Highlight */
-        .search-highlight {
-            background-color: var(--search-highlight);
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-weight: bold;
-            color: black;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .year-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (max-width: 992px) {
-            .month-grid {
-                grid-template-columns: repeat(7, 1fr);
-            }
-            
-            .year-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .controls-panel {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .month-navigation {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .app-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .search-container {
-                width: 100%;
-            }
-            
-            .year-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .day-cell {
-                min-height: 100px;
-                padding: 10px;
-            }
-            
-            .day-number {
-                font-size: 1.2rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .container {
-                border-radius: 8px;
-            }
-            
-            .app-header, .controls-panel, .tags-manager, .calendar-container {
-                padding-left: 20px;
-                padding-right: 20px;
-            }
-            
-            .add-tag-form {
-                flex-direction: column;
-            }
-            
-            #new-tag-name {
-                min-width: unset;
-            }
-        }
-    </style>
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* ===== BODY ===== */
+body{
+    font-family:'Segoe UI','Poppins',system-ui;
+    background:#000;
+    min-height:100vh;
+    position:relative;
+    color:#fff;
+}
+
+/* nền giống index */
+body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 70% 20%, rgba(255,100,0,0.15), transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(255,120,0,0.12), transparent 50%),
+        linear-gradient(135deg,#000 0%,#0a0500 60%,#140800 100%);
+    z-index:-2;
+}
+body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,150,80,.4), transparent),
+        radial-gradient(1px 1px at 80% 70%, rgba(255,120,50,.4), transparent);
+    z-index:-1;
+}
+
+/* ===== BACK ===== */
+.back-home{
+    position:fixed;
+    top:20px;
+    left:20px;
+    background:rgba(0,0,0,.6);
+    border:1px solid rgba(255,120,40,.3);
+    padding:8px 16px;
+    border-radius:30px;
+    color:#ffaa66;
+    text-decoration:none;
+    z-index:1000;
+}
+.back-home:hover{
+    background:#ff6600;
+    color:#000;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+    max-width:1400px;
+    margin:auto;
+    padding:30px 20px;
+}
+
+/* ===== CARD ===== */
+.app-header,
+.controls-panel,
+.tags-manager,
+.calendar-container{
+    background:rgba(0, 0, 0, 0.85);
+    backdrop-filter:blur(12px);
+    border-radius:24px;
+    border:1px solid rgba(255,120,40,.25);
+    padding:20px;
+    margin-bottom:20px;
+}
+
+/* ===== HEADER ===== */
+.app-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.app-title{
+    font-size:1.8rem;
+    font-weight:bold;
+    color:#ffb066;
+}
+
+.app-subtitle{
+    font-size:.9rem;
+    color:#ffaa77;
+}
+
+/* ===== SEARCH ===== */
+.search-container{
+    position:relative;
+}
+#global-search{
+    padding:10px 16px;
+    border-radius:30px;
+    border:1px solid #ff6600;
+    background:#111;
+    color:#fff;
+    outline:none;
+    transition:all 0.3s ease;
+}
+#global-search:focus{
+    border-color:#ffaa44;
+    box-shadow:0 0 0 2px rgba(255,102,0,0.3);
+}
+
+/* ===== CONTROLS ===== */
+.controls-panel{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.view-btn,
+.nav-btn{
+    padding:8px 16px;
+    border-radius:30px;
+    border:1px solid #ff6600;
+    background:transparent;
+    color:#ffaa66;
+    cursor:pointer;
+}
+.view-btn.active,
+.view-btn:hover,
+.nav-btn:hover{
+    background:#ff6600;
+    color:#000;
+}
+
+.month-navigation{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+#current-month-year{
+    color:#ffb066;
+    font-weight:600;
+}
+
+/* ===== TAG ===== */
+.tags-container{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.tag-item{
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:.8rem;
+    color: #000000;
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.delete-tag-btn{
+    border:none;
+    background:rgba(0,0,0,.5);
+    color:#fff;
+    border-radius:50%;
+    width:18px;
+    height:18px;
+    cursor:pointer;
+}
+
+.add-tag-form{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+#new-tag-name{
+    flex:1;
+    padding:8px 12px;
+    background:#111;
+    border:1px solid #ff6600;
+    border-radius:30px;
+    color:#fff;
+}
+#new-tag-color{
+    width:50px;
+    border:1px solid #ff6600;
+    border-radius:30px;
+    background:#111;
+    cursor:pointer;
+}
+#add-tag-btn{
+    padding:8px 20px;
+    background:#ff6600;
+    border:none;
+    border-radius:30px;
+    color:#000;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* ===== CALENDAR ===== */
+.month-view, .year-view{display:none;}
+.month-view.active, .year-view.active{display:block;}
+
+.month-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+}
+
+.day-header{
+    text-align:center;
+    color:#ffaa66;
+    padding:8px;
+    font-weight:bold;
+}
+
+.day-cell{
+    background:rgba(0,0,0,.6);
+    border:1px solid rgba(255,120,40,.2);
+    border-radius:14px;
+    padding:10px;
+    min-height:100px;
+    cursor:pointer;
+    transition:.2s;
+}
+.day-cell:hover{
+    background:rgba(255,102,0,.15);
+}
+.day-cell.today{
+    border:2px solid #ff6600;
+    background:rgba(255,102,0,.25);
+}
+.day-cell.other-month{
+    opacity:0.5;
+}
+.day-number{
+    font-weight:bold;
+    color:#ffaa66;
+    font-size:1.1rem;
+    margin-bottom:5px;
+}
+.day-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+    margin-bottom:5px;
+}
+.day-tag{
+    font-size:0.65rem;
+    padding:2px 6px;
+    border-radius:12px;
+    color:#000000;
+}
+.note-title{
+    font-size:.7rem;
+    color:#ffcc99;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.search-highlight{
+    background:#ff8844;
+    color:#000;
+    padding:0 2px;
+    border-radius:3px;
+    font-weight:bold;
+}
+
+/* Highlight kết quả tìm kiếm */
+.day-cell.search-match {
+    box-shadow: 0 0 0 2px #ff8844;
+    background: rgba(255,136,68,0.3);
+    animation: pulse 0.5s ease;
+}
+
+.year-day.search-match {
+    background: #ff8844;
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 0 1px #ff8844;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+/* ===== YEAR ===== */
+.year-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+.year-month{
+    border:1px solid rgba(255,120,40,.2);
+    border-radius:16px;
+    overflow:hidden;
+    cursor:pointer;
+}
+.year-month:hover{
+    border-color:#ff6600;
+}
+.year-month-header{
+    background:#000000;
+    color:#ffaa66;
+    text-align:center;
+    border-bottom: 2px solid rgba(255, 102, 0, 0.6);
+    padding:8px;
+    padding-top:15px;
+    font-weight:bold;
+}
+.year-month-days{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:2px;
+    padding:8px;
+    background:rgba(0,0,0,0.3);
+   
+}
+.year-day{
+    text-align:center;
+    
+    padding:4px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    font-size:.7rem;
+    cursor:pointer;
+
+    border-radius:6px;
+}
+.year-day:hover{
+    background:rgba(255,102,0,0.3);
+}
+.year-day.today{
+    background:#ff6600;
+    color:#000;
+    font-weight:bold;
+}
+
+
+/* ===== MODAL ===== */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.8);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:2000;
+}
+.modal.active{display:flex;}
+
+.modal-content{
+    background:#000;
+    border:1px solid #ff6600;
+    border-radius:20px;
+    padding:20px;
+    width:90%;
+    max-width:400px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+.modal-title{
+    font-size:1.2rem;
+    font-weight:bold;
+    color:#ffaa66;
+}
+.close-modal{
+    border:none;
+    background:none;
+    color:#fff;
+    font-size:24px;
+    cursor:pointer;
+}
+
+.selected-date{
+    text-align:center;
+    color:#ffaa66;
+    margin-bottom:15px;
+    padding-bottom:10px;
+    border-bottom:1px solid #ff6600;
+}
+
+input,textarea{
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    background:#111;
+    border:1px solid #ff6600;
+    color:#fff;
+    border-radius:10px;
+    outline:none;
+}
+textarea{
+    height:100px;
+    resize:vertical;
+}
+
+.tags-selection{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:15px;
+}
+.tag-option{
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:0.75rem;
+    cursor:pointer;
+    transition:0.2s;
+    color:#fff;
+}
+.tag-option.selected{
+    border:2px solid white;
+    transform:scale(1.02);
+}
+
+.modal-actions{
+    margin-top:20px;
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+}
+.modal-btn{
+    padding:8px 16px;
+    border-radius:20px;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
+}
+.save-btn{background:#ff6600;color:#000;}
+.cancel-btn{background:#333;color:#fff;}
+.delete-btn{background:#cc3333;color:#fff;}
+
+@media (max-width:1000px){
+    .year-grid{grid-template-columns:repeat(3,1fr);}
+}
+@media (max-width:768px){
+    .year-grid{grid-template-columns:repeat(2,1fr);}
+    .app-header{flex-direction:column;text-align:center;}
+    .controls-panel{flex-direction:column;}
+}
+@media (max-width:500px){
+    .year-grid{grid-template-columns:1fr;}
+}
+</style>
 </head>
+
 <body>
-    <a href="index.html" class="back-home">← Quay lại trang chủ</a>
 
-    <div class="container">
-        <!-- Header -->
-        <header class="app-header">
-            <div class="header-left">
-                <div class="app-title">📅 Lịch 2026</div>
-                <div class="app-subtitle">Quản lý ghi chú & tag</div>
-            </div>
-            <div class="search-container">
-                <input type="text" id="global-search" placeholder="🔍 Tìm kiếm ghi chú và tag...">
-            </div>
-        </header>
+<a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại</a>
 
-        <!-- Controls -->
-        <div class="controls-panel">
-            <div class="view-controls">
-                <button class="view-btn active" id="month-view-btn" type="button">📅 Tháng</button>
-                <button class="view-btn" id="year-view-btn" type="button">📆 Năm</button>
-            </div>
-            
-            <div class="month-navigation">
-                <button class="nav-btn" id="prev-month" type="button">‹</button>
-                <div id="current-month-year">Tháng 1, 2026</div>
-                <button class="nav-btn" id="next-month" type="button">›</button>
-                <button class="nav-btn" id="prev-year" type="button" style="margin-left: 10px;">«</button>
-                <button class="nav-btn" id="next-year" type="button">»</button>
-            </div>
-        </div>
+<div class="container">
 
-        <!-- Tags Manager -->
-        <div class="tags-manager">
-            <h3>🏷️ Quản lý Tag</h3>
-            <div class="tags-container" id="tags-container">
-                <!-- Tags sẽ được tạo bằng JavaScript -->
-            </div>
-            <div class="add-tag-form">
-                <input type="text" id="new-tag-name" placeholder="Tên tag mới...">
-                <input type="color" id="new-tag-color" value="#FF5722">
-                <button id="add-tag-btn" type="button">➕ Thêm Tag</button>
-            </div>
-        </div>
-
-        <!-- Calendar Views -->
-        <div class="calendar-container">
-            <!-- Month View -->
-            <div class="month-view active" id="month-view">
-                <div class="month-grid" id="month-grid">
-                    <!-- Calendar sẽ được tạo bằng JavaScript -->
-                </div>
-            </div>
-            
-            <!-- Year View -->
-            <div class="year-view" id="year-view">
-                <div class="year-grid" id="year-grid">
-                    <!-- Năm sẽ được tạo bằng JavaScript -->
-                </div>
-            </div>
-        </div>
+<header class="app-header">
+    <div>
+        <div class="app-title"><i class="fas fa-calendar-alt"></i> Calendar</div>
+     
     </div>
 
-    <!-- Note Modal -->
-    <div class="modal" id="note-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">📝 Ghi chú</div>
-                <button class="close-modal" id="close-modal" type="button">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="selected-date" id="selected-date">1 Tháng 1, 2026</div>
-                
-                <div class="note-form-section">
-                    <div class="section-title">📌 Tiêu đề ghi chú</div>
-                    <input type="text" id="note-title" placeholder="Nhập tiêu đề...">
-                </div>
-                
-                <div class="note-form-section">
-                    <div class="section-title">📄 Nội dung ghi chú</div>
-                    <textarea id="note-content" placeholder="Nhập nội dung..."></textarea>
-                </div>
-                
-                <div class="note-form-section">
-                    <div class="section-title">🏷️ Chọn Tag</div>
-                    <div class="tags-selection" id="tags-selection">
-                        <!-- Tag options sẽ được tạo bằng JavaScript -->
-                    </div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="modal-btn delete-btn" id="delete-note" type="button">🗑️ Xóa</button>
-                    <button class="modal-btn cancel-btn" id="cancel-note" type="button">❌ Hủy</button>
-                    <button class="modal-btn save-btn" id="save-note" type="button">💾 Lưu</button>
-                </div>
-            </div>
-        </div>
+    <div class="search-container">
+        <input type="text" id="global-search" placeholder="Tìm kiếm ghi chú...">
+    </div>
+</header>
+
+<div class="controls-panel">
+    <div>
+        <button class="view-btn active" id="month-view-btn"><i class="fas fa-calendar-alt"></i> Tháng</button>
+        <button class="view-btn" id="year-view-btn"><i class="fas fa-calendar-alt"></i> Năm</button>
     </div>
 
-    <script>
-        // Dữ liệu ứng dụng
-        const appData = {
-            currentYear: 2026,
-            currentMonth: 0,
-            notes: JSON.parse(localStorage.getItem('calendarNotes')) || {},
-            tags: JSON.parse(localStorage.getItem('calendarTags')) || {
-                'Học tập': { color: '#4CAF50', count: 0 },
-                'Làm việc': { color: '#2196F3', count: 0 },
-                'Cá nhân': { color: '#9C27B0', count: 0 },
-                'Quan trọng': { color: '#F44336', count: 0 },
-                'Sự kiện': { color: '#FF9800', count: 0 }
-            },
-            selectedDate: null,
-            searchQuery: '',
-            viewMode: 'month'
-        };
+    <div class="month-navigation">
+        <button class="nav-btn" id="prev-month">‹</button>
+        <div id="current-month-year"></div>
+        <button class="nav-btn" id="next-month">›</button>
+        <button class="nav-btn" id="prev-year">«</button>
+        <button class="nav-btn" id="next-year">»</button>
+    </div>
+</div>
 
-        // Tên tháng tiếng Việt
-        const monthNames = [
-            "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", 
-            "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8", 
-            "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-        ];
+<div class="tags-manager">
+    <h3 style="color: #ffb066;"><i class="fas fa-tags"></i> Quản lý Tag</h3><br>
+    <div id="tags-container" class="tags-container"></div>
 
-        // Tên ngày trong tuần
-        const dayNames = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
+    <div class="add-tag-form">
+        <input id="new-tag-name" placeholder="Tên tag mới...">
+        <input type="color" id="new-tag-color" value="#ff6600">
+        <button id="add-tag-btn">Thêm</button>
+    </div>
+</div>
 
-        // Khởi tạo ứng dụng
-        function initApp() {
-            updateMonthYearDisplay();
-            renderTags();
-            renderMonthView();
-            renderYearView();
-            setupEventListeners();
-        }
+<div class="calendar-container">
+    <div id="month-view" class="month-view active">
+        <div id="month-grid" class="month-grid"></div>
+    </div>
 
-        // Cập nhật hiển thị tháng/năm
-        function updateMonthYearDisplay() {
-            const display = document.getElementById('current-month-year');
-            if (display) {
-                display.textContent = `${monthNames[appData.currentMonth]}, ${appData.currentYear}`;
-            }
-        }
+    <div id="year-view" class="year-view">
+        <div id="year-grid" class="year-grid"></div>
+    </div>
+</div>
 
-        // Render tag manager với nút xóa
-        function renderTags() {
-            const tagsContainer = document.getElementById('tags-container');
-            if (!tagsContainer) return;
-            
-            tagsContainer.innerHTML = '';
-            
-            Object.entries(appData.tags).forEach(([tagName, tagData]) => {
-                const tagElement = document.createElement('div');
-                tagElement.className = 'tag-item';
-                tagElement.innerHTML = `
-                    ${tagName}
-                    <span class="tag-count">${tagData.count}</span>
-                    <button class="delete-tag-btn" data-tag="${tagName}">×</button>
-                `;
-                tagElement.style.backgroundColor = tagData.color;
-                tagsContainer.appendChild(tagElement);
-            });
-            
-            // Thêm sự kiện xóa tag
-            document.querySelectorAll('.delete-tag-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const tagName = this.getAttribute('data-tag');
-                    deleteTag(tagName);
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="note-modal">
+<div class="modal-content">
+
+<div class="modal-header">
+    <div class="modal-title"><i class="fas fa-pen"></i> Ghi chú</div>
+    <button class="close-modal" id="close-modal">×</button>
+</div>
+
+<div id="selected-date" class="selected-date"></div>
+
+<input id="note-title" placeholder="Tiêu đề...">
+<textarea id="note-content" placeholder="Nội dung..."></textarea>
+
+<div id="tags-selection" class="tags-selection"></div>
+
+<div class="modal-actions">
+    <button class="modal-btn delete-btn" id="delete-note">Xóa</button>
+    <button class="modal-btn cancel-btn" id="cancel-note">Hủy</button>
+    <button class="modal-btn save-btn" id="save-note">Lưu</button>
+</div>
+
+</div>
+</div>
+
+<script>
+let appData = {
+    currentYear: new Date().getFullYear(),
+    currentMonth: new Date().getMonth(),
+    notes: JSON.parse(localStorage.getItem('calendarNotes')) || {},
+    tags: JSON.parse(localStorage.getItem('calendarTags')) || {
+       
+    },
+    selectedDate: null,
+    searchQuery: '',
+    viewMode: 'month'
+};
+
+const monthNames = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+const dayNames = ["CN","T2","T3","T4","T5","T6","T7"];
+
+function updateMonthYearDisplay() {
+    document.getElementById('current-month-year').textContent = `${monthNames[appData.currentMonth]}, ${appData.currentYear}`;
+}
+
+function formatDateKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+
+function parseDateKey(key) {
+    let [y,m,d] = key.split('-').map(Number);
+    return new Date(y,m-1,d);
+}
+
+function getFirstTagColor(dateKey) {
+    let note = appData.notes[dateKey];
+    if (note && note.tags && note.tags.length > 0 && appData.tags[note.tags[0]]) {
+        return appData.tags[note.tags[0]].color;
+    }
+    return null;
+}
+
+function highlightText(text, query) {
+    if (!query || !text) return text;
+    try {
+        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+        return text.replace(regex, '<span class="search-highlight">$1</span>');
+    } catch(e) { return text; }
+}
+
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function noteMatchesSearch(note, query) {
+    if (!query) return false;
+    const title = (note.title || '').toLowerCase();
+    const content = (note.content || '').toLowerCase();
+    const tags = (note.tags || []).join(' ').toLowerCase();
+    return title.includes(query) || content.includes(query) || tags.includes(query);
+}
+
+function updateTagCounts() {
+    Object.keys(appData.tags).forEach(t => appData.tags[t].count = 0);
+    Object.values(appData.notes).forEach(n => {
+        if (n.tags) n.tags.forEach(t => {
+            if (appData.tags[t]) appData.tags[t].count++;
+        });
+    });
+}
+
+function renderTags() {
+    const container = document.getElementById('tags-container');
+    container.innerHTML = '';
+    Object.entries(appData.tags).forEach(([name, data]) => {
+        const tag = document.createElement('div');
+        tag.className = 'tag-item';
+        tag.style.backgroundColor = data.color;
+        tag.innerHTML = `${name} <span class="tag-count">${data.count}</span>
+        <button class="delete-tag-btn" data-tag="${name}">×</button>`;
+        container.appendChild(tag);
+    });
+    
+    document.querySelectorAll('.delete-tag-btn').forEach(btn => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            let tagName = btn.dataset.tag;
+            if (confirm(`Xóa tag "${tagName}"?`)) {
+                delete appData.tags[tagName];
+                Object.values(appData.notes).forEach(n => {
+                    if (n.tags) n.tags = n.tags.filter(t => t !== tagName);
                 });
-            });
-        }
-
-        // Xóa tag
-        function deleteTag(tagName) {
-            if (!confirm(`Bạn có chắc muốn xóa tag "${tagName}"? Ghi chú có tag này sẽ bị xóa tag đó.`)) {
-                return;
-            }
-            
-            // Xóa tag khỏi danh sách
-            delete appData.tags[tagName];
-            
-            // Xóa tag khỏi tất cả các ghi chú
-            Object.values(appData.notes).forEach(note => {
-                if (note.tags) {
-                    note.tags = note.tags.filter(t => t !== tagName);
-                }
-            });
-            
-            // Lưu vào localStorage
-            localStorage.setItem('calendarNotes', JSON.stringify(appData.notes));
-            localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
-            
-            // Cập nhật giao diện
-            renderTags();
-            updateCalendarViews();
-        }
-
-        // Render month view
-        function renderMonthView() {
-            const monthGrid = document.getElementById('month-grid');
-            if (!monthGrid) return;
-            
-            monthGrid.innerHTML = '';
-            
-            // Thêm header các ngày trong tuần
-            dayNames.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'day-header';
-                dayHeader.textContent = day;
-                monthGrid.appendChild(dayHeader);
-            });
-            
-            // Tính toán ngày đầu tiên và cuối cùng của tháng
-            const firstDay = new Date(appData.currentYear, appData.currentMonth, 1);
-            const lastDay = new Date(appData.currentYear, appData.currentMonth + 1, 0);
-            const daysInMonth = lastDay.getDate();
-            const startingDay = firstDay.getDay();
-            
-            // Thêm các ô trống trước ngày đầu tiên
-            for (let i = 0; i < startingDay; i++) {
-                const emptyCell = document.createElement('div');
-                emptyCell.className = 'day-cell other-month';
-                monthGrid.appendChild(emptyCell);
-            }
-            
-            // Thêm các ngày trong tháng
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dayCell = createDayCell(day);
-                monthGrid.appendChild(dayCell);
-            }
-            
-            // Highlight kết quả tìm kiếm
-            highlightSearch();
-        }
-
-        // Tạo ô ngày cho month view
-        function createDayCell(day) {
-            const date = new Date(appData.currentYear, appData.currentMonth, day);
-            const dateKey = formatDateKey(date);
-            const dayCell = document.createElement('div');
-            dayCell.className = 'day-cell';
-            dayCell.dataset.date = dateKey;
-            
-            // Kiểm tra cuối tuần
-            if (date.getDay() === 0 || date.getDay() === 6) {
-                dayCell.classList.add('weekend');
-            }
-            
-            // Kiểm tra ngày hôm nay
-            const today = new Date();
-            if (date.toDateString() === today.toDateString()) {
-                dayCell.classList.add('today');
-            }
-            
-            // Thêm số ngày
-            const dayNumber = document.createElement('div');
-            dayNumber.className = 'day-number';
-            dayNumber.textContent = day;
-            dayCell.appendChild(dayNumber);
-            
-            // Thêm tags
-            const noteData = appData.notes[dateKey];
-            if (noteData && noteData.tags && noteData.tags.length > 0) {
-                const tagsContainer = document.createElement('div');
-                tagsContainer.className = 'day-tags';
-                
-                noteData.tags.forEach(tagName => {
-                    const tagElement = document.createElement('span');
-                    tagElement.className = 'day-tag';
-                    tagElement.textContent = tagName;
-                    tagElement.style.backgroundColor = appData.tags[tagName]?.color || '#666';
-                    tagsContainer.appendChild(tagElement);
-                });
-                
-                dayCell.appendChild(tagsContainer);
-            }
-            
-            // Thêm xem trước ghi chú
-            if (noteData) {
-                const notesPreview = document.createElement('div');
-                notesPreview.className = 'day-notes-preview';
-                
-                const noteTitle = document.createElement('div');
-                noteTitle.className = 'note-title';
-                noteTitle.innerHTML = highlightText(noteData.title || 'Không có tiêu đề');
-                notesPreview.appendChild(noteTitle);
-                
-                const noteContent = document.createElement('div');
-                noteContent.className = 'note-content-preview';
-                const contentPreview = noteData.content ? noteData.content.substring(0, 100) : '';
-                noteContent.innerHTML = highlightText(contentPreview);
-                notesPreview.appendChild(noteContent);
-                
-                dayCell.appendChild(notesPreview);
-            }
-            
-            // Thêm sự kiện click
-            dayCell.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openNoteModal(dateKey);
-            });
-            
-            return dayCell;
-        }
-
-        // Render year view
-        function renderYearView() {
-            const yearGrid = document.getElementById('year-grid');
-            if (!yearGrid) return;
-            
-            yearGrid.innerHTML = '';
-            
-            for (let month = 0; month < 12; month++) {
-                const yearMonth = createYearMonth(month);
-                yearGrid.appendChild(yearMonth);
-            }
-            
-            // Highlight kết quả tìm kiếm
-            highlightYearSearch();
-        }
-
-        // Tạo tháng cho year view
-        function createYearMonth(monthIndex) {
-            const yearMonth = document.createElement('div');
-            yearMonth.className = 'year-month';
-            
-            const header = document.createElement('div');
-            header.className = 'year-month-header';
-            header.textContent = monthNames[monthIndex];
-            yearMonth.appendChild(header);
-            
-            const daysGrid = document.createElement('div');
-            daysGrid.className = 'year-month-days';
-            
-            // Thêm header các ngày trong tuần
-            dayNames.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'day-header';
-                dayHeader.textContent = day;
-                dayHeader.style.fontSize = '0.8rem';
-                dayHeader.style.padding = '5px';
-                daysGrid.appendChild(dayHeader);
-            });
-            
-            // Tính toán ngày đầu tiên
-            const firstDay = new Date(appData.currentYear, monthIndex, 1);
-            const lastDay = new Date(appData.currentYear, monthIndex + 1, 0);
-            const daysInMonth = lastDay.getDate();
-            const startingDay = firstDay.getDay();
-            
-            // Thêm ô trống
-            for (let i = 0; i < startingDay; i++) {
-                const emptyDay = document.createElement('div');
-                emptyDay.className = 'year-day';
-                emptyDay.style.visibility = 'hidden';
-                daysGrid.appendChild(emptyDay);
-            }
-            
-            // Thêm các ngày
-            for (let day = 1; day <= daysInMonth; day++) {
-                const yearDay = createYearDay(monthIndex, day);
-                daysGrid.appendChild(yearDay);
-            }
-            
-            yearMonth.appendChild(daysGrid);
-            return yearMonth;
-        }
-
-        // Tạo ngày cho year view
-        function createYearDay(monthIndex, day) {
-            const date = new Date(appData.currentYear, monthIndex, day);
-            const dateKey = formatDateKey(date);
-            const yearDay = document.createElement('div');
-            yearDay.className = 'year-day';
-            yearDay.textContent = day;
-            yearDay.dataset.date = dateKey;
-            
-            // Kiểm tra cuối tuần
-            if (date.getDay() === 0 || date.getDay() === 6) {
-                yearDay.classList.add('weekend');
-            }
-            
-            // Kiểm tra ngày hôm nay
-            const today = new Date();
-            if (date.toDateString() === today.toDateString()) {
-                yearDay.classList.add('today');
-            }
-            
-            // Kiểm tra có ghi chú không
-            if (appData.notes[dateKey]) {
-                yearDay.classList.add('has-note');
-            }
-            
-            // Kiểm tra có tag không
-            const noteData = appData.notes[dateKey];
-            if (noteData && noteData.tags && noteData.tags.length > 0) {
-                yearDay.classList.add('has-tag');
-                yearDay.style.borderBottom = `3px solid ${appData.tags[noteData.tags[0]]?.color || '#666'}`;
-            }
-            
-            // Sự kiện click - chỉ mở modal, không chuyển view
-            yearDay.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openNoteModal(dateKey);
-            });
-            
-            return yearDay;
-        }
-
-        // Mở modal ghi chú
-        function openNoteModal(dateKey) {
-            appData.selectedDate = dateKey;
-            const date = parseDateKey(dateKey);
-            
-            // Cập nhật tiêu đề
-            const selectedDateElement = document.getElementById('selected-date');
-            if (selectedDateElement) {
-                selectedDateElement.textContent = 
-                    `${date.getDate()} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
-            }
-            
-            // Lấy dữ liệu ghi chú hiện tại
-            const noteData = appData.notes[dateKey] || { title: '', content: '', tags: [] };
-            
-            // Điền form
-            const noteTitleInput = document.getElementById('note-title');
-            const noteContentInput = document.getElementById('note-content');
-            if (noteTitleInput) noteTitleInput.value = noteData.title || '';
-            if (noteContentInput) noteContentInput.value = noteData.content || '';
-            
-            // Render tag options
-            renderTagOptions(noteData.tags || []);
-            
-            // Hiển thị modal
-            const modal = document.getElementById('note-modal');
-            if (modal) {
-                modal.classList.add('active');
-                
-                // Tự động focus
-                setTimeout(() => {
-                    if (noteTitleInput) noteTitleInput.focus();
-                }, 100);
-            }
-        }
-
-        // Render tag options trong modal
-        function renderTagOptions(selectedTags = []) {
-            const tagsSelection = document.getElementById('tags-selection');
-            if (!tagsSelection) return;
-            
-            tagsSelection.innerHTML = '';
-            
-            Object.entries(appData.tags).forEach(([tagName, tagData]) => {
-                const tagOption = document.createElement('div');
-                tagOption.className = `tag-option ${selectedTags.includes(tagName) ? 'selected' : ''}`;
-                tagOption.textContent = tagName;
-                tagOption.style.backgroundColor = tagData.color;
-                
-                tagOption.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    tagOption.classList.toggle('selected');
-                });
-                
-                tagsSelection.appendChild(tagOption);
-            });
-        }
-
-        // Lấy các tag đã chọn
-        function getSelectedTags() {
-            const tagOptions = document.querySelectorAll('.tag-option.selected');
-            return Array.from(tagOptions).map(option => option.textContent);
-        }
-
-        // Lưu ghi chú
-        function saveNote() {
-            if (!appData.selectedDate) return;
-            
-            const noteTitleInput = document.getElementById('note-title');
-            const noteContentInput = document.getElementById('note-content');
-            
-            if (!noteTitleInput || !noteContentInput) return;
-            
-            const title = noteTitleInput.value.trim();
-            const content = noteContentInput.value.trim();
-            const selectedTags = getSelectedTags();
-            
-            if (!title && !content && selectedTags.length === 0) {
-                // Xóa ghi chú nếu không có nội dung
-                delete appData.notes[appData.selectedDate];
-            } else {
-                // Lưu ghi chú
-                appData.notes[appData.selectedDate] = {
-                    title,
-                    content,
-                    tags: selectedTags,
-                    lastModified: new Date().toISOString()
-                };
-                
-                // Cập nhật tag count
                 updateTagCounts();
-            }
-            
-            // Lưu vào localStorage
-            localStorage.setItem('calendarNotes', JSON.stringify(appData.notes));
-            localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
-            
-            // Cập nhật giao diện
-            updateCalendarViews();
-            closeNoteModal();
-        }
-
-        // Xóa ghi chú
-        function deleteNote() {
-            if (!appData.selectedDate) return;
-            
-            if (confirm('Bạn có chắc chắn muốn xóa ghi chú này?')) {
-                delete appData.notes[appData.selectedDate];
-                
-                // Cập nhật tag counts
-                updateTagCounts();
-                
-                // Lưu vào localStorage
                 localStorage.setItem('calendarNotes', JSON.stringify(appData.notes));
                 localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
-                
-                // Cập nhật giao diện
-                updateCalendarViews();
-                closeNoteModal();
+                renderTags();
+                renderMonthView();
+                renderYearView();
             }
-        }
+        };
+    });
+}
 
-        // Cập nhật số lần sử dụng tag
-        function updateTagCounts() {
-            // Reset counts
-            Object.keys(appData.tags).forEach(tagName => {
-                appData.tags[tagName].count = 0;
+function renderMonthView() {
+    const grid = document.getElementById('month-grid');
+    grid.innerHTML = '';
+
+    dayNames.forEach(d => {
+        let h = document.createElement('div');
+        h.className = 'day-header';
+        h.textContent = d;
+        grid.appendChild(h);
+    });
+
+    let firstDay = new Date(appData.currentYear, appData.currentMonth, 1);
+    let lastDay = new Date(appData.currentYear, appData.currentMonth + 1, 0);
+    let startOffset = firstDay.getDay();
+
+    for (let i = 0; i < startOffset; i++) {
+        let empty = document.createElement('div');
+        empty.className = 'day-cell other-month';
+        grid.appendChild(empty);
+    }
+
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+        let date = new Date(appData.currentYear, appData.currentMonth, d);
+        let key = formatDateKey(date);
+        let note = appData.notes[key];
+        let firstTagColor = getFirstTagColor(key);
+
+        let cell = document.createElement('div');
+        cell.className = 'day-cell';
+        
+        if (date.getDay() === 0 || date.getDay() === 6) cell.classList.add('weekend');
+        if (new Date().toDateString() === date.toDateString()) cell.classList.add('today');
+        
+        let isSearchMatch = false;
+        if (appData.searchQuery && note && noteMatchesSearch(note, appData.searchQuery)) {
+            cell.classList.add('search-match');
+            isSearchMatch = true;
+        }
+        
+        if (firstTagColor) {
+            cell.style.borderBottom = `3px solid ${firstTagColor}`;
+        }
+        
+        cell.innerHTML = `<div class="day-number">${d}</div>`;
+        
+        if (note && note.tags && note.tags.length) {
+            let tagDiv = document.createElement('div');
+            tagDiv.className = 'day-tags';
+            note.tags.slice(0, 2).forEach(t => {
+                let span = document.createElement('span');
+                span.className = 'day-tag';
+                span.textContent = t;
+                span.style.backgroundColor = appData.tags[t]?.color || '#666';
+                tagDiv.appendChild(span);
             });
-            
-            // Đếm lại
-            Object.values(appData.notes).forEach(note => {
-                if (note.tags) {
-                    note.tags.forEach(tagName => {
-                        if (appData.tags[tagName]) {
-                            appData.tags[tagName].count++;
-                        }
-                    });
-                }
-            });
+            cell.appendChild(tagDiv);
         }
-
-        // Đóng modal
-        function closeNoteModal() {
-            const modal = document.getElementById('note-modal');
-            if (modal) {
-                modal.classList.remove('active');
+        
+        if (note && note.title) {
+            let titleDiv = document.createElement('div');
+            titleDiv.className = 'note-title';
+            let displayTitle = note.title.length > 25 ? note.title.slice(0, 25) + '...' : note.title;
+            if (isSearchMatch && appData.searchQuery) {
+                titleDiv.innerHTML = highlightText(displayTitle, appData.searchQuery);
+            } else {
+                titleDiv.textContent = displayTitle;
             }
-            appData.selectedDate = null;
+            cell.appendChild(titleDiv);
         }
+        
+        cell.onclick = () => openNoteModal(key);
+        grid.appendChild(cell);
+    }
+}
 
-        // Thêm tag mới
-        function addNewTag() {
-            const tagNameInput = document.getElementById('new-tag-name');
-            const tagColorInput = document.getElementById('new-tag-color');
+function renderYearView() {
+    const grid = document.getElementById('year-grid');
+    grid.innerHTML = '';
+    
+    for (let m = 0; m < 12; m++) {
+        let monthDiv = document.createElement('div');
+        monthDiv.className = 'year-month';
+        monthDiv.onclick = () => {
+            appData.currentMonth = m;
+            appData.viewMode = 'month';
+            switchViewMode('month');
+            renderMonthView();
+            updateMonthYearDisplay();
+        };
+        
+        let header = document.createElement('div');
+        header.className = 'year-month-header';
+        header.textContent = monthNames[m];
+        monthDiv.appendChild(header);
+        
+        let daysGrid = document.createElement('div');
+        daysGrid.className = 'year-month-days';
+        
+        dayNames.forEach(day => {
+            let d = document.createElement('div');
+            d.className = 'day-header';
+            d.style.fontSize = '0.7rem';
+            d.style.padding = '4px';
+            d.textContent = day;
+            daysGrid.appendChild(d);
+        });
+        
+        let first = new Date(appData.currentYear, m, 1);
+        let last = new Date(appData.currentYear, m + 1, 0);
+        let start = first.getDay();
+        
+        for (let i = 0; i < start; i++) {
+            let empty = document.createElement('div');
+            empty.className = 'year-day';
+            empty.style.visibility = 'hidden';
+            daysGrid.appendChild(empty);
+        }
+        
+        for (let d = 1; d <= last.getDate(); d++) {
+            let date = new Date(appData.currentYear, m, d);
+            let key = formatDateKey(date);
+            let dayDiv = document.createElement('div');
+            dayDiv.className = 'year-day';
             
-            if (!tagNameInput || !tagColorInput) return;
+            if (date.getDay() === 0 || date.getDay() === 6) dayDiv.classList.add('weekend');
+            if (new Date().toDateString() === date.toDateString()) dayDiv.classList.add('today');
+            dayDiv.textContent = d;
             
-            const tagName = tagNameInput.value.trim();
-            const tagColor = tagColorInput.value;
-            
-            if (!tagName) {
-                alert('Vui lòng nhập tên tag!');
-                return;
+            let firstTagColor = getFirstTagColor(key);
+            if (firstTagColor) {
+                dayDiv.style.borderBottom = `3px solid ${firstTagColor}`;
             }
             
-            if (appData.tags[tagName]) {
-                alert('Tag này đã tồn tại!');
-                return;
+            let note = appData.notes[key];
+            if (appData.searchQuery && note && noteMatchesSearch(note, appData.searchQuery)) {
+                dayDiv.classList.add('search-match');
             }
+            if (note) dayDiv.classList.add('has-note');
             
-            // Thêm tag mới
-            appData.tags[tagName] = {
-                color: tagColor,
-                count: 0
+            dayDiv.onclick = (e) => {
+                e.stopPropagation();
+                openNoteModal(key);
             };
-            
-            // Lưu vào localStorage
-            localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
-            
-            // Cập nhật giao diện
-            renderTags();
-            
-            // Reset form
-            tagNameInput.value = '';
+            daysGrid.appendChild(dayDiv);
         }
+        
+        monthDiv.appendChild(daysGrid);
+        grid.appendChild(monthDiv);
+    }
+}
 
-        // Tìm kiếm
-        function performSearch() {
-            const searchInput = document.getElementById('global-search');
-            if (searchInput) {
-                appData.searchQuery = searchInput.value.toLowerCase().trim();
-                highlightSearch();
-                highlightYearSearch();
-            }
+function openNoteModal(dateKey) {
+    appData.selectedDate = dateKey;
+    let date = parseDateKey(dateKey);
+    document.getElementById('selected-date').textContent = `${date.getDate()} ${monthNames[date.getMonth()]}, ${date.getFullYear()}`;
+    
+    let note = appData.notes[dateKey] || { title: '', content: '', tags: [] };
+    document.getElementById('note-title').value = note.title;
+    document.getElementById('note-content').value = note.content;
+    
+    let tagsDiv = document.getElementById('tags-selection');
+    tagsDiv.innerHTML = '';
+    Object.entries(appData.tags).forEach(([name, data]) => {
+        let opt = document.createElement('div');
+        opt.className = `tag-option ${note.tags?.includes(name) ? 'selected' : ''}`;
+        opt.textContent = name;
+        opt.style.backgroundColor = data.color;
+        opt.onclick = () => opt.classList.toggle('selected');
+        tagsDiv.appendChild(opt);
+    });
+    
+    document.getElementById('note-modal').classList.add('active');
+}
+
+function closeNoteModal() {
+    document.getElementById('note-modal').classList.remove('active');
+    appData.selectedDate = null;
+}
+
+function saveNote() {
+    if (!appData.selectedDate) return;
+    let title = document.getElementById('note-title').value.trim();
+    let content = document.getElementById('note-content').value.trim();
+    let selectedTags = Array.from(document.querySelectorAll('#tags-selection .tag-option.selected')).map(el => el.textContent);
+    
+    if (!title && !content && selectedTags.length === 0) {
+        delete appData.notes[appData.selectedDate];
+    } else {
+        appData.notes[appData.selectedDate] = { title, content, tags: selectedTags, lastModified: new Date().toISOString() };
+    }
+    
+    updateTagCounts();
+    localStorage.setItem('calendarNotes', JSON.stringify(appData.notes));
+    localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
+    renderMonthView();
+    renderYearView();
+    renderTags();
+    closeNoteModal();
+}
+
+function deleteNote() {
+    if (appData.selectedDate && confirm('Xóa ghi chú này?')) {
+        delete appData.notes[appData.selectedDate];
+        updateTagCounts();
+        localStorage.setItem('calendarNotes', JSON.stringify(appData.notes));
+        localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
+        renderMonthView();
+        renderYearView();
+        renderTags();
+        closeNoteModal();
+    }
+}
+
+function addNewTag() {
+    let name = document.getElementById('new-tag-name').value.trim();
+    let color = document.getElementById('new-tag-color').value;
+    if (!name) return;
+    if (appData.tags[name]) { alert('Tag đã tồn tại'); return; }
+    appData.tags[name] = { color, count: 0 };
+    localStorage.setItem('calendarTags', JSON.stringify(appData.tags));
+    renderTags();
+    document.getElementById('new-tag-name').value = '';
+}
+
+function switchViewMode(mode) {
+    appData.viewMode = mode;
+    document.getElementById('month-view').classList.toggle('active', mode === 'month');
+    document.getElementById('year-view').classList.toggle('active', mode === 'year');
+    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+    if (mode === 'month') document.getElementById('month-view-btn').classList.add('active');
+    else document.getElementById('year-view-btn').classList.add('active');
+}
+
+function changeMonth(delta) {
+    let newDate = new Date(appData.currentYear, appData.currentMonth + delta, 1);
+    appData.currentYear = newDate.getFullYear();
+    appData.currentMonth = newDate.getMonth();
+    updateMonthYearDisplay();
+    renderMonthView();
+}
+
+function changeYear(delta) {
+    appData.currentYear += delta;
+    updateMonthYearDisplay();
+    renderMonthView();
+    renderYearView();
+}
+
+function performSearch() {
+    let query = document.getElementById('global-search').value.toLowerCase().trim();
+    appData.searchQuery = query;
+    renderMonthView();
+    renderYearView();
+    
+    // Hiển thị thông báo kết quả tìm kiếm
+    let resultCount = 0;
+    Object.values(appData.notes).forEach(note => {
+        if (noteMatchesSearch(note, query)) resultCount++;
+    });
+    
+    const statusDiv = document.querySelector('.tags-manager h3');
+    if (query && resultCount === 0) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'color:#ffaa66; margin-top:10px; font-size:0.8rem;';
+        msg.id = 'search-status';
+        msg.innerHTML = `<i class="fas fa-search"></i> Không tìm thấy "${query}"`;
+        if (!document.getElementById('search-status')) {
+            document.querySelector('.tags-manager').appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
         }
-
-        // Highlight kết quả tìm kiếm trong month view
-        function highlightSearch() {
-            // Xóa highlight cũ
-            document.querySelectorAll('.day-cell.search-match').forEach(cell => {
-                cell.classList.remove('search-match');
-            });
-            
-            if (!appData.searchQuery) {
-                document.querySelectorAll('.search-highlight').forEach(el => {
-                    el.outerHTML = el.innerHTML;
-                });
-                return;
-            }
-            
-            // Highlight trong month view
-            const dayCells = document.querySelectorAll('.day-cell');
-            dayCells.forEach(cell => {
-                const noteData = appData.notes[cell.dataset.date];
-                if (noteData) {
-                    const title = noteData.title || '';
-                    const content = noteData.content || '';
-                    const tags = noteData.tags || [];
-                    
-                    const searchText = `${title} ${content} ${tags.join(' ')}`.toLowerCase();
-                    
-                    if (searchText.includes(appData.searchQuery)) {
-                        cell.classList.add('search-match');
-                        
-                        // Highlight text
-                        const titleElement = cell.querySelector('.note-title');
-                        const contentElement = cell.querySelector('.note-content-preview');
-                        
-                        if (titleElement) {
-                            titleElement.innerHTML = highlightText(title);
-                        }
-                        if (contentElement) {
-                            contentElement.innerHTML = highlightText(content.substring(0, 100));
-                        }
-                    }
-                }
-            });
+    } else if (query && resultCount > 0) {
+        const msg = document.createElement('div');
+        msg.style.cssText = 'color:#ffaa66; margin-top:10px; font-size:0.8rem;';
+        msg.id = 'search-status';
+        msg.innerHTML = `<i class="fas fa-check-circle"></i> Tìm thấy ${resultCount} ghi chú`;
+        if (!document.getElementById('search-status')) {
+            document.querySelector('.tags-manager').appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
         }
+    }
+}
 
-        // Highlight kết quả tìm kiếm trong year view
-        function highlightYearSearch() {
-            // Xóa highlight cũ
-            document.querySelectorAll('.year-day.search-match').forEach(cell => {
-                cell.classList.remove('search-match');
-            });
-            
-            if (!appData.searchQuery) return;
-            
-            // Highlight trong year view
-            const yearDays = document.querySelectorAll('.year-day');
-            yearDays.forEach(day => {
-                const noteData = appData.notes[day.dataset.date];
-                if (noteData) {
-                    const title = noteData.title || '';
-                    const content = noteData.content || '';
-                    const tags = noteData.tags || [];
-                    
-                    const searchText = `${title} ${content} ${tags.join(' ')}`.toLowerCase();
-                    
-                    if (searchText.includes(appData.searchQuery)) {
-                        day.classList.add('search-match');
-                    }
-                }
-            });
-        }
+document.getElementById('month-view-btn').onclick = () => switchViewMode('month');
+document.getElementById('year-view-btn').onclick = () => switchViewMode('year');
+document.getElementById('prev-month').onclick = () => changeMonth(-1);
+document.getElementById('next-month').onclick = () => changeMonth(1);
+document.getElementById('prev-year').onclick = () => changeYear(-1);
+document.getElementById('next-year').onclick = () => changeYear(1);
+document.getElementById('add-tag-btn').onclick = addNewTag;
+document.getElementById('global-search').oninput = performSearch;
+document.getElementById('close-modal').onclick = closeNoteModal;
+document.getElementById('cancel-note').onclick = closeNoteModal;
+document.getElementById('save-note').onclick = saveNote;
+document.getElementById('delete-note').onclick = deleteNote;
 
-        // Highlight text với search query
-        function highlightText(text) {
-            if (!appData.searchQuery || !text) return text;
-            
-            try {
-                const regex = new RegExp(`(${escapeRegExp(appData.searchQuery)})`, 'gi');
-                return text.replace(regex, '<span class="search-highlight">$1</span>');
-            } catch (e) {
-                return text;
-            }
-        }
+updateTagCounts();
+renderTags();
+renderMonthView();
+renderYearView();
+updateMonthYearDisplay();
+</script>
 
-        // Escape regex special characters
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        }
-
-        // Cập nhật tất cả views
-        function updateCalendarViews() {
-            renderMonthView();
-            renderYearView();
-            renderTags();
-        }
-
-        // Chuyển đổi view mode
-        function switchViewMode(mode) {
-            appData.viewMode = mode;
-            
-            // Cập nhật nút
-            const monthViewBtn = document.getElementById('month-view-btn');
-            const yearViewBtn = document.getElementById('year-view-btn');
-            if (monthViewBtn) monthViewBtn.classList.toggle('active', mode === 'month');
-            if (yearViewBtn) yearViewBtn.classList.toggle('active', mode === 'year');
-            
-            // Hiển thị view đúng
-            const monthView = document.getElementById('month-view');
-            const yearView = document.getElementById('year-view');
-            if (monthView) monthView.classList.toggle('active', mode === 'month');
-            if (yearView) yearView.classList.toggle('active', mode === 'year');
-        }
-
-        // Chuyển tháng
-        function changeMonth(delta) {
-            appData.currentMonth += delta;
-            
-            if (appData.currentMonth < 0) {
-                appData.currentMonth = 11;
-                appData.currentYear--;
-            } else if (appData.currentMonth > 11) {
-                appData.currentMonth = 0;
-                appData.currentYear++;
-            }
-            
-            updateMonthYearDisplay();
-            renderMonthView();
-        }
-
-        // Chuyển năm
-        function changeYear(delta) {
-            appData.currentYear += delta;
-            updateMonthYearDisplay();
-            renderMonthView();
-            renderYearView();
-        }
-
-        // Format date key
-        function formatDateKey(date) {
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        }
-
-        // Parse date key
-        function parseDateKey(dateKey) {
-            const [year, month, day] = dateKey.split('-').map(Number);
-            return new Date(year, month - 1, day);
-        }
-
-        // Thiết lập event listeners
-        function setupEventListeners() {
-            // Navigation
-            const prevMonthBtn = document.getElementById('prev-month');
-            const nextMonthBtn = document.getElementById('next-month');
-            const prevYearBtn = document.getElementById('prev-year');
-            const nextYearBtn = document.getElementById('next-year');
-            
-            if (prevMonthBtn) prevMonthBtn.addEventListener('click', () => changeMonth(-1));
-            if (nextMonthBtn) nextMonthBtn.addEventListener('click', () => changeMonth(1));
-            if (prevYearBtn) prevYearBtn.addEventListener('click', () => changeYear(-1));
-            if (nextYearBtn) nextYearBtn.addEventListener('click', () => changeYear(1));
-            
-            // View modes
-            const monthViewBtn = document.getElementById('month-view-btn');
-            const yearViewBtn = document.getElementById('year-view-btn');
-            
-            if (monthViewBtn) monthViewBtn.addEventListener('click', () => switchViewMode('month'));
-            if (yearViewBtn) yearViewBtn.addEventListener('click', () => switchViewMode('year'));
-            
-            // Tags
-            const addTagBtn = document.getElementById('add-tag-btn');
-            const newTagNameInput = document.getElementById('new-tag-name');
-            
-            if (addTagBtn) addTagBtn.addEventListener('click', addNewTag);
-            if (newTagNameInput) {
-                newTagNameInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') addNewTag();
-                });
-            }
-            
-            // Search
-            const globalSearch = document.getElementById('global-search');
-            if (globalSearch) {
-                globalSearch.addEventListener('input', performSearch);
-            }
-            
-            // Modal
-            const closeModalBtn = document.getElementById('close-modal');
-            const cancelNoteBtn = document.getElementById('cancel-note');
-            const saveNoteBtn = document.getElementById('save-note');
-            const deleteNoteBtn = document.getElementById('delete-note');
-            
-            if (closeModalBtn) closeModalBtn.addEventListener('click', closeNoteModal);
-            if (cancelNoteBtn) cancelNoteBtn.addEventListener('click', closeNoteModal);
-            if (saveNoteBtn) saveNoteBtn.addEventListener('click', saveNote);
-            if (deleteNoteBtn) deleteNoteBtn.addEventListener('click', deleteNote);
-            
-            // Đóng modal khi click bên ngoài
-            const modal = document.getElementById('note-modal');
-            if (modal) {
-                modal.addEventListener('click', (e) => {
-                    if (e.target === modal) {
-                        closeNoteModal();
-                    }
-                });
-            }
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                // ESC để đóng modal
-                if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
-                    closeNoteModal();
-                }
-                
-                // Ctrl+S để lưu trong modal
-                if (e.ctrlKey && e.key === 's' && modal && modal.classList.contains('active')) {
-                    e.preventDefault();
-                    saveNote();
-                }
-            });
-        }
-
-        // Khởi chạy ứng dụng khi trang tải xong
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
 </body>
 </html>

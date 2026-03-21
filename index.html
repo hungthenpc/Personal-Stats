@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Dashboard - Spotify & Lịch</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top, #1a1a1a, #000);
+    color: white;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 40px 20px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, orange, #ff5e00);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: linear-gradient(145deg, #111, #1c1c1c);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255, 140, 0, 0.2);
+    transition: 0.3s;
+}
+
+.card:hover {
+    box-shadow: 0 0 20px rgba(255, 120, 0, 0.3);
+}
+
+.card-header {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 140, 0, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.spotify-section {
+    background: rgba(29, 185, 84, 0.1);
+    border-left: 3px solid #1DB954;
+}
+
+.calendar-section {
+    background: rgba(255, 94, 0, 0.05);
+    border-left: 3px solid #ff5e00;
+}
+
+.track-list {
+    list-style: none;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.track-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #333;
+    transition: 0.2s;
+}
+
+.track-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    padding-left: 10px;
+}
+
+.track-rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ff5e00;
+    width: 35px;
+}
+
+.track-info {
+    flex: 1;
+}
+
+.track-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.track-artist {
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.track-count {
+    font-size: 0.8rem;
+    color: #1DB954;
+}
+
+.calendar-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #ff5e00;
+    padding: 8px;
+    font-weight: bold;
+}
+
+.calendar-day {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    transition: 0.2s;
+    cursor: pointer;
+    min-height: 80px;
+    position: relative;
+}
+
+.calendar-day:hover {
+    background: #2a2a2a;
+    transform: translateY(-2px);
+}
+
+.calendar-day.today {
+    border: 2px solid #ff5e00;
+    background: rgba(255, 94, 0, 0.2);
+}
+
+.calendar-day-number {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.calendar-day.has-note::after {
+    content: "📝";
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    font-size: 0.7rem;
+}
+
+.calendar-note-preview {
+    font-size: 0.7rem;
+    color: #ff5e00;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 5px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, orange, #ff5e00);
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-top: 15px;
+}
+
+.btn-sm {
+    padding: 5px 15px;
+    font-size: 0.75rem;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #ff5e00;
+}
+
+.btn-outline:hover {
+    background: #ff5e00;
+}
+
+.btn-spotify {
+    background: linear-gradient(90deg, #1DB954, #168f40);
+}
+
+.btn-logout {
+    background: linear-gradient(90deg, #dc3545, #b02a37);
+    margin-left: 10px;
+}
+
+.status {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #aaa;
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #333;
+    border-top-color: #ff5e00;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #1e1e1e;
+    border-radius: 12px;
+    margin-bottom: 15px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.cards-container {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.mini-card {
+    background: linear-gradient(145deg, #111, #1c1c1c);
+    border-radius: 20px;
+    width: 280px;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid rgba(255, 140, 0, 0.2);
+    text-align: center;
+}
+
+.mini-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(255, 120, 0, 0.3);
+}
+
+.mini-card-header {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.mini-card-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .calendar-week {
+        gap: 4px;
+    }
+    
+    .calendar-day {
+        padding: 5px;
+        min-height: 60px;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔥 Personal Dashboard</h1>
+    <div class="subtitle">🎵 Spotify thống kê tự động | 📅 Lịch 7 ngày tới</div>
+
+    <div class="dashboard-grid">
+        
+        <!-- Spotify Section -->
+        <div class="card spotify-section">
+            <div class="card-header">
+                🎵 Top 10 Bài Hát Yêu Thích
+            </div>
+            <div id="spotify-user-info"></div>
+            <div id="spotify-top-tracks">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Đang kiểm tra đăng nhập...</p>
+                </div>
+            </div>
+            <div class="status" id="spotify-status"></div>
+            <div id="spotify-buttons">
+                <button class="btn btn-spotify" id="spotify-login-btn" onclick="loginSpotify()" style="display:none;">
+                    🔐 Đăng nhập Spotify
+                </button>
+                <button class="btn btn-sm btn-outline" id="spotify-refresh-btn" onclick="refreshSpotify()" style="display:none;">
+                    🔄 Cập nhật
+                </button>
+                <button class="btn btn-sm btn-logout" id="spotify-logout-btn" onclick="logoutSpotify()" style="display:none;">
+                    🚪 Đăng xuất
+                </button>
+            </div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div class="card calendar-section">
+            <div class="card-header">
+                📅 Lịch 7 Ngày Tới
+            </div>
+            <div id="calendar-week-view">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p>Đang tải lịch...</p>
+                </div>
+            </div>
+            <div class="status">
+                💾 Ghi chú được lưu cục bộ trên trình duyệt
+            </div>
+            <button class="btn" onclick="location.href='calendar.html'">
+                📖 Quản lý ghi chú chi tiết
+            </button>
+        </div>
+    </div>
+
+    <div class="cards-container">
+        <div class="mini-card" onclick="location.href='calendar.html'">
+            <div class="mini-card-header">📅</div>
+            <div class="mini-card-title">Lịch & Ghi chú</div>
+        </div>
+        <div class="mini-card" onclick="location.href='spotify.html'">
+            <div class="mini-card-header">🎵</div>
+            <div class="mini-card-title">Spotify Stats</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== SPOTIFY CONFIG ==========
+    const CLIENT_ID = "cd0524eb368f45ceb21721b9543bd5d6";
+    const CLIENT_SECRET = "1a9856d20b41437d9c56a29d29e55f53";
+    const REDIRECT_URI = window.location.origin + window.location.pathname;
+    
+    let spotifyToken = null;
+    let spotifyUser = null;
+    
+    // ========== TỰ ĐỘNG KIỂM TRA ĐĂNG NHẬP KHI VÀO WEB ==========
+    (function autoCheckLogin() {
+        // Kiểm tra token từ URL (sau khi đăng nhập)
+        const urlParams = new URLSearchParams(window.location.search);
+        const authCode = urlParams.get('code');
+        
+        if (authCode) {
+            // Có code -> đổi lấy token
+            exchangeCodeForToken(authCode);
+        } else {
+            // Kiểm tra token đã lưu
+            const savedToken = localStorage.getItem('spotify_token');
+            const tokenExpiry = localStorage.getItem('spotify_token_expiry');
+            
+            if (savedToken && tokenExpiry && Date.now() < parseInt(tokenExpiry)) {
+                // Token còn hiệu lực -> tự động đăng nhập
+                spotifyToken = savedToken;
+                loadSpotifyData(spotifyToken);
+            } else {
+                // Hết hạn hoặc chưa có token -> hiển thị nút đăng nhập
+                showLoginUI();
+            }
+        }
+    })();
+    
+    function showLoginUI() {
+        document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">🔐 Chưa đăng nhập Spotify</div>';
+        document.getElementById('spotify-status').innerHTML = '💡 Đăng nhập để xem top bài hát của bạn';
+        document.getElementById('spotify-login-btn').style.display = 'inline-block';
+        document.getElementById('spotify-refresh-btn').style.display = 'none';
+        document.getElementById('spotify-logout-btn').style.display = 'none';
+        document.getElementById('spotify-user-info').innerHTML = '';
+    }
+    
+    function showLoggedInUI() {
+        document.getElementById('spotify-login-btn').style.display = 'none';
+        document.getElementById('spotify-refresh-btn').style.display = 'inline-block';
+        document.getElementById('spotify-logout-btn').style.display = 'inline-block';
+    }
+    
+    function loginSpotify() {
+        const scope = 'user-read-recently-played user-top-read user-read-private';
+        const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&show_dialog=true`;
+        window.location.href = authUrl;
+    }
+    
+    function logoutSpotify() {
+        localStorage.removeItem('spotify_token');
+        localStorage.removeItem('spotify_token_expiry');
+        spotifyToken = null;
+        spotifyUser = null;
+        showLoginUI();
+        document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">🔐 Đã đăng xuất</div>';
+    }
+    
+    async function exchangeCodeForToken(code) {
+        document.getElementById('spotify-top-tracks').innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang xử lý đăng nhập...</p></div>';
+        
+        try {
+            const response = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa(CLIENT_ID + ':' + CLIENT_SECRET)
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    code: code,
+                    redirect_uri: REDIRECT_URI
+                })
+            });
+            
+            const data = await response.json();
+            if (data.access_token) {
+                spotifyToken = data.access_token;
+                localStorage.setItem('spotify_token', data.access_token);
+                localStorage.setItem('spotify_token_expiry', Date.now() + (data.expires_in * 1000));
+                
+                // Xóa code khỏi URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Tự động tải dữ liệu
+                loadSpotifyData(spotifyToken);
+            } else {
+                throw new Error(data.error_description || 'Không lấy được token');
+            }
+        } catch(e) {
+            console.error('Lỗi:', e);
+            document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">❌ Đăng nhập thất bại</div>';
+            showLoginUI();
+        }
+    }
+    
+    async function loadSpotifyData(token) {
+        document.getElementById('spotify-top-tracks').innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải dữ liệu...</p></div>';
+        document.getElementById('spotify-status').innerHTML = '🔄 Đang tải...';
+        
+        try {
+            // Lấy thông tin user
+            const userResponse = await fetch('https://api.spotify.com/v1/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (!userResponse.ok) throw new Error('Token hết hạn');
+            
+            const userData = await userResponse.json();
+            spotifyUser = userData;
+            
+            // Hiển thị thông tin user
+            document.getElementById('spotify-user-info').innerHTML = `
+                <div class="user-info">
+                    ${userData.images?.[0] ? `<img class="user-avatar" src="${userData.images[0].url}">` : '<div style="width:40px;height:40px;background:#1DB954;border-radius:50%;text-align:center;line-height:40px;">🎵</div>'}
+                    <div class="user-name">${userData.display_name || userData.id}</div>
+                </div>
+            `;
+            
+            // Lấy top tracks
+            const tracksResponse = await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            const tracksData = await tracksResponse.json();
+            displayTopTracks(tracksData);
+            
+            document.getElementById('spotify-status').innerHTML = `✅ Đã cập nhật lúc ${new Date().toLocaleTimeString()}`;
+            showLoggedInUI();
+            
+        } catch(e) {
+            console.error(e);
+            if (e.message === 'Token hết hạn') {
+                logoutSpotify();
+            } else {
+                document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">⚠️ Lỗi tải dữ liệu</div>';
+            }
+        }
+    }
+    
+    function refreshSpotify() {
+        if (spotifyToken) {
+            loadSpotifyData(spotifyToken);
+        } else {
+            loginSpotify();
+        }
+    }
+    
+    function displayTopTracks(data) {
+        const tracks = data.items || [];
+        if (tracks.length === 0) {
+            document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">🎧 Chưa có dữ liệu, hãy nghe nhạc nhiều hơn!</div>';
+            return;
+        }
+        
+        let html = '<ul class="track-list">';
+        tracks.forEach((track, i) => {
+            html += `
+                <li class="track-item">
+                    <span class="track-rank">#${i+1}</span>
+                    <div class="track-info">
+                        <div class="track-name">${escapeHtml(track.name)}</div>
+                        <div class="track-artist">${escapeHtml(track.artists[0].name)}</div>
+                    </div>
+                    <div class="track-count">🔥 ${track.popularity}</div>
+                </li>
+            `;
+        });
+        html += '</ul>';
+        document.getElementById('spotify-top-tracks').innerHTML = html;
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // ========== LỊCH 7 NGÀY ==========
+    function loadCalendarWeek() {
+        const notes = JSON.parse(localStorage.getItem('calendarNotes')) || {};
+        const today = new Date();
+        
+        const weekDays = [];
+        for (let i = 0; i < 7; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            weekDays.push(date);
+        }
+        
+        const dayNames = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        
+        let html = `<div class="calendar-week">${dayNames.map(day => `<div class="calendar-day-header">${day}</div>`).join('')}`;
+        
+        weekDays.forEach(date => {
+            const dateKey = formatDateKey(date);
+            const note = notes[dateKey];
+            const isToday = date.toDateString() === new Date().toDateString();
+            
+            html += `
+                <div class="calendar-day ${isToday ? 'today' : ''} ${note ? 'has-note' : ''}" onclick="location.href='calendar.html'">
+                    <div class="calendar-day-number">${date.getDate()}</div>
+                    ${note ? `<div class="calendar-note-preview">${escapeHtml(note.title || '📝')}</div>` : ''}
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        
+        const totalNotes = Object.keys(notes).length;
+        const notesThisWeek = weekDays.filter(d => notes[formatDateKey(d)]).length;
+        
+        html += `
+            <div style="margin-top: 15px; padding: 10px; background: #1e1e1e; border-radius: 12px;">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>📊 Tổng số ghi chú:</span>
+                    <span style="color: #ff5e00;">${totalNotes}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <span>📝 Ghi chú trong 7 ngày tới:</span>
+                    <span style="color: #ff5e00;">${notesThisWeek}</span>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('calendar-week-view').innerHTML = html;
+    }
+    
+    function formatDateKey(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    }
+    
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'calendarNotes') {
+            loadCalendarWeek();
+        }
+    });
+    
+    loadCalendarWeek();
+</script>
+
+</body>
+</html>

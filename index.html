@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cosmic Dashboard - Personal Hub</title>
+<title>HomePage</title>
+
+<!-- Font Awesome 6 (miễn phí, icon đẹp) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 * {
@@ -18,6 +21,12 @@ body {
     position: relative;
     background: #000000;
 }
+.fas, .far, .fab, .fa-brands {
+    color: #db8310 !important;
+    transition: color 0.3s ease !important;
+    padding-top:3px;
+}
+
 
 /* Background gradient chéo: đen -> cam vũ trụ */
 body::before {
@@ -76,7 +85,6 @@ h1 {
     color:  #ffb066;
     text-shadow: 0 0 20px rgba(255,120,0,0.3);
     letter-spacing: 2px;
-    
 }
 
 .subtitle {
@@ -145,7 +153,13 @@ h1 {
 .card-header-left {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+}
+
+.card-header-left i {
+    font-size: 1.4rem;
+    width: 28px;
+    text-align: center;
 }
 
 .view-more {
@@ -272,7 +286,7 @@ h1 {
 }
 
 .calendar-day.has-note::after {
-    content: "📌";
+    content: "";
     position: absolute;
     bottom: 3px;
     right: 6px;
@@ -293,6 +307,13 @@ h1 {
 .weather-info {
     text-align: center;
     padding: 15px;
+}
+
+.weather-location {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #ffaa66;
+    margin-bottom: 8px;
 }
 
 .weather-temp {
@@ -334,6 +355,43 @@ h1 {
     box-shadow: 0 4px 12px rgba(255, 102, 0, 0.5);
 }
 
+/* Link Card - Icon lớn ở giữa, không có mô tả */
+.link-card {
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+}
+
+.link-icon {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+}
+
+.link-icon i {
+    color: #ffaa44;
+    transition: all 0.3s ease;
+}
+
+.link-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffd9b3;
+    letter-spacing: 0.5px;
+}
+
+.link-card:hover .link-icon i {
+    transform: scale(1.1);
+    color: #ff8844;
+    text-shadow: 0 0 10px rgba(255, 136, 68, 0.5);
+}
+
+.link-card:hover .link-title {
+    color: #ffaa66;
+}
 .status {
     font-size: 0.75rem;
     color: #ccaa77;
@@ -356,34 +414,50 @@ h1 {
     animation: spin 1s linear infinite;
     margin: 0 auto 10px;
 }
+#spotify-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: linear-gradient(90deg, #020202, #000000);
+    border: none;
+    color:#ccaa77;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+#spotify-login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(255, 102, 0, 0.4);
+    background: linear-gradient(90deg, #ffa16a, #fba973);
+    color:black;
+}
+
+#spotify-login-btn i {
+    font-size: 1rem;
+    color: #ccaa77;
+}
+
+/* Các nút khác đồng bộ */
+.btn, .btn-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn i, .btn-outline i {
+    font-size: 0.9rem;
+}
 
 @keyframes spin {
     to { transform: rotate(360deg); }
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 20px;
-    margin-bottom: 15px;
-    border-left: 3px solid #ff6600;
-}
-
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid #ff6600;
-}
-
-.user-name {
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #ffbb88;
 }
 
 /* Link Card */
@@ -438,76 +512,108 @@ h1 {
 <body>
 
 <div class="container">
-    <h1>✨ COSMIC DASHBOARD</h1>
-    <div class="subtitle">⚡ Quản lý cá nhân | Âm nhạc | Lịch | Anime | Codeforces</div>
+    <h1>PERSONAL STATS</h1>
+    <br><br>
+    
 
-    <!-- 4 CARD LINK ĐẦU -->
-    <div class="link-grid">
-        <div class="card link-card" onclick="location.href='calendar.html'">
-            <div class="card-header"><div class="card-header-left">📅 LỊCH & GHI CHÚ</div></div>
-            <div class="link-card-content">👉 Nhấn để mở<br>Quản lý công việc hàng ngày</div>
+    <!-- 4 CARD LINK ĐẦU - ĐÃ THAY ICON FONT AWESOME MÀU CAM -->
+    <!-- 4 CARD LINK ĐẦU - Icon lớn ở giữa + tiêu đề bên dưới -->
+<div class="link-grid">
+    <div class="card link-card" onclick="location.href='calendar.html'">
+        <div class="link-icon">
+            <i class="fas fa-calendar-alt"></i>
         </div>
-        <div class="card link-card" onclick="location.href='spotify.html'">
-            <div class="card-header"><div class="card-header-left">🎧 SPOTIFY STATS</div></div>
-            <div class="link-card-content">👉 Nhấn để mở<br>Thống kê nghe nhạc chi tiết</div>
-        </div>
-        <div class="card link-card" onclick="location.href='rank-anime.html'">
-            <div class="card-header"><div class="card-header-left">🏆 RANKING ANIME</div></div>
-            <div class="link-card-content">👉 Nhấn để mở<br>Xếp hạng anime yêu thích</div>
-        </div>
-        <div class="card link-card" onclick="location.href='rank-movie.html'">
-            <div class="card-header"><div class="card-header-left">🏆 RANKING MOVIE</div></div>
-            <div class="link-card-content">👉 Nhấn để mở<br>Xếp hạng phim yêu thích</div>
-        </div>
+        <div class="link-title">LỊCH & GHI CHÚ</div>
     </div>
+    
+    <div class="card link-card" onclick="location.href='spotify.html'">
+        <div class="link-icon">
+            <i class="fab fa-spotify"></i>
+        </div>
+        <div class="link-title">SPOTIFY STATS</div>
+    </div>
+    
+    <div class="card link-card" onclick="location.href='rank-anime.html'">
+        <div class="link-icon">
+            <i class="fa-brands fa-bilibili"></i>
+        </div>
+        <div class="link-title">RANKING ANIME</div>
+    </div>
+    
+    <div class="card link-card" onclick="location.href='rank-movie.html'">
+        <div class="link-icon">
+            <i class="fas fa-film"></i>
+        </div>
+        <div class="link-title">RANKING MOVIE</div>
+    </div>
+</div>
 
     <!-- 3 CARD NỘI DUNG CHÍNH -->
     <div class="content-grid">
-        <!-- Top 10 Bài Hát -->
+        <!-- Codeforces -->
         <div class="card">
             <div class="card-header">
-                <div class="card-header-left">⚡ CODEFORCES SẮP DIỄN RA</div>
-                <div class="view-more" onclick="window.open('https://codeforces.com/contests', '_blank')">Xem thêm →</div>
+                <div class="card-header-left">
+                    <i class="fas fa-code" style="color: #ffaa44;"></i>
+                    CODEFORCES CONTESTS
+                </div>
+                
             </div>
             <div id="cf-contests-list"><div class="loading"><div class="loading-spinner"></div><p>Đang tải contest...</p></div></div>
         </div>
 
         <!-- Lịch 7 Ngày -->
         <div class="card">
-            <div class="card-header"><div class="card-header-left">📅 LỊCH 7 NGÀY TỚI</div></div>
+            <div class="card-header">
+                <div class="card-header-left">
+                    <i class="fas fa-calendar-week" style="color: #ffaa44;"></i>
+                    LỊCH 7 NGÀY TỚI
+                </div>
+            </div>
             <div id="calendar-week-view"><div class="loading"><div class="loading-spinner"></div><p>Đang tải lịch...</p></div></div>
-            <button class="btn btn-outline" onclick="location.href='calendar.html'">📖 Quản lý ghi chú</button>
+            <button class="btn btn-outline" onclick="location.href='calendar.html'"><i class="fas fa-edit"></i> Quản lý ghi chú</button>
         </div>
 
         <!-- Thời tiết -->
         <div class="card">
-            <div class="card-header"><div class="card-header-left">🌙 THỜI TIẾT HÔM NAY</div></div>
+            <div class="card-header">
+                <div class="card-header-left">
+                    <i class="fas fa-cloud-sun" style="color: #ffaa44;"></i>
+                    THỜI TIẾT HÔM NAY
+                </div>
+            </div>
             <div id="weather-info"><div class="loading"><div class="loading-spinner"></div><p>Đang lấy dữ liệu...</p></div></div>
         </div>
     </div>
 
-    <!-- 2 CARD CUỐI: Anime Hot + Codeforces -->
+    <!-- 2 CARD CUỐI: Anime Hot + Spotify Top Tracks -->
     <div class="bottom-grid">
         <div class="card">
             <div class="card-header">
-                <div class="card-header-left">🎬 TOP 10 ANIME THỊNH HÀNH</div>
-                <div class="view-more" onclick="window.open('https://myanimelist.net/topanime.php', '_blank')">Xem thêm →</div>
+                <div class="card-header-left">
+                    <i class="fa-brands fa-bilibili" style="color: #ffaa44;"></i>
+                    TOP 10 ANIME THỊNH HÀNH
+                </div>
+                
             </div>
             <div id="anime-list"><div class="loading"><div class="loading-spinner"></div><p>Đang tải anime...</p></div></div>
         </div>
         <div class="card">
-            <div class="card-header"><div class="card-header-left">🎧 TOP 10 BÀI HÁT YÊU THÍCH</div></div>
+            <div class="card-header">
+                <div class="card-header-left">
+                    <i class="fas fa-music" style="color: #ffaa44;"></i>
+                    TOP 10 BÀI HÁT YÊU THÍCH
+                </div>
+            </div>
             <div id="spotify-user-info"></div>
             <div id="spotify-top-tracks"><div class="loading"><div class="loading-spinner"></div><p>Đang kiểm tra đăng nhập...</p></div></div>
             <div class="status" id="spotify-status"></div>
             <div id="spotify-buttons">
-                <button class="btn" id="spotify-login-btn" onclick="loginSpotify()" style="display:none;">🔐 Đăng nhập Spotify</button>
-                <button class="btn btn-outline" id="spotify-refresh-btn" onclick="refreshSpotify()" style="display:none;">🔄 Cập nhật</button>
-                <button class="btn btn-outline" id="spotify-logout-btn" onclick="logoutSpotify()" style="display:none;">🚪 Đăng xuất</button>
+                <button class="btn" id="spotify-login-btn" onclick="loginSpotify()" style="display:none;"><i class="fab fa-spotify"></i> Đăng nhập Spotify</button>
+                <button class="btn btn-outline" id="spotify-refresh-btn" onclick="refreshSpotify()" style="display:none;"><i class="fas fa-sync-alt"></i> Cập nhật</button>
+                <button class="btn btn-outline" id="spotify-logout-btn" onclick="logoutSpotify()" style="display:none;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
             </div>
         </div>
-
-        
     </div>
 </div>
 
@@ -533,8 +639,8 @@ h1 {
     })();
 
     function showLoginUI() {
-        document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">🔐 Chưa đăng nhập Spotify</div>';
-        document.getElementById('spotify-status').innerHTML = '💡 Đăng nhập để xem top bài hát';
+        document.getElementById('spotify-top-tracks').innerHTML = '';
+        document.getElementById('spotify-status').innerHTML = '';
         document.getElementById('spotify-login-btn').style.display = 'inline-block';
         document.getElementById('spotify-refresh-btn').style.display = 'none';
         document.getElementById('spotify-logout-btn').style.display = 'none';
@@ -554,7 +660,7 @@ h1 {
         localStorage.removeItem('spotify_token_expiry');
         spotifyToken = null;
         showLoginUI();
-        document.getElementById('spotify-top-tracks').innerHTML = '<div class="status">🔐 Đã đăng xuất</div>';
+        document.getElementById('spotify-top-tracks').innerHTML = '<div class="status"><i class="fas fa-lock"></i> Đã đăng xuất</div>';
     }
     async function exchangeCodeForToken(code) {
         try {
@@ -575,29 +681,26 @@ h1 {
     }
     async function loadSpotifyData(token) {
         try {
-            const user = await (await fetch('https://api.spotify.com/v1/me', { headers: { 'Authorization': `Bearer ${token}` } })).json();
-            const tracks = await (await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', { headers: { 'Authorization': `Bearer ${token}` } })).json();
-            document.getElementById('spotify-user-info').innerHTML = `<div class="user-info"><div style="width:40px;height:40px;background:#ff6600;border-radius:50%;text-align:center;line-height:40px;">🎵</div><div class="user-name">${escapeHtml(user.display_name || user.id)}</div></div>`;
+            const tracks = await (await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', { 
+                headers: { 'Authorization': `Bearer ${token}` } 
+            })).json();
             let html = '<ul class="track-list">';
             tracks.items.forEach((t,i)=> {
-    let img = t.album.images?.[0]?.url || '';
-
-    html += `
-    <li class="track-item" onclick="window.open('https://open.spotify.com/track/${t.id}','_blank')">
-        <span class="track-rank">#${i+1}</span>
-        ${img ? `<img class="track-img" src="${img}">` : `<div class="track-img"></div>`}
-        
-        <div class="track-info">
-            <div class="track-name">${escapeHtml(t.name)}</div>
-            <div class="track-artist">${escapeHtml(t.artists[0].name)}</div>
-        </div>
-
-        <div class="track-meta">🔥 ${t.popularity ?? ''}</div>
-    </li>`;
-});
+                let img = t.album.images?.[0]?.url || '';
+                html += `
+                <li class="track-item" onclick="window.open('https://open.spotify.com/track/${t.id}','_blank')">
+                    <span class="track-rank">#${i+1}</span>
+                    ${img ? `<img class="track-img" src="${img}">` : `<div class="track-img"></div>`}
+                    <div class="track-info">
+                        <div class="track-name">${escapeHtml(t.name)}</div>
+                        <div class="track-artist">${escapeHtml(t.artists[0].name)}</div>
+                    </div>
+                    <div class="track-meta"><i class="fas fa-fire"></i> ${t.popularity ?? ''}</div>
+                </li>`;
+            });
             html += '</ul>';
             document.getElementById('spotify-top-tracks').innerHTML = html;
-            document.getElementById('spotify-status').innerHTML = `✅ Cập nhật ${new Date().toLocaleTimeString()}`;
+            document.getElementById('spotify-status').innerHTML = `<i class="fas fa-check-circle"></i> Cập nhật ${new Date().toLocaleTimeString()}`;
             showLoggedInUI();
         } catch(e) { logoutSpotify(); }
     }
@@ -605,45 +708,35 @@ h1 {
 
     // ========== LỊCH ==========
     function loadCalendarWeek() {
-    const notes = JSON.parse(localStorage.getItem('calendarNotes')) || {};
-    const today = new Date();
-
-    let week = [];
-    for (let i = 0; i < 7; i++) {
-        let d = new Date(today);
-        d.setDate(today.getDate() + i);
-        week.push(d);
+        const notes = JSON.parse(localStorage.getItem('calendarNotes')) || {};
+        const today = new Date();
+        let week = [];
+        for (let i = 0; i < 7; i++) {
+            let d = new Date(today);
+            d.setDate(today.getDate() + i);
+            week.push(d);
+        }
+        const dayNames = ['CN','T2','T3','T4','T5','T6','T7'];
+        let html = `<div class="calendar-week">`;
+        week.forEach(d => {
+            html += `<div class="calendar-day-header">${dayNames[d.getDay()]}</div>`;
+        });
+        week.forEach(d => {
+            let key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            let note = notes[key];
+            let isToday = d.toDateString() === new Date().toDateString();
+            html += `
+                <div class="calendar-day ${isToday?'today':''} ${note?'has-note':''}" onclick="location.href='calendar.html'">
+                    <div class="calendar-day-number">${d.getDate()}</div>
+                    ${note?`<div class="calendar-note-preview">${escapeHtml(note.title||'📝')}</div>`:''}
+                </div>
+            `;
+        });
+        html += '</div>';
+        document.getElementById('calendar-week-view').innerHTML = html;
     }
 
-    const dayNames = ['CN','T2','T3','T4','T5','T6','T7'];
-
-    let html = `<div class="calendar-week">`;
-
-    // header đúng thứ
-    week.forEach(d => {
-        html += `<div class="calendar-day-header">${dayNames[d.getDay()]}</div>`;
-    });
-
-    // ngày
-    week.forEach(d => {
-        let key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-        let note = notes[key];
-        let isToday = d.toDateString() === new Date().toDateString();
-
-        html += `
-            <div class="calendar-day ${isToday?'today':''} ${note?'has-note':''}" onclick="location.href='calendar.html'">
-                <div class="calendar-day-number">${d.getDate()}</div>
-                ${note?`<div class="calendar-note-preview">${escapeHtml(note.title||'📝')}</div>`:''}
-            </div>
-        `;
-    });
-
-    html += '</div>';
-
-    document.getElementById('calendar-week-view').innerHTML = html;
-}
-
-    // ========== ANIME HOT (CÓ HÌNH ẢNH) ==========
+    // ========== ANIME HOT ==========
     async function loadAnimeHot() {
         try {
             let res = await fetch('https://api.jikan.moe/v4/top/anime?filter=airing&limit=10');
@@ -656,13 +749,13 @@ h1 {
                             ${imgUrl ? `<img class="track-img" src="${imgUrl}" onerror="this.style.display='none'" alt="${escapeHtml(a.title)}">` : '<div class="track-img" style="background:#2a1a05;"></div>'}
                             <div class="track-info">
                                 <div class="track-name">${escapeHtml(a.title)}</div>
-                                <div class="track-meta">⭐ ${a.score||'N/A'} | 📺 ${a.episodes||'?'} tập</div>
+                                <div class="track-meta"><i class="fas fa-star"></i>${a.score||'N/A'} |<i class="fas fa-tv"></i>${a.episodes||'?'} tập</div>
                             </div>
                          </li>`;
             });
             html += '</ul>';
             document.getElementById('anime-list').innerHTML = html;
-        } catch(e) { document.getElementById('anime-list').innerHTML = '<div class="status">⚠️ Lỗi tải anime</div>'; }
+        } catch(e) { document.getElementById('anime-list').innerHTML = '<div class="status"> Lỗi tải anime</div>'; }
     }
 
     // ========== CODEFORCES ==========
@@ -673,15 +766,23 @@ h1 {
             let contests = data.result.filter(c=>c.phase==='BEFORE').sort((a,b)=>a.startTimeSeconds-b.startTimeSeconds).slice(0,10);
             let html = '<ul class="track-list">';
             contests.forEach((c,i)=> {
-                let start = new Date(c.startTimeSeconds*1000);
-                let diff = Math.floor((start - Date.now())/1000);
-                let days = Math.floor(diff/86400), hours = Math.floor((diff%86400)/3600);
-                let timeStr = days>0?`${days} ngày ${hours}h nữa`:(hours>0?`${hours} giờ nữa`:'Sắp diễn ra');
-                html += `<li class="track-item" onclick="window.open('https://codeforces.com/contests/${c.id}','_blank')"><span class="track-rank">#${i+1}</span><div class="track-info"><div class="track-name">${escapeHtml(c.name)}</div><div class="track-meta">📅 ${timeStr} | ⏱️ ${Math.floor(c.durationSeconds/3600)}h</div></div></li>`;
+                let start = new Date(c.startTimeSeconds * 1000);
+                let hours = Math.floor(c.durationSeconds / 3600);
+                let minutes = Math.floor((c.durationSeconds % 3600) / 60);
+                let durationText = `${hours}h ${minutes > 0 ? minutes + 'p' : ''}`;
+                let dateStr = start.toLocaleDateString('vi-VN');
+                let timeStr = start.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                html += `<li class="track-item" onclick="window.open('https://codeforces.com/contests/${c.id}','_blank')">
+                            <span class="track-rank">#${i+1}</span>
+                            <div class="track-info">
+                                <div class="track-name">${escapeHtml(c.name)}</div>
+                                <div class="track-meta"><i class="fas fa-calendar-day"></i> ${dateStr} - ${timeStr} | <i class="fas fa-hourglass-half"></i> ${durationText}</div>
+                            </div>
+                         </li>`;
             });
             html += '</ul>';
             document.getElementById('cf-contests-list').innerHTML = html;
-        } catch(e) { document.getElementById('cf-contests-list').innerHTML = '<div class="status">⚠️ Lỗi tải contest</div>'; }
+        } catch(e) { document.getElementById('cf-contests-list').innerHTML = '<div class="status"> Lỗi tải contest</div>'; }
     }
 
     // ========== THỜI TIẾT ==========
@@ -691,9 +792,14 @@ h1 {
             let data = await res.json();
             let temp = data.current_weather.temperature;
             let code = data.current_weather.weathercode;
-            let desc = code===0?'☀️ Trời quang':(code<3?'🌤️ Có mây':(code<50?'☁️ U ám':(code<60?'🌫️ Sương mù':'🌧️ Mưa')));
-            document.getElementById('weather-info').innerHTML = `<div class="weather-info"><div class="weather-temp">${Math.round(temp)}°C</div><div class="weather-desc">${desc}</div><button class="btn btn-outline" onclick="loadWeather()">🔄 Cập nhật</button></div>`;
-        } catch(e) { document.getElementById('weather-info').innerHTML = '<div class="status">⚠️ Không lấy được thời tiết</div>'; }
+            let desc = code===0?'Trời quang':(code<3?'Có mây':(code<50?'U ám':(code<60?'Sương mù':'Mưa')));
+            document.getElementById('weather-info').innerHTML = `<div class="weather-info">
+                            <div class="weather-location"><i class="fas fa-map-marker-alt"></i> Hà Nội, Việt Nam</div>
+                            <div class="weather-temp">${Math.round(temp)}°C</div>
+                            <div class="weather-desc">${desc}</div>
+                            <button class="btn btn-outline" onclick="loadWeather()"><i class="fas fa-sync-alt"></i> Cập nhật</button>
+                        </div>`;
+        } catch(e) { document.getElementById('weather-info').innerHTML = '<div class="status"> Không lấy được thời tiết</div>'; }
     }
 
     function escapeHtml(t) { if(!t) return ''; let d=document.createElement('div'); d.textContent=t; return d.innerHTML; }

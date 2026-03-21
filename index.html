@@ -55,7 +55,9 @@ body::after {
     pointer-events: none;
     z-index: -1;
 }
-
+#spotify-user-info {
+    display: none;
+}
 .container {
     max-width: 1400px;
     margin: auto;
@@ -163,7 +165,7 @@ h1 {
 
 .track-list {
     list-style: none;
-    max-height: 380px;
+    max-height: 260px;
     overflow-y: auto;
 }
 
@@ -576,7 +578,22 @@ h1 {
             const tracks = await (await fetch('https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=medium_term', { headers: { 'Authorization': `Bearer ${token}` } })).json();
             document.getElementById('spotify-user-info').innerHTML = `<div class="user-info"><div style="width:40px;height:40px;background:#ff6600;border-radius:50%;text-align:center;line-height:40px;">🎵</div><div class="user-name">${escapeHtml(user.display_name || user.id)}</div></div>`;
             let html = '<ul class="track-list">';
-            tracks.items.forEach((t,i)=> { html += `<li class="track-item" onclick="window.open('https://open.spotify.com/track/${t.id}','_blank')"><span class="track-rank">#${i+1}</span><div class="track-info"><div class="track-name">${escapeHtml(t.name)}</div><div class="track-artist">${escapeHtml(t.artists[0].name)}</div></div><div class="track-meta">🔥 ${t.popularity}</div></li>`; });
+            tracks.items.forEach((t,i)=> {
+    let img = t.album.images?.[0]?.url || '';
+
+    html += `
+    <li class="track-item" onclick="window.open('https://open.spotify.com/track/${t.id}','_blank')">
+        <span class="track-rank">#${i+1}</span>
+        ${img ? `<img class="track-img" src="${img}">` : `<div class="track-img"></div>`}
+        
+        <div class="track-info">
+            <div class="track-name">${escapeHtml(t.name)}</div>
+            <div class="track-artist">${escapeHtml(t.artists[0].name)}</div>
+        </div>
+
+        <div class="track-meta">🔥 ${t.popularity ?? ''}</div>
+    </li>`;
+});
             html += '</ul>';
             document.getElementById('spotify-top-tracks').innerHTML = html;
             document.getElementById('spotify-status').innerHTML = `✅ Cập nhật ${new Date().toLocaleTimeString()}`;

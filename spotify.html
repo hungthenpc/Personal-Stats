@@ -6,7 +6,7 @@
     <title>Spotify Tier Maker - Cosmic Ranking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* (giữ nguyên CSS như code gốc, chỉ thay đổi phần script) */
+        /* (GIỮ NGUYÊN CSS NHƯ CODE GỐC, KHÔNG THAY ĐỔI) */
         * {
             margin: 0;
             padding: 0;
@@ -519,33 +519,31 @@
 </div>
 
 <script>
-    // ========== CẤU HÌNH SPOTIFY ==========
+    // ========== SPOTIFY ==========
     const CLIENT_ID = "cd0524eb368f45ceb21721b9543bd5d6";
     const CLIENT_SECRET = "1a9856d20b41437d9c56a29d29e55f53";
     const REDIRECT_URI = window.location.origin + window.location.pathname;
     let spotifyToken = null;
 
-    // ========== DỮ LIỆU CHÍNH ==========
-    // Mỗi bài hát: { id, name, artist, image, popularity: { short_term, medium_term, long_term } }
-    let songs = JSON.parse(localStorage.getItem('tier_songs')) || [];
-    // Mỗi nghệ sĩ: { id, name, image, popularity: { short_term, medium_term, long_term } }
-    let artists = JSON.parse(localStorage.getItem('tier_artists')) || [];
+    // ========== DỮ LIỆU ==========
+    // combinedSongs: tất cả bài hát từ mọi lần fetch (từ cả 3 mốc) + custom
+    let combinedSongs = JSON.parse(localStorage.getItem('combinedSongs')) || [];
+    let combinedArtists = JSON.parse(localStorage.getItem('combinedArtists')) || [];
     let songRanking = JSON.parse(localStorage.getItem('songTierRanking')) || {};
     let artistRanking = JSON.parse(localStorage.getItem('artistTierRanking')) || {};
     
     let currentSongRange = "medium_term";
     let currentArtistRange = "medium_term";
+    let currentTopSongs = []; // lưu top 50 đang hiển thị của mốc hiện tại
 
-    // ========== HÀM LƯU DỮ LIỆU ==========
-    function saveAll() {
-        localStorage.setItem('tier_songs', JSON.stringify(songs));
-        localStorage.setItem('tier_artists', JSON.stringify(artists));
+    function saveCombined() {
+        localStorage.setItem('combinedSongs', JSON.stringify(combinedSongs));
+        localStorage.setItem('combinedArtists', JSON.stringify(combinedArtists));
         localStorage.setItem('songTierRanking', JSON.stringify(songRanking));
         localStorage.setItem('artistTierRanking', JSON.stringify(artistRanking));
     }
 
-    // ========== GỌI API SPOTIFY ==========
-    // Hàm fetch dữ liệu cho một range cụ thể, trả về mảng item
+    // Hàm fetch top tracks của một range, trả về mảng 50 bài
     async function fetchTopTracks(range) {
         if (!spotifyToken) return [];
         try {
@@ -568,101 +566,87 @@
         } catch (e) { return []; }
     }
 
-    // Lấy tất cả bài hát từ 3 range và cập nhật vào mảng songs
-    async function fetchAllTracks() {
-        const ranges = ['short_term', 'medium_term', 'long_term'];
-        const newSongsMap = new Map(); // dùng map để dễ cập nhật
-        // Giữ lại các bài custom
-        songs.forEach(s => { if (s.id.startsWith('custom_')) newSongsMap.set(s.id, s); });
-        
-        for (const range of ranges) {
-            const items = await fetchTopTracks(range);
-            items.forEach(item => {
-                const id = item.id;
-                if (!newSongsMap.has(id)) {
-                    // Tạo mới
-                    newSongsMap.set(id, {
-                        id: id,
-                        name: item.name,
-                        artist: item.artists[0]?.name || 'Unknown',
-                        image: item.album.images[0]?.url || '',
-                        popularity: { short_term: 0, medium_term: 0, long_term: 0 }
-                    });
-                }
-                const song = newSongsMap.get(id);
-                song.popularity[range] = item.popularity || 0;
-            });
-        }
-        // Chuyển map thành array
-        songs = Array.from(newSongsMap.values());
-        saveAll();
-    }
-
-    async function fetchAllArtists() {
-        const ranges = ['short_term', 'medium_term', 'long_term'];
-        const newArtistsMap = new Map();
-        artists.forEach(a => { if (a.id.startsWith('custom_')) newArtistsMap.set(a.id, a); });
-        
-        for (const range of ranges) {
-            const items = await fetchTopArtists(range);
-            items.forEach(item => {
-                const id = item.id;
-                if (!newArtistsMap.has(id)) {
-                    newArtistsMap.set(id, {
-                        id: id,
-                        name: item.name,
-                        image: item.images[0]?.url || '',
-                        popularity: { short_term: 0, medium_term: 0, long_term: 0 }
-                    });
-                }
-                const artist = newArtistsMap.get(id);
-                artist.popularity[range] = item.popularity || 0;
-            });
-        }
-        artists = Array.from(newArtistsMap.values());
-        saveAll();
-    }
-
-    // Hàm load dữ liệu tổng hợp (gọi cả tracks và artists)
-    async function loadAllSpotifyData() {
-        if (!spotifyToken) return;
-        try {
-            document.getElementById('topSongsList').innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải bài hát...</p></div>';
-            document.getElementById('topArtistsList').innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải nghệ sĩ...</p></div>';
-            
-            await Promise.all([fetchAllTracks(), fetchAllArtists()]);
-            refreshAllUI();
-            document.getElementById('loginStatus').innerHTML = '<i class="fas fa-check-circle"></i> Đã cập nhật từ Spotify!';
-            setTimeout(() => document.getElementById('loginStatus').innerHTML = '', 2000);
-        } catch(e) { console.error(e); }
-    }
-
-    // ========== HÀM HIỂN THỊ ==========
-    // Lấy top 50 bài hát theo range hiện tại
-    function getTopSongs() {
-        const sorted = [...songs].sort((a,b) => {
-            const popA = a.popularity[currentSongRange] || 0;
-            const popB = b.popularity[currentSongRange] || 0;
-            return popB - popA;
-        });
-        return sorted.slice(0, 50).map((s, idx) => ({ ...s, rank: idx+1 }));
-    }
-
-    function getTopArtists() {
-        const sorted = [...artists].sort((a,b) => {
-            const popA = a.popularity[currentArtistRange] || 0;
-            const popB = b.popularity[currentArtistRange] || 0;
-            return popB - popA;
-        });
-        return sorted.slice(0, 20).map((a, idx) => ({ ...a, rank: idx+1 }));
-    }
-
-    // Render top list (có thể kéo thả)
-    function renderTopSongs() {
+    // Lấy top 50 cho range hiện tại, hiển thị lên top list, đồng thời cập nhật combinedSongs
+    async function loadAndDisplayTopSongs(range) {
         const container = document.getElementById('topSongsList');
         if (!container) return;
-        const tops = getTopSongs();
-        container.innerHTML = tops.map(song => {
+        container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải...</p></div>';
+        
+        const items = await fetchTopTracks(range);
+        if (!items.length) {
+            container.innerHTML = '<div class="status">Không thể tải dữ liệu</div>';
+            return;
+        }
+        
+        // Chuyển đổi dữ liệu từ Spotify
+        const topSongs = items.map((item, idx) => ({
+            id: item.id,
+            name: item.name,
+            artist: item.artists[0]?.name || 'Unknown',
+            image: item.album.images[0]?.url || '',
+            rank: idx + 1
+        }));
+        currentTopSongs = topSongs;
+        
+        // Cập nhật combinedSongs: thêm những bài chưa có
+        for (const song of topSongs) {
+            if (!combinedSongs.find(s => s.id === song.id)) {
+                combinedSongs.push({
+                    id: song.id,
+                    name: song.name,
+                    artist: song.artist,
+                    image: song.image
+                });
+            }
+        }
+        saveCombined();
+        
+        // Render top list
+        renderTopSongsList(topSongs);
+        // Cập nhật thư viện (vì có thể có bài mới)
+        renderLibrary('songsLibrary', combinedSongs, true);
+        // Cập nhật tier (vì có thể có bài mới)
+        renderTier('songTierContainer', combinedSongs, songRanking, true);
+    }
+
+    async function loadAndDisplayTopArtists(range) {
+        const container = document.getElementById('topArtistsList');
+        if (!container) return;
+        container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải...</p></div>';
+        
+        const items = await fetchTopArtists(range);
+        if (!items.length) {
+            container.innerHTML = '<div class="status">Không thể tải dữ liệu</div>';
+            return;
+        }
+        
+        const topArtists = items.map((item, idx) => ({
+            id: item.id,
+            name: item.name,
+            image: item.images[0]?.url || '',
+            rank: idx + 1
+        }));
+        
+        for (const artist of topArtists) {
+            if (!combinedArtists.find(a => a.id === artist.id)) {
+                combinedArtists.push({
+                    id: artist.id,
+                    name: artist.name,
+                    image: artist.image
+                });
+            }
+        }
+        saveCombined();
+        
+        renderTopArtistsList(topArtists);
+        renderLibrary('artistsLibrary', combinedArtists, false);
+        renderTier('artistTierContainer', combinedArtists, artistRanking, false);
+    }
+
+    function renderTopSongsList(songs) {
+        const container = document.getElementById('topSongsList');
+        if (!container) return;
+        container.innerHTML = songs.map(song => {
             const tier = songRanking[song.id];
             const badge = tier ? `<span class="tier-badge ${tier}">${tier}</span>` : '';
             return `<div class="top-item" draggable="true" data-id="${song.id}" data-type="song" data-name="${escapeHtml(song.name)}" data-artist="${escapeHtml(song.artist)}" data-image="${song.image}">
@@ -677,11 +661,10 @@
         document.querySelectorAll('.top-item').forEach(makeDraggable);
     }
 
-    function renderTopArtists() {
+    function renderTopArtistsList(artists) {
         const container = document.getElementById('topArtistsList');
         if (!container) return;
-        const tops = getTopArtists();
-        container.innerHTML = tops.map(artist => {
+        container.innerHTML = artists.map(artist => {
             const tier = artistRanking[artist.id];
             const badge = tier ? `<span class="tier-badge ${tier}">${tier}</span>` : '';
             return `<div class="top-item" draggable="true" data-id="${artist.id}" data-type="artist" data-name="${escapeHtml(artist.name)}" data-image="${artist.image}">
@@ -695,7 +678,6 @@
         document.querySelectorAll('#topArtistsList .top-item').forEach(makeDraggable);
     }
 
-    // Hàm tạo draggable chung
     function makeDraggable(element) {
         element.setAttribute('draggable', 'true');
         element.addEventListener('dragstart', (e) => {
@@ -710,7 +692,6 @@
         element.addEventListener('dragend', () => element.classList.remove('dragging'));
     }
 
-    // Render các tier
     function renderTier(containerId, items, ranking, isSong) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -732,7 +713,7 @@
                 if (!isSong && data.type !== 'artist') return;
                 if (isSong) songRanking[data.id] = tierId;
                 else artistRanking[data.id] = tierId;
-                saveAll();
+                saveCombined();
                 refreshAllUI();
             });
             
@@ -761,7 +742,6 @@
         });
     }
 
-    // Render thư viện (các item chưa xếp hạng)
     function renderLibrary(containerId, items, isSong) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -778,7 +758,7 @@
             if (!isSong && data.type !== 'artist') return;
             if (isSong) delete songRanking[data.id];
             else delete artistRanking[data.id];
-            saveAll();
+            saveCombined();
             refreshAllUI();
         });
         
@@ -803,15 +783,24 @@
     }
 
     function refreshAllUI() {
-        renderTopSongs();
-        renderTopArtists();
-        renderTier('songTierContainer', songs, songRanking, true);
-        renderTier('artistTierContainer', artists, artistRanking, false);
-        renderLibrary('songsLibrary', songs, true);
-        renderLibrary('artistsLibrary', artists, false);
+        // Giữ nguyên top list theo range hiện tại, nhưng cần hiển thị lại (nếu có currentTopSongs)
+        if (currentTopSongs.length) {
+            renderTopSongsList(currentTopSongs);
+        } else {
+            // Nếu chưa có dữ liệu, load lại
+            loadAndDisplayTopSongs(currentSongRange);
+        }
+        // Cập nhật thư viện và tier
+        renderLibrary('songsLibrary', combinedSongs, true);
+        renderLibrary('artistsLibrary', combinedArtists, false);
+        renderTier('songTierContainer', combinedSongs, songRanking, true);
+        renderTier('artistTierContainer', combinedArtists, artistRanking, false);
+        // Nếu có top artists hiện tại, hiển thị lại (cần lưu lại)
+        // Ở đây tạm thời load lại top artists theo range hiện tại
+        loadAndDisplayTopArtists(currentArtistRange);
     }
 
-    // ========== THÊM CUSTOM ==========
+    // Thêm custom
     let currentSongImage = null, currentArtistImage = null;
     function setupImageUpload(zoneId, fileInputId, previewId, setter) {
         const zone = document.getElementById(zoneId);
@@ -834,14 +823,13 @@
         const artist = document.getElementById('customArtistName').value.trim();
         if(!name || !artist) { alert('Vui lòng nhập tên bài hát và nghệ sĩ'); return; }
         const newId = `custom_song_${Date.now()}`;
-        songs.push({
+        combinedSongs.push({
             id: newId,
             name: name,
             artist: artist,
-            image: currentSongImage || "",
-            popularity: { short_term: 80, medium_term: 80, long_term: 80 }
+            image: currentSongImage || ""
         });
-        saveAll();
+        saveCombined();
         document.getElementById('customSongName').value = '';
         document.getElementById('customArtistName').value = '';
         document.getElementById('songImagePreview').style.display = 'none';
@@ -854,13 +842,12 @@
         const name = document.getElementById('customArtistNameOnly').value.trim();
         if(!name) { alert('Vui lòng nhập tên nghệ sĩ'); return; }
         const newId = `custom_artist_${Date.now()}`;
-        artists.push({
+        combinedArtists.push({
             id: newId,
             name: name,
-            image: currentArtistImage || "",
-            popularity: { short_term: 80, medium_term: 80, long_term: 80 }
+            image: currentArtistImage || ""
         });
-        saveAll();
+        saveCombined();
         document.getElementById('customArtistNameOnly').value = '';
         document.getElementById('artistImagePreview').style.display = 'none';
         currentArtistImage = null;
@@ -868,12 +855,12 @@
         alert('Đã thêm nghệ sĩ');
     }
 
-    function resetSongTier() { if(confirm('Đặt lại xếp hạng bài hát?')) { songRanking = {}; saveAll(); refreshAllUI(); } }
-    function resetArtistTier() { if(confirm('Đặt lại xếp hạng nghệ sĩ?')) { artistRanking = {}; saveAll(); refreshAllUI(); } }
+    function resetSongTier() { if(confirm('Đặt lại xếp hạng bài hát?')) { songRanking = {}; saveCombined(); refreshAllUI(); } }
+    function resetArtistTier() { if(confirm('Đặt lại xếp hạng nghệ sĩ?')) { artistRanking = {}; saveCombined(); refreshAllUI(); } }
     
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m] || m); }
 
-    // ========== XỬ LÝ ĐĂNG NHẬP VÀ KHỞI TẠO ==========
+    // Đăng nhập Spotify
     function loginSpotify() {
         const scope = 'user-top-read user-read-private';
         const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&show_dialog=true`;
@@ -900,9 +887,16 @@
                 localStorage.setItem('spotify_token', data.access_token);
                 localStorage.setItem('spotify_token_expiry', Date.now() + (data.expires_in * 1000));
                 window.history.replaceState({}, document.title, window.location.pathname);
-                await loadAllSpotifyData();
+                
                 document.getElementById('spotifyLoginArea').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+                
+                // Load lần đầu: lấy top 50 của medium_term cho bài hát và nghệ sĩ
+                await loadAndDisplayTopSongs('medium_term');
+                await loadAndDisplayTopArtists('medium_term');
+                // Đánh dấu range hiện tại
+                currentSongRange = 'medium_term';
+                currentArtistRange = 'medium_term';
             }
         } catch(e) { console.error(e); }
     }
@@ -917,46 +911,48 @@
         const expiry = localStorage.getItem('spotify_token_expiry');
         if (savedToken && expiry && Date.now() < parseInt(expiry)) {
             spotifyToken = savedToken;
-            loadAllSpotifyData().then(() => {
-                document.getElementById('spotifyLoginArea').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-            });
+            document.getElementById('spotifyLoginArea').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            // Load dữ liệu từ các range đã lưu? Ở đây ta load lại top list cho range hiện tại
+            loadAndDisplayTopSongs(currentSongRange);
+            loadAndDisplayTopArtists(currentArtistRange);
         } else {
             document.getElementById('spotifyLoginArea').style.display = 'block';
             document.getElementById('mainContent').style.display = 'none';
         }
     }
 
-    // ========== SỰ KIỆN ==========
-    document.getElementById('loginSpotifyBtn').onclick = loginSpotify;
-    document.getElementById('addCustomSongBtn').onclick = addCustomSong;
-    document.getElementById('addCustomArtistBtn').onclick = addCustomArtist;
-    document.getElementById('resetSongTierBtn').onclick = resetSongTier;
-    document.getElementById('resetArtistTierBtn').onclick = resetArtistTier;
-
-    // Chuyển term cho bài hát
+    // Sự kiện chuyển term
     document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('#songTimeRange .time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentSongRange = btn.getAttribute('data-range');
-            renderTopSongs();
+            const range = btn.getAttribute('data-range');
+            currentSongRange = range;
+            loadAndDisplayTopSongs(range);
         };
     });
     document.querySelectorAll('#artistTimeRange .time-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('#artistTimeRange .time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentArtistRange = btn.getAttribute('data-range');
-            renderTopArtists();
+            const range = btn.getAttribute('data-range');
+            currentArtistRange = range;
+            loadAndDisplayTopArtists(range);
         };
     });
 
+    document.getElementById('loginSpotifyBtn').onclick = loginSpotify;
+    document.getElementById('addCustomSongBtn').onclick = addCustomSong;
+    document.getElementById('addCustomArtistBtn').onclick = addCustomArtist;
+    document.getElementById('resetSongTierBtn').onclick = resetSongTier;
+    document.getElementById('resetArtistTierBtn').onclick = resetArtistTier;
+
     setupImageUpload('imageDropZoneSong', 'songImageInput', 'songImagePreview', (img) => currentSongImage = img);
     setupImageUpload('imageDropZoneArtist', 'artistImageInput', 'artistImagePreview', (img) => currentArtistImage = img);
-
-    // Nếu đã có dữ liệu trước đó (từ local) và chưa đăng nhập, vẫn hiển thị
-    if (songs.length > 0 && !spotifyToken) {
+    
+    // Nếu đã có combinedSongs từ trước (chưa đăng nhập) thì vẫn hiển thị
+    if (combinedSongs.length > 0 && !spotifyToken) {
         refreshAllUI();
     }
 </script>

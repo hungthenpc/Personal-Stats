@@ -7,6 +7,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* Giữ nguyên CSS như cũ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
@@ -312,10 +313,43 @@
     const REDIRECT_URI = window.location.origin + window.location.pathname;
     let spotifyToken = null;
     
-    let allSongs = JSON.parse(localStorage.getItem('tier_all_songs')) || [];
-    let allArtists = JSON.parse(localStorage.getItem('tier_all_artists')) || [];
+    // ========== DỮ LIỆU MẪU MẶC ĐỊNH ==========
+    const defaultSongs = [
+        { id: "sample_1", name: "HOODIE", artist: "Coldzy", image: "", popularity: 92 },
+        { id: "sample_2", name: "NOL4B3L", artist: "RPT MCK", image: "", popularity: 89 },
+        { id: "sample_3", name: "Tại Sao Em Buông", artist: "Duniverse", image: "", popularity: 87 },
+        { id: "sample_4", name: "CẢM NHẬN", artist: "RAP VIỆT", image: "", popularity: 85 },
+        { id: "sample_5", name: "In Love", artist: "Low G", image: "", popularity: 83 },
+        { id: "sample_6", name: "Nơi Não Khi Buông Tay", artist: "NvK", image: "", popularity: 81 },
+        { id: "sample_7", name: "Có Em", artist: "Madihu", image: "", popularity: 79 },
+        { id: "sample_8", name: "Lạ Lùng", artist: "Vũ.", image: "", popularity: 78 },
+        { id: "sample_9", name: "Thức Giấc", artist: "Da LAB", image: "", popularity: 76 },
+        { id: "sample_10", name: "Sài Gòn Hôm Nay Mưa", artist: "JSOL", image: "", popularity: 75 }
+    ];
+    
+    const defaultArtists = [
+        { id: "artist_1", name: "Sơn Tùng M-TP", image: "", popularity: 95 },
+        { id: "artist_2", name: "Đen Vâu", image: "", popularity: 92 },
+        { id: "artist_3", name: "Hòa Minzy", image: "", popularity: 88 },
+        { id: "artist_4", name: "RPT MCK", image: "", popularity: 86 },
+        { id: "artist_5", name: "Vũ.", image: "", popularity: 84 },
+        { id: "artist_6", name: "Coldzy", image: "", popularity: 82 }
+    ];
+    
+    let allSongs = JSON.parse(localStorage.getItem('tier_all_songs'));
+    let allArtists = JSON.parse(localStorage.getItem('tier_all_artists'));
     let songRanking = JSON.parse(localStorage.getItem('songTierRanking')) || {};
     let artistRanking = JSON.parse(localStorage.getItem('artistTierRanking')) || {};
+    
+    // Khởi tạo dữ liệu mặc định nếu chưa có
+    if (!allSongs || allSongs.length === 0) {
+        allSongs = defaultSongs;
+        localStorage.setItem('tier_all_songs', JSON.stringify(allSongs));
+    }
+    if (!allArtists || allArtists.length === 0) {
+        allArtists = defaultArtists;
+        localStorage.setItem('tier_all_artists', JSON.stringify(allArtists));
+    }
 
     function saveAll() {
         localStorage.setItem('tier_all_songs', JSON.stringify(allSongs));
@@ -324,25 +358,13 @@
         localStorage.setItem('artistTierRanking', JSON.stringify(artistRanking));
     }
 
-    // Gộp nghệ sĩ theo ID, nếu custom có tên trùng với Spotify thì gộp lại
+    // Gộp nghệ sĩ theo ID
     function mergeArtistsWithId(newArtists) {
         for (const newArtist of newArtists) {
             const existing = allArtists.find(a => a.id === newArtist.id);
             if (existing) {
                 existing.popularity = newArtist.popularity;
                 if (newArtist.image) existing.image = newArtist.image;
-                continue;
-            }
-            // Kiểm tra trùng tên để gộp custom vào Spotify
-            const byName = allArtists.find(a => a.name.toLowerCase() === newArtist.name.toLowerCase() && !a.id.startsWith('custom_'));
-            if (byName && byName.id === newArtist.id) {
-                byName.popularity = newArtist.popularity;
-                if (newArtist.image) byName.image = newArtist.image;
-                // Chuyển ranking từ custom sang official nếu có
-                if (artistRanking[byName.id] === undefined && artistRanking[`custom_${byName.name}_old`]) {
-                    artistRanking[byName.id] = artistRanking[`custom_${byName.name}_old`];
-                    delete artistRanking[`custom_${byName.name}_old`];
-                }
             } else {
                 allArtists.push(newArtist);
             }
@@ -357,8 +379,8 @@
                 headers: { 'Authorization': `Bearer ${spotifyToken}` }
             });
             const data = await res.json();
-            return data.items;
-        } catch(e) { return []; }
+            return data.items || [];
+        } catch(e) { console.error(e); return []; }
     }
 
     async function fetchAllTimeRanges(type) {
@@ -378,7 +400,7 @@
     }
 
     async function refreshAllSongs() {
-        if (!spotifyToken) return;
+        if (!spotifyToken) { alert('Vui lòng đăng nhập Spotify trước'); return; }
         const items = await fetchAllTimeRanges('tracks');
         const newSongs = items.map(t => ({
             id: t.id,
@@ -387,7 +409,6 @@
             image: t.album.images[0]?.url || "",
             popularity: t.popularity || 0
         }));
-        // Gộp vào allSongs dựa trên ID
         for (const newSong of newSongs) {
             const existing = allSongs.find(s => s.id === newSong.id);
             if (existing) {
@@ -399,10 +420,11 @@
         }
         saveAll();
         refreshDisplay();
+        alert(`Đã cập nhật ${newSongs.length} bài hát mới`);
     }
 
     async function refreshAllArtists() {
-        if (!spotifyToken) return;
+        if (!spotifyToken) { alert('Vui lòng đăng nhập Spotify trước'); return; }
         const items = await fetchAllTimeRanges('artists');
         const newArtists = items.map(a => ({
             id: a.id,
@@ -412,6 +434,7 @@
         }));
         mergeArtistsWithId(newArtists);
         refreshDisplay();
+        alert(`Đã cập nhật ${newArtists.length} nghệ sĩ mới`);
     }
 
     async function searchAndAddArtist() {
@@ -681,8 +704,11 @@
                 await refreshAllArtists();
                 document.getElementById('spotifyLoginArea').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
+            } else {
+                console.error('Token error:', data);
+                document.getElementById('loginStatus').innerHTML = 'Đăng nhập thất bại, vui lòng thử lại';
             }
-        } catch(e) { console.error(e); }
+        } catch(e) { console.error(e); document.getElementById('loginStatus').innerHTML = 'Lỗi kết nối'; }
     }
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -698,10 +724,14 @@
                 document.getElementById('spotifyLoginArea').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'block';
                 refreshDisplay();
+            }).catch(() => {
+                document.getElementById('spotifyLoginArea').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
             });
         } else {
             document.getElementById('spotifyLoginArea').style.display = 'block';
             document.getElementById('mainContent').style.display = 'none';
+            refreshDisplay(); // Hiển thị dữ liệu mẫu
         }
     }
 
@@ -730,6 +760,9 @@
             renderTopArtists();
         };
     });
+    
+    // Khởi tạo hiển thị
+    refreshDisplay();
 </script>
 </body>
 </html>

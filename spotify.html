@@ -328,18 +328,28 @@
     
     // Lấy top songs theo mốc thời gian hiện tại
     function getTopSongs(limit = 50) {
-        let sorted = [...allSongs];
-        let popData = songPopularity[currentSongRange] || songPopularity.medium_term || {};
-        sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
-        return sorted.slice(0, limit).map((s, i) => ({ ...s, rank: i + 1 }));
+    let sorted = [...allSongs];
+    // Lấy đúng dữ liệu theo currentSongRange, KHÔNG fallback
+    let popData = songPopularity[currentSongRange];
+    if (!popData) {
+        console.error(`Không có dữ liệu cho range: ${currentSongRange}`);
+        return [];
     }
-    
-    function getTopArtists(limit = 20) {
-        let sorted = [...allArtists];
-        let popData = artistPopularity[currentArtistRange] || artistPopularity.medium_term || {};
-        sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
-        return sorted.slice(0, limit).map((a, i) => ({ ...a, rank: i + 1 }));
+    sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
+    return sorted.slice(0, limit).map((s, i) => ({ ...s, rank: i + 1 }));
+}
+
+function getTopArtists(limit = 20) {
+    let sorted = [...allArtists];
+    // Lấy đúng dữ liệu theo currentArtistRange, KHÔNG fallback
+    let popData = artistPopularity[currentArtistRange];
+    if (!popData) {
+        console.error(`Không có dữ liệu cho range: ${currentArtistRange}`);
+        return [];
     }
+    sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
+    return sorted.slice(0, limit).map((a, i) => ({ ...a, rank: i + 1 }));
+}
     
     async function fetchFromSpotify(endpoint) {
         if (!spotifyToken) return [];

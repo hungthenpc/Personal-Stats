@@ -606,14 +606,15 @@
     // Data Storage
     let allSongs = []; // { id, name, artist, image }
     let songTiers = {}; // { songId: tier }
+    // Lưu popularity cho từng term: { short_term: { songId: popularity }, medium_term: {...}, long_term: {...} }
     let songPopularity = { short_term: {}, medium_term: {}, long_term: {} };
     let currentTimeRange = "medium_term";
     
     // Load saved data from localStorage
     function loadSavedData() {
-        const savedSongs = localStorage.getItem('spotify_all_songs');
-        const savedTiers = localStorage.getItem('spotify_song_tiers');
-        const savedPop = localStorage.getItem('spotify_song_popularity');
+        const savedSongs = localStorage.getItem('spotify_all_songs_v2');
+        const savedTiers = localStorage.getItem('spotify_song_tiers_v2');
+        const savedPop = localStorage.getItem('spotify_song_popularity_v2');
         
         if (savedSongs) allSongs = JSON.parse(savedSongs);
         if (savedTiers) songTiers = JSON.parse(savedTiers);
@@ -622,12 +623,12 @@
     
     // Save data to localStorage
     function saveData() {
-        localStorage.setItem('spotify_all_songs', JSON.stringify(allSongs));
-        localStorage.setItem('spotify_song_tiers', JSON.stringify(songTiers));
-        localStorage.setItem('spotify_song_popularity', JSON.stringify(songPopularity));
+        localStorage.setItem('spotify_all_songs_v2', JSON.stringify(allSongs));
+        localStorage.setItem('spotify_song_tiers_v2', JSON.stringify(songTiers));
+        localStorage.setItem('spotify_song_popularity_v2', JSON.stringify(songPopularity));
     }
     
-    // Fetch top tracks from Spotify
+    // Fetch top tracks from Spotify for a specific range
     async function fetchTopTracks(range) {
         if (!spotifyToken) return [];
         try {
@@ -649,14 +650,18 @@
         const ranges = ['short_term', 'medium_term', 'long_term'];
         const newSongsMap = new Map();
         
+        // Reset popularity data
+        songPopularity = { short_term: {}, medium_term: {}, long_term: {} };
+        
         for (const range of ranges) {
             const tracks = await fetchTopTracks(range);
-            songPopularity[range] = {};
             
             for (const track of tracks) {
                 const songId = track.id;
+                // Lưu popularity cho range này
                 songPopularity[range][songId] = track.popularity || 0;
                 
+                // Thêm bài hát vào danh sách tổng nếu chưa có
                 if (!newSongsMap.has(songId)) {
                     newSongsMap.set(songId, {
                         id: songId,
@@ -668,6 +673,7 @@
             }
         }
         
+        // Cập nhật allSongs
         allSongs = Array.from(newSongsMap.values());
         saveData();
         
@@ -684,6 +690,7 @@
     // Get top 50 songs sorted by popularity for current time range
     function getTop50Songs() {
         const popData = songPopularity[currentTimeRange] || {};
+        // Sắp xếp tất cả bài hát theo popularity giảm dần, lấy top 50
         const sorted = [...allSongs].sort((a, b) => {
             const popA = popData[a.id] || 0;
             const popB = popData[b.id] || 0;
@@ -927,9 +934,12 @@
         const timeBtns = document.querySelectorAll('#timeRangeSelector .time-btn');
         timeBtns.forEach(btn => {
             btn.addEventListener('click', () => {
+                // Cập nhật active class
                 timeBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                // Cập nhật currentTimeRange
                 currentTimeRange = btn.dataset.range;
+                // Render lại top songs
                 renderTopSongs();
             });
         });

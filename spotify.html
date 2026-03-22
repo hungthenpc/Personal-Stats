@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Spotify Tier Maker - Cosmic Ranking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -308,6 +308,8 @@
     let allArtists = JSON.parse(localStorage.getItem('tier_all_artists')) || [];
     let songRanking = JSON.parse(localStorage.getItem('songTierRanking')) || {};
     let artistRanking = JSON.parse(localStorage.getItem('artistTierRanking')) || {};
+    
+    // Lưu popularity riêng cho từng mốc thời gian
     let songPopularity = JSON.parse(localStorage.getItem('tier_song_popularity')) || { short_term: {}, medium_term: {}, long_term: {} };
     let artistPopularity = JSON.parse(localStorage.getItem('tier_artist_popularity')) || { short_term: {}, medium_term: {}, long_term: {} };
     
@@ -324,61 +326,86 @@
         localStorage.setItem('tier_artist_popularity', JSON.stringify(artistPopularity));
     }
     
+    // Lấy top songs theo mốc thời gian hiện tại
     function getTopSongs(limit = 50) {
         let sorted = [...allSongs];
-        let pop = songPopularity[currentSongRange] || {};
-        sorted.sort((a,b) => (pop[b.id] || 0) - (pop[a.id] || 0));
-        return sorted.slice(0, limit).map((s,i) => ({ ...s, rank: i+1 }));
+        let popData = songPopularity[currentSongRange] || songPopularity.medium_term || {};
+        sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
+        return sorted.slice(0, limit).map((s, i) => ({ ...s, rank: i + 1 }));
     }
     
     function getTopArtists(limit = 20) {
         let sorted = [...allArtists];
-        let pop = artistPopularity[currentArtistRange] || {};
-        sorted.sort((a,b) => (pop[b.id] || 0) - (pop[a.id] || 0));
-        return sorted.slice(0, limit).map((a,i) => ({ ...a, rank: i+1 }));
+        let popData = artistPopularity[currentArtistRange] || artistPopularity.medium_term || {};
+        sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
+        return sorted.slice(0, limit).map((a, i) => ({ ...a, rank: i + 1 }));
     }
     
     async function fetchFromSpotify(endpoint) {
         if (!spotifyToken) return [];
         try {
-            let res = await fetch(`https://api.spotify.com/v1/me/${endpoint}`, {
+            const res = await fetch(`https://api.spotify.com/v1/me/${endpoint}`, {
                 headers: { 'Authorization': `Bearer ${spotifyToken}` }
             });
-            let data = await res.json();
+            const data = await res.json();
             return data.items || [];
         } catch(e) { return []; }
     }
     
+    // Cập nhật bài hát từ Spotify - LƯU RIÊNG POPULARITY CHO TỪNG MỐC
     async function refreshAllSongs() {
         if (!spotifyToken) { alert('Đăng nhập Spotify trước'); return; }
-        for (let range of ['short_term', 'medium_term', 'long_term']) {
-            let items = await fetchFromSpotify(`top/tracks?limit=50&time_range=${range}`);
-            for (let item of items) {
+        const ranges = ['short_term', 'medium_term', 'long_term'];
+        
+        for (const range of ranges) {
+            const items = await fetchFromSpotify(`top/tracks?limit=50&time_range=${range}`);
+            
+            for (const item of items) {
+                // Thêm bài hát mới nếu chưa có
                 if (!allSongs.find(s => s.id === item.id)) {
-                    allSongs.push({ id: item.id, name: item.name, artist: item.artists[0].name, image: item.album.images[0]?.url || "" });
+                    allSongs.push({
+                        id: item.id,
+                        name: item.name,
+                        artist: item.artists[0].name,
+                        image: item.album.images[0]?.url || ""
+                    });
                 }
+                
+                // LƯU POPULARITY RIÊNG CHO TỪNG MỐC THỜI GIAN
                 if (!songPopularity[range]) songPopularity[range] = {};
                 songPopularity[range][item.id] = item.popularity || 0;
             }
         }
+        
         saveAll();
         renderAll();
+        alert('Đã cập nhật bài hát từ Spotify');
     }
     
     async function refreshAllArtists() {
         if (!spotifyToken) { alert('Đăng nhập Spotify trước'); return; }
-        for (let range of ['short_term', 'medium_term', 'long_term']) {
-            let items = await fetchFromSpotify(`top/artists?limit=50&time_range=${range}`);
-            for (let item of items) {
+        const ranges = ['short_term', 'medium_term', 'long_term'];
+        
+        for (const range of ranges) {
+            const items = await fetchFromSpotify(`top/artists?limit=50&time_range=${range}`);
+            
+            for (const item of items) {
                 if (!allArtists.find(a => a.id === item.id)) {
-                    allArtists.push({ id: item.id, name: item.name, image: item.images[0]?.url || "" });
+                    allArtists.push({
+                        id: item.id,
+                        name: item.name,
+                        image: item.images[0]?.url || ""
+                    });
                 }
+                
                 if (!artistPopularity[range]) artistPopularity[range] = {};
                 artistPopularity[range][item.id] = item.popularity || 0;
             }
         }
+        
         saveAll();
         renderAll();
+        alert('Đã cập nhật nghệ sĩ từ Spotify');
     }
     
     function addCustomSong() {
@@ -659,6 +686,7 @@
     document.getElementById('resetSongTierBtn').onclick = resetSongTier;
     document.getElementById('resetArtistTierBtn').onclick = resetArtistTier;
     
+    // Xử lý chuyển mốc thời gian
     document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('#songTimeRange .time-btn').forEach(b => b.classList.remove('active'));

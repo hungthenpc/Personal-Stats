@@ -298,426 +298,242 @@
 </div>
 
 <script>
-    const CLIENT_ID = "cd0524eb368f45ceb21721b9543bd5d6";
-    const CLIENT_SECRET = "1a9856d20b41437d9c56a29d29e55f53";
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
-    let spotifyToken = null;
-    
-    // Dữ liệu
-    let allSongs = JSON.parse(localStorage.getItem('tier_all_songs')) || [];
-    let allArtists = JSON.parse(localStorage.getItem('tier_all_artists')) || [];
-    let songRanking = JSON.parse(localStorage.getItem('songTierRanking')) || {};
-    let artistRanking = JSON.parse(localStorage.getItem('artistTierRanking')) || {};
-    
-    // Lưu popularity riêng cho từng mốc thời gian
-    let songPopularity = JSON.parse(localStorage.getItem('tier_song_popularity')) || { short_term: {}, medium_term: {}, long_term: {} };
-    let artistPopularity = JSON.parse(localStorage.getItem('tier_artist_popularity')) || { short_term: {}, medium_term: {}, long_term: {} };
-    
-    let currentSongRange = "medium_term";
-    let currentArtistRange = "medium_term";
-    let currentSongImage = null, currentArtistImage = null;
-    
-    function saveAll() {
-        localStorage.setItem('tier_all_songs', JSON.stringify(allSongs));
-        localStorage.setItem('tier_all_artists', JSON.stringify(allArtists));
-        localStorage.setItem('songTierRanking', JSON.stringify(songRanking));
-        localStorage.setItem('artistTierRanking', JSON.stringify(artistRanking));
-        localStorage.setItem('tier_song_popularity', JSON.stringify(songPopularity));
-        localStorage.setItem('tier_artist_popularity', JSON.stringify(artistPopularity));
-    }
-    
-    // Lấy top songs theo mốc thời gian hiện tại
-    function getTopSongs(limit = 50) {
-    let sorted = [...allSongs];
-    // Lấy đúng dữ liệu theo currentSongRange, KHÔNG fallback
-    let popData = songPopularity[currentSongRange];
-    if (!popData) {
-        console.error(`Không có dữ liệu cho range: ${currentSongRange}`);
-        return [];
-    }
-    sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
-    return sorted.slice(0, limit).map((s, i) => ({ ...s, rank: i + 1 }));
+const CLIENT_ID = "YOUR_CLIENT_ID";
+const CLIENT_SECRET = "YOUR_CLIENT_SECRET";
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+let spotifyToken = null;
+
+// DATA
+let allSongs = JSON.parse(localStorage.getItem('tier_all_songs')) || [];
+let allArtists = JSON.parse(localStorage.getItem('tier_all_artists')) || [];
+
+// 🔥 TÁCH THEO TIME RANGE
+let songRanking = JSON.parse(localStorage.getItem('songTierRanking')) || {
+    short_term: {}, medium_term: {}, long_term: {}
+};
+
+let artistRanking = JSON.parse(localStorage.getItem('artistTierRanking')) || {
+    short_term: {}, medium_term: {}, long_term: {}
+};
+
+let songPopularity = JSON.parse(localStorage.getItem('tier_song_popularity')) || {
+    short_term: {}, medium_term: {}, long_term: {}
+};
+
+let artistPopularity = JSON.parse(localStorage.getItem('tier_artist_popularity')) || {
+    short_term: {}, medium_term: {}, long_term: {}
+};
+
+let currentSongRange = "medium_term";
+let currentArtistRange = "medium_term";
+
+// SAVE
+function saveAll() {
+    localStorage.setItem('tier_all_songs', JSON.stringify(allSongs));
+    localStorage.setItem('tier_all_artists', JSON.stringify(allArtists));
+    localStorage.setItem('songTierRanking', JSON.stringify(songRanking));
+    localStorage.setItem('artistTierRanking', JSON.stringify(artistRanking));
+    localStorage.setItem('tier_song_popularity', JSON.stringify(songPopularity));
+    localStorage.setItem('tier_artist_popularity', JSON.stringify(artistPopularity));
+}
+
+// ================= TOP =================
+
+function getTopSongs(limit = 50) {
+    let pop = songPopularity[currentSongRange] || {};
+    return [...allSongs]
+        .sort((a, b) => (pop[b.id] || 0) - (pop[a.id] || 0))
+        .slice(0, limit)
+        .map((s, i) => ({ ...s, rank: i + 1 }));
 }
 
 function getTopArtists(limit = 20) {
-    let sorted = [...allArtists];
-    // Lấy đúng dữ liệu theo currentArtistRange, KHÔNG fallback
-    let popData = artistPopularity[currentArtistRange];
-    if (!popData) {
-        console.error(`Không có dữ liệu cho range: ${currentArtistRange}`);
-        return [];
-    }
-    sorted.sort((a, b) => (popData[b.id] || 0) - (popData[a.id] || 0));
-    return sorted.slice(0, limit).map((a, i) => ({ ...a, rank: i + 1 }));
+    let pop = artistPopularity[currentArtistRange] || {};
+    return [...allArtists]
+        .sort((a, b) => (pop[b.id] || 0) - (pop[a.id] || 0))
+        .slice(0, limit)
+        .map((a, i) => ({ ...a, rank: i + 1 }));
 }
-    
-    async function fetchFromSpotify(endpoint) {
-        if (!spotifyToken) return [];
-        try {
-            const res = await fetch(`https://api.spotify.com/v1/me/${endpoint}`, {
-                headers: { 'Authorization': `Bearer ${spotifyToken}` }
-            });
-            const data = await res.json();
-            return data.items || [];
-        } catch(e) { return []; }
-    }
-    
-    // Cập nhật bài hát từ Spotify - LƯU RIÊNG POPULARITY CHO TỪNG MỐC
-    async function refreshAllSongs() {
-        if (!spotifyToken) { alert('Đăng nhập Spotify trước'); return; }
-        const ranges = ['short_term', 'medium_term', 'long_term'];
-        
-        for (const range of ranges) {
-            const items = await fetchFromSpotify(`top/tracks?limit=50&time_range=${range}`);
-            
-            for (const item of items) {
-                // Thêm bài hát mới nếu chưa có
-                if (!allSongs.find(s => s.id === item.id)) {
-                    allSongs.push({
-                        id: item.id,
-                        name: item.name,
-                        artist: item.artists[0].name,
-                        image: item.album.images[0]?.url || ""
-                    });
-                }
-                
-                // LƯU POPULARITY RIÊNG CHO TỪNG MỐC THỜI GIAN
-                if (!songPopularity[range]) songPopularity[range] = {};
-                songPopularity[range][item.id] = item.popularity || 0;
-            }
-        }
-        
-        saveAll();
-        renderAll();
-        alert('Đã cập nhật bài hát từ Spotify');
-    }
-    
-    async function refreshAllArtists() {
-        if (!spotifyToken) { alert('Đăng nhập Spotify trước'); return; }
-        const ranges = ['short_term', 'medium_term', 'long_term'];
-        
-        for (const range of ranges) {
-            const items = await fetchFromSpotify(`top/artists?limit=50&time_range=${range}`);
-            
-            for (const item of items) {
-                if (!allArtists.find(a => a.id === item.id)) {
-                    allArtists.push({
-                        id: item.id,
-                        name: item.name,
-                        image: item.images[0]?.url || ""
-                    });
-                }
-                
-                if (!artistPopularity[range]) artistPopularity[range] = {};
-                artistPopularity[range][item.id] = item.popularity || 0;
-            }
-        }
-        
-        saveAll();
-        renderAll();
-        alert('Đã cập nhật nghệ sĩ từ Spotify');
-    }
-    
-    function addCustomSong() {
-        let name = document.getElementById('customSongName').value.trim();
-        let artist = document.getElementById('customArtistName').value.trim();
-        if (!name || !artist) { alert('Nhập tên bài hát và nghệ sĩ'); return; }
-        let id = `custom_${Date.now()}`;
-        allSongs.push({ id, name, artist, image: currentSongImage || "" });
-        for (let r of ['short_term', 'medium_term', 'long_term']) {
-            if (!songPopularity[r]) songPopularity[r] = {};
-            songPopularity[r][id] = 50;
-        }
-        saveAll();
-        document.getElementById('customSongName').value = '';
-        document.getElementById('customArtistName').value = '';
-        document.getElementById('songImagePreview').style.display = 'none';
-        currentSongImage = null;
-        renderAll();
-        alert(`Đã thêm "${name}"`);
-    }
-    
-    function addCustomArtist() {
-        let name = document.getElementById('customArtistNameOnly').value.trim();
-        if (!name) { alert('Nhập tên nghệ sĩ'); return; }
-        let id = `custom_${Date.now()}`;
-        allArtists.push({ id, name, image: currentArtistImage || "" });
-        for (let r of ['short_term', 'medium_term', 'long_term']) {
-            if (!artistPopularity[r]) artistPopularity[r] = {};
-            artistPopularity[r][id] = 50;
-        }
-        saveAll();
-        document.getElementById('customArtistNameOnly').value = '';
-        document.getElementById('artistImagePreview').style.display = 'none';
-        currentArtistImage = null;
-        renderAll();
-        alert(`Đã thêm "${name}"`);
-    }
-    
-    function renderTopSongs() {
-        let container = document.getElementById('topSongsList');
-        if (!container) return;
-        let tops = getTopSongs(50);
-        container.innerHTML = tops.map(song => {
-            let tier = songRanking[song.id];
-            let badge = tier ? `<span class="tier-badge">${tier}</span>` : '';
-            return `<div class="top-item">
-                <div class="top-rank">#${song.rank}</div>
-                <img class="top-img" src="${song.image || 'https://via.placeholder.com/40?text=🎵'}" onerror="this.src='https://via.placeholder.com/40?text=🎵'">
-                <div class="top-info">
-                    <div class="top-name">${escapeHtml(song.name)} ${badge}</div>
-                    <div class="top-artist">${escapeHtml(song.artist)}</div>
+
+// ================= RENDER =================
+
+function renderTopSongs() {
+    let c = document.getElementById('topSongsList');
+    let rankMap = songRanking[currentSongRange] || {};
+
+    c.innerHTML = getTopSongs().map(s => `
+        <div class="top-item">
+            <div class="top-rank">#${s.rank}</div>
+            <img class="top-img" src="${s.image || ''}">
+            <div class="top-info">
+                <div class="top-name">${s.name}
+                    ${rankMap[s.id] ? `<span class="tier-badge">${rankMap[s.id]}</span>` : ''}
                 </div>
-            </div>`;
-        }).join('');
-    }
-    
-    function renderTopArtists() {
-        let container = document.getElementById('topArtistsList');
-        if (!container) return;
-        let tops = getTopArtists(20);
-        container.innerHTML = tops.map(artist => {
-            let tier = artistRanking[artist.id];
-            let badge = tier ? `<span class="tier-badge">${tier}</span>` : '';
-            return `<div class="top-item">
-                <div class="top-rank">#${artist.rank}</div>
-                <img class="top-img" src="${artist.image || 'https://via.placeholder.com/40?text=🎤'}" onerror="this.src='https://via.placeholder.com/40?text=🎤'">
-                <div class="top-info">
-                    <div class="top-name">${escapeHtml(artist.name)} ${badge}</div>
+                <div class="top-artist">${s.artist}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderTopArtists() {
+    let c = document.getElementById('topArtistsList');
+    let rankMap = artistRanking[currentArtistRange] || {};
+
+    c.innerHTML = getTopArtists().map(a => `
+        <div class="top-item">
+            <div class="top-rank">#${a.rank}</div>
+            <img class="top-img" src="${a.image || ''}">
+            <div class="top-info">
+                <div class="top-name">${a.name}
+                    ${rankMap[a.id] ? `<span class="tier-badge">${rankMap[a.id]}</span>` : ''}
                 </div>
-            </div>`;
-        }).join('');
-    }
-    
-    function makeDraggable(el, id, type, name, artist, img) {
-        el.draggable = true;
-        el.ondragstart = (e) => {
-            e.dataTransfer.setData('text/plain', JSON.stringify({ id, type, name, artist, image: img }));
-            el.classList.add('dragging');
+            </div>
+        </div>
+    `).join('');
+}
+
+// ================= TIER =================
+
+function renderSongTier() {
+    let c = document.getElementById('songTierContainer');
+    let rankMap = songRanking[currentSongRange] || {};
+    let tiers = ['S','A','B','C','D','F'];
+
+    c.innerHTML = '';
+
+    tiers.forEach(tier => {
+        let row = document.createElement('div');
+        row.className = 'tier-row';
+
+        let label = document.createElement('div');
+        label.className = `tier-label ${tier}`;
+        label.textContent = tier;
+
+        let items = document.createElement('div');
+        items.className = 'tier-items';
+
+        items.ondrop = e => {
+            let data = JSON.parse(e.dataTransfer.getData('text'));
+            if (!songRanking[currentSongRange]) songRanking[currentSongRange] = {};
+            songRanking[currentSongRange][data.id] = tier;
+            saveAll();
+            renderAll();
         };
-        el.ondragend = () => el.classList.remove('dragging');
-    }
-    
-    function renderSongTier() {
-        let container = document.getElementById('songTierContainer');
-        if (!container) return;
-        let tiers = ['S','A','B','C','D','F'];
-        container.innerHTML = '';
-        tiers.forEach(tier => {
-            let row = document.createElement('div'); row.className = 'tier-row';
-            let label = document.createElement('div'); label.className = `tier-label ${tier}`; label.textContent = tier;
-            let itemsDiv = document.createElement('div'); itemsDiv.className = 'tier-items';
-            itemsDiv.ondragover = e => { e.preventDefault(); itemsDiv.classList.add('drag-over'); };
-            itemsDiv.ondragleave = () => itemsDiv.classList.remove('drag-over');
-            itemsDiv.ondrop = e => {
-                e.preventDefault(); itemsDiv.classList.remove('drag-over');
-                let data = JSON.parse(e.dataTransfer.getData('text/plain'));
-                if (data.type === 'song') {
-                    songRanking[data.id] = tier;
-                    saveAll();
-                    renderAll();
-                }
-            };
-            let ids = Object.entries(songRanking).filter(([id,t]) => t === tier).map(([id]) => id);
-            ids.forEach(id => {
-                let s = allSongs.find(s => s.id === id);
-                if (s) {
-                    let card = document.createElement('div'); card.className = 'tier-card';
-                    card.innerHTML = `<img class="tier-card-img" src="${s.image || 'https://via.placeholder.com/65?text=🎵'}" onerror="this.src='https://via.placeholder.com/65?text=🎵'"><div class="tier-card-name">${escapeHtml(s.name)}</div><div class="tier-rank-icon">${tier}</div>`;
-                    makeDraggable(card, s.id, 'song', s.name, s.artist, s.image);
-                    itemsDiv.appendChild(card);
-                }
+
+        Object.entries(rankMap)
+            .filter(([id, t]) => t === tier)
+            .forEach(([id]) => {
+                let s = allSongs.find(x => x.id === id);
+                if (!s) return;
+
+                let card = document.createElement('div');
+                card.className = 'tier-card';
+                card.textContent = s.name;
+
+                card.draggable = true;
+                card.ondragstart = e => {
+                    e.dataTransfer.setData('text', JSON.stringify({ id, type: 'song' }));
+                };
+
+                items.appendChild(card);
             });
-            row.appendChild(label); row.appendChild(itemsDiv);
-            container.appendChild(row);
-        });
-    }
-    
-    function renderArtistTier() {
-        let container = document.getElementById('artistTierContainer');
-        if (!container) return;
-        let tiers = ['S','A','B','C','D','F'];
-        container.innerHTML = '';
-        tiers.forEach(tier => {
-            let row = document.createElement('div'); row.className = 'tier-row';
-            let label = document.createElement('div'); label.className = `tier-label ${tier}`; label.textContent = tier;
-            let itemsDiv = document.createElement('div'); itemsDiv.className = 'tier-items';
-            itemsDiv.ondragover = e => { e.preventDefault(); itemsDiv.classList.add('drag-over'); };
-            itemsDiv.ondragleave = () => itemsDiv.classList.remove('drag-over');
-            itemsDiv.ondrop = e => {
-                e.preventDefault(); itemsDiv.classList.remove('drag-over');
-                let data = JSON.parse(e.dataTransfer.getData('text/plain'));
-                if (data.type === 'artist') {
-                    artistRanking[data.id] = tier;
-                    saveAll();
-                    renderAll();
-                }
-            };
-            let ids = Object.entries(artistRanking).filter(([id,t]) => t === tier).map(([id]) => id);
-            ids.forEach(id => {
-                let a = allArtists.find(a => a.id === id);
-                if (a) {
-                    let card = document.createElement('div'); card.className = 'tier-card';
-                    card.innerHTML = `<img class="tier-card-img" src="${a.image || 'https://via.placeholder.com/65?text=🎤'}" onerror="this.src='https://via.placeholder.com/65?text=🎤'"><div class="tier-card-name">${escapeHtml(a.name)}</div><div class="tier-rank-icon">${tier}</div>`;
-                    makeDraggable(card, a.id, 'artist', a.name, '', a.image);
-                    itemsDiv.appendChild(card);
-                }
-            });
-            row.appendChild(label); row.appendChild(itemsDiv);
-            container.appendChild(row);
-        });
-    }
-    
-    function renderSongLibrary() {
-        let container = document.getElementById('songsLibrary');
-        if (!container) return;
-        container.innerHTML = '';
-        container.ondragover = e => e.preventDefault();
-        container.ondrop = e => {
-            e.preventDefault();
-            let data = JSON.parse(e.dataTransfer.getData('text/plain'));
-            if (data.type === 'song') {
-                delete songRanking[data.id];
-                saveAll();
-                renderAll();
-            }
-        };
-        let ranked = Object.keys(songRanking);
-        let unranked = allSongs.filter(s => !ranked.includes(s.id));
-        unranked.forEach(s => {
-            let div = document.createElement('div'); div.className = 'drag-item';
-            div.innerHTML = `<img class="drag-item-img" src="${s.image || 'https://via.placeholder.com/70?text=🎵'}" onerror="this.src='https://via.placeholder.com/70?text=🎵'"><div class="drag-item-name">${escapeHtml(s.name)}</div><div class="drag-item-artist">${escapeHtml(s.artist)}</div>`;
-            makeDraggable(div, s.id, 'song', s.name, s.artist, s.image);
-            container.appendChild(div);
-        });
-    }
-    
-    function renderArtistLibrary() {
-        let container = document.getElementById('artistsLibrary');
-        if (!container) return;
-        container.innerHTML = '';
-        container.ondragover = e => e.preventDefault();
-        container.ondrop = e => {
-            e.preventDefault();
-            let data = JSON.parse(e.dataTransfer.getData('text/plain'));
-            if (data.type === 'artist') {
-                delete artistRanking[data.id];
-                saveAll();
-                renderAll();
-            }
-        };
-        let ranked = Object.keys(artistRanking);
-        let unranked = allArtists.filter(a => !ranked.includes(a.id));
-        unranked.forEach(a => {
-            let div = document.createElement('div'); div.className = 'drag-item';
-            div.innerHTML = `<img class="drag-item-img" src="${a.image || 'https://via.placeholder.com/70?text=🎤'}" onerror="this.src='https://via.placeholder.com/70?text=🎤'"><div class="drag-item-name">${escapeHtml(a.name)}</div>`;
-            makeDraggable(div, a.id, 'artist', a.name, '', a.image);
-            container.appendChild(div);
-        });
-    }
-    
-    function renderAll() {
-        renderTopSongs();
-        renderTopArtists();
-        renderSongTier();
-        renderArtistTier();
-        renderSongLibrary();
-        renderArtistLibrary();
-    }
-    
-    function setupImageUpload(zoneId, fileInputId, previewId, setter) {
-        let zone = document.getElementById(zoneId);
-        let fileInput = document.getElementById(fileInputId);
-        let preview = document.getElementById(previewId);
-        zone.onclick = () => fileInput.click();
-        zone.ondragover = e => { e.preventDefault(); zone.classList.add('drag-over'); };
-        zone.ondragleave = () => zone.classList.remove('drag-over');
-        zone.ondrop = e => {
-            e.preventDefault(); zone.classList.remove('drag-over');
-            let file = e.dataTransfer.files[0];
-            if (file && file.type.startsWith('image/')) handleFile(file);
-        };
-        fileInput.onchange = e => { if (e.target.files[0]) handleFile(e.target.files[0]); };
-        function handleFile(file) {
-            let reader = new FileReader();
-            reader.onload = ev => { setter(ev.target.result); preview.src = ev.target.result; preview.style.display = 'block'; };
-            reader.readAsDataURL(file);
-        }
-    }
-    
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[m] || m); }
-    
-    function resetSongTier() { if (confirm('Đặt lại xếp hạng bài hát?')) { songRanking = {}; saveAll(); renderAll(); } }
-    function resetArtistTier() { if (confirm('Đặt lại xếp hạng nghệ sĩ?')) { artistRanking = {}; saveAll(); renderAll(); } }
-    
-    function loginSpotify() {
-        let scope = 'user-read-recently-played user-top-read user-read-private';
-        window.location.href = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&show_dialog=true`;
-    }
-    
-    async function exchangeCode(code) {
-        try {
-            let res = await fetch('https://accounts.spotify.com/api/token', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': 'Basic ' + btoa(CLIENT_ID + ':' + CLIENT_SECRET) },
-                body: new URLSearchParams({ grant_type: 'authorization_code', code, redirect_uri: REDIRECT_URI })
-            });
-            let data = await res.json();
-            if (data.access_token) {
-                spotifyToken = data.access_token;
-                localStorage.setItem('spotify_token', data.access_token);
-                localStorage.setItem('token_expiry', Date.now() + data.expires_in * 1000);
-                window.history.replaceState({}, document.title, window.location.pathname);
-                await refreshAllSongs();
-                await refreshAllArtists();
-                document.getElementById('spotifyLoginArea').style.display = 'none';
-                renderAll();
-            }
-        } catch(e) { console.error(e); }
-    }
-    
-    let urlCode = new URLSearchParams(window.location.search).get('code');
-    if (urlCode) exchangeCode(urlCode);
-    else {
-        let saved = localStorage.getItem('spotify_token');
-        let exp = localStorage.getItem('token_expiry');
-        if (saved && exp && Date.now() < parseInt(exp)) {
-            spotifyToken = saved;
-            refreshAllSongs().then(() => refreshAllArtists()).then(() => renderAll());
-            document.getElementById('spotifyLoginArea').style.display = 'none';
-        }
-    }
-    
-    document.getElementById('loginSpotifyBtn').onclick = loginSpotify;
-    document.getElementById('refreshSongsBtn').onclick = () => refreshAllSongs();
-    document.getElementById('refreshArtistsBtn').onclick = () => refreshAllArtists();
-    document.getElementById('addCustomSongBtn').onclick = addCustomSong;
-    document.getElementById('addCustomArtistBtn').onclick = addCustomArtist;
-    document.getElementById('resetSongTierBtn').onclick = resetSongTier;
-    document.getElementById('resetArtistTierBtn').onclick = resetArtistTier;
-    
-    // Xử lý chuyển mốc thời gian
-    document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('#songTimeRange .time-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentSongRange = btn.dataset.range;
-            renderTopSongs();
-        };
+
+        row.appendChild(label);
+        row.appendChild(items);
+        c.appendChild(row);
     });
-    document.querySelectorAll('#artistTimeRange .time-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('#artistTimeRange .time-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentArtistRange = btn.dataset.range;
-            renderTopArtists();
+}
+
+function renderArtistTier() {
+    let c = document.getElementById('artistTierContainer');
+    let rankMap = artistRanking[currentArtistRange] || {};
+    let tiers = ['S','A','B','C','D','F'];
+
+    c.innerHTML = '';
+
+    tiers.forEach(tier => {
+        let row = document.createElement('div');
+        row.className = 'tier-row';
+
+        let label = document.createElement('div');
+        label.className = `tier-label ${tier}`;
+        label.textContent = tier;
+
+        let items = document.createElement('div');
+        items.className = 'tier-items';
+
+        items.ondrop = e => {
+            let data = JSON.parse(e.dataTransfer.getData('text'));
+            if (!artistRanking[currentArtistRange]) artistRanking[currentArtistRange] = {};
+            artistRanking[currentArtistRange][data.id] = tier;
+            saveAll();
+            renderAll();
         };
+
+        Object.entries(rankMap)
+            .filter(([id, t]) => t === tier)
+            .forEach(([id]) => {
+                let a = allArtists.find(x => x.id === id);
+                if (!a) return;
+
+                let card = document.createElement('div');
+                card.className = 'tier-card';
+                card.textContent = a.name;
+
+                card.draggable = true;
+                card.ondragstart = e => {
+                    e.dataTransfer.setData('text', JSON.stringify({ id, type: 'artist' }));
+                };
+
+                items.appendChild(card);
+            });
+
+        row.appendChild(label);
+        row.appendChild(items);
+        c.appendChild(row);
     });
-    
-    setupImageUpload('imageDropZoneSong', 'songImageInput', 'songImagePreview', (img) => currentSongImage = img);
-    setupImageUpload('imageDropZoneArtist', 'artistImageInput', 'artistImagePreview', (img) => currentArtistImage = img);
-    
+}
+
+// ================= RESET =================
+
+function resetSongTier() {
+    songRanking[currentSongRange] = {};
+    saveAll();
     renderAll();
+}
+
+function resetArtistTier() {
+    artistRanking[currentArtistRange] = {};
+    saveAll();
+    renderAll();
+}
+
+// ================= MAIN =================
+
+function renderAll() {
+    renderTopSongs();
+    renderTopArtists();
+    renderSongTier();
+    renderArtistTier();
+}
+
+// TIME SWITCH
+document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
+    btn.onclick = () => {
+        currentSongRange = btn.dataset.range;
+        renderAll();
+    };
+});
+
+document.querySelectorAll('#artistTimeRange .time-btn').forEach(btn => {
+    btn.onclick = () => {
+        currentArtistRange = btn.dataset.range;
+        renderAll();
+    };
+});
+
+renderAll();
 </script>
 </body>
 </html>

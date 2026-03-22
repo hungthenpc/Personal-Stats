@@ -47,13 +47,12 @@
             background: rgba(0,0,0,.6);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,120,40,.3);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 30px;
             color: #ffaa66;
             text-decoration: none;
             z-index: 1000;
-            transition: 0.3s;
-            font-size: 14px;
+            transition: 0.2s;
         }
 
         .back-home:hover {
@@ -63,7 +62,7 @@
         }
 
         .container {
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
             background: rgba(0,0,0,0.6);
             backdrop-filter: blur(12px);
@@ -80,7 +79,6 @@
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: 1px;
         }
 
         .sub {
@@ -88,7 +86,6 @@
             color: #ffaa77;
             margin-bottom: 35px;
             font-size: 0.9rem;
-            opacity: 0.9;
         }
 
         .login-area {
@@ -129,7 +126,6 @@
 
         .section:last-child {
             border-bottom: none;
-            margin-bottom: 0;
         }
 
         .section-title {
@@ -170,11 +166,6 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            transition: 0.2s;
-        }
-
-        .card:hover {
-            border-color: rgba(255,102,0,0.6);
         }
 
         .card h3 {
@@ -237,7 +228,6 @@
             gap: 14px;
             border: 1px solid rgba(255,102,0,0.3);
             cursor: grab;
-            transition: 0.2s;
         }
 
         .item:active {
@@ -286,6 +276,7 @@
             border-radius: 20px;
             margin-left: 10px;
             font-weight: bold;
+            display: inline-block;
         }
 
         .tier-container {
@@ -311,10 +302,9 @@
             font-size: 1.5rem;
             font-weight: bold;
             border-radius: 18px 0 0 18px;
-            background: rgba(0,0,0,0.6);
         }
 
-        .tier-label.S { background: #c97e00; color: #000; text-shadow: 0 0 4px #ffaa33; }
+        .tier-label.S { background: #c97e00; color: #000; }
         .tier-label.A { background: #8b5a2b; color: #fff; }
         .tier-label.B { background: #5a3a1a; color: #fff; }
         .tier-label.C { background: #3a2a1a; color: #fff; }
@@ -341,7 +331,6 @@
             border: 1px solid #ff6600;
             cursor: grab;
             flex-shrink: 0;
-            transition: 0.1s;
         }
 
         .tier-card:active { cursor: grabbing; }
@@ -392,7 +381,6 @@
             padding: 8px;
             border: 1px solid #ff6600;
             cursor: grab;
-            transition: 0.2s;
         }
 
         .drag-item:active { cursor: grabbing; }
@@ -423,13 +411,11 @@
             font-weight: bold;
             margin-top: 15px;
             cursor: pointer;
-            transition: 0.2s;
             font-size: 0.8rem;
         }
 
         .reset-btn:hover {
             background: #ff8844;
-            transform: scale(1.02);
         }
 
         .refresh-btn {
@@ -440,12 +426,11 @@
             color: #ffaa66;
             cursor: pointer;
             font-size: 0.75rem;
-            transition: 0.2s;
+            margin-top: 12px;
         }
 
         .refresh-btn:hover {
             background: rgba(255,102,0,0.45);
-            color: #ffcc88;
         }
     </style>
 </head>
@@ -545,6 +530,27 @@
     let currentSongRange = "medium_term";
     let currentArtistRange = "medium_term";
     
+    // Dữ liệu mẫu để test (3 mốc khác nhau)
+    if (allSongs.length === 0) {
+        allSongs = [
+            { id: "song1", name: "HOODIE", artist: "Coldzy", image: "" },
+            { id: "song2", name: "NOL4B3L", artist: "RPT MCK", image: "" },
+            { id: "song3", name: "Tại Sao Em Buông", artist: "Duniverse", image: "" },
+            { id: "song4", name: "CẢM NHẬN", artist: "RAP VIỆT", image: "" },
+            { id: "song5", name: "In Love", artist: "Low G", image: "" },
+            { id: "song6", name: "Nơi Não Khi Buông Tay", artist: "NvK", image: "" },
+            { id: "song7", name: "Có Em", artist: "Madihu", image: "" },
+            { id: "song8", name: "Lạ Lùng", artist: "Vũ.", image: "" }
+        ];
+        songPop = {
+            short_term: { "song1": 95, "song2": 92, "song3": 88, "song4": 85, "song5": 82, "song6": 78, "song7": 75, "song8": 70 },
+            medium_term: { "song1": 85, "song2": 90, "song3": 92, "song4": 88, "song5": 80, "song6": 75, "song7": 72, "song8": 68 },
+            long_term: { "song1": 70, "song2": 85, "song3": 90, "song4": 88, "song5": 82, "song6": 80, "song7": 78, "song8": 75 }
+        };
+        localStorage.setItem('allSongs', JSON.stringify(allSongs));
+        localStorage.setItem('songPop', JSON.stringify(songPop));
+    }
+    
     function saveAll() {
         localStorage.setItem('allSongs', JSON.stringify(allSongs));
         localStorage.setItem('songTier', JSON.stringify(songTier));
@@ -556,11 +562,13 @@
     
     async function fetchSpotify(endpoint) {
         if (!token) return [];
-        let res = await fetch(`https://api.spotify.com/v1/me/${endpoint}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        let data = await res.json();
-        return data.items || [];
+        try {
+            let res = await fetch(`https://api.spotify.com/v1/me/${endpoint}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            let data = await res.json();
+            return data.items || [];
+        } catch(e) { return []; }
     }
     
     async function updateSongs() {
@@ -583,9 +591,8 @@
         }
         saveAll();
         renderAll();
-        let statusDiv = document.getElementById('loginStatus');
-        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Đã cập nhật bài hát';
-        setTimeout(() => statusDiv.innerHTML = '', 2000);
+        document.getElementById('loginStatus').innerHTML = '✅ Đã cập nhật bài hát';
+        setTimeout(() => document.getElementById('loginStatus').innerHTML = '', 2000);
     }
     
     async function updateArtists() {
@@ -607,21 +614,22 @@
         }
         saveAll();
         renderAll();
-        let statusDiv = document.getElementById('loginStatus');
-        statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Đã cập nhật nghệ sĩ';
-        setTimeout(() => statusDiv.innerHTML = '', 2000);
+        document.getElementById('loginStatus').innerHTML = '✅ Đã cập nhật nghệ sĩ';
+        setTimeout(() => document.getElementById('loginStatus').innerHTML = '', 2000);
     }
     
     function getTopSongs(limit = 50) {
         let sorted = [...allSongs];
-        let pop = songPop[currentSongRange] || {};
+        let pop = songPop[currentSongRange];
+        if (!pop) return [];
         sorted.sort((a, b) => (pop[b.id] || 0) - (pop[a.id] || 0));
         return sorted.slice(0, limit).map((s, i) => ({ ...s, rank: i + 1 }));
     }
     
     function getTopArtists(limit = 20) {
         let sorted = [...allArtists];
-        let pop = artistPop[currentArtistRange] || {};
+        let pop = artistPop[currentArtistRange];
+        if (!pop) return [];
         sorted.sort((a, b) => (pop[b.id] || 0) - (pop[a.id] || 0));
         return sorted.slice(0, limit).map((a, i) => ({ ...a, rank: i + 1 }));
     }
@@ -844,26 +852,26 @@
     document.getElementById('resetSongTier').onclick = resetSongTier;
     document.getElementById('resetArtistTier').onclick = resetArtistTier;
     
+    // XỬ LÝ CHUYỂN MỐC THỜI GIAN
     document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('#songTimeRange .time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentSongRange = btn.dataset.range;
+            currentSongRange = btn.getAttribute('data-range');
             renderTopSongs();
         };
     });
+    
     document.querySelectorAll('#artistTimeRange .time-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('#artistTimeRange .time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentArtistRange = btn.dataset.range;
+            currentArtistRange = btn.getAttribute('data-range');
             renderTopArtists();
         };
     });
     
-    if (document.getElementById('mainContent').style.display !== 'none') {
-        renderAll();
-    }
+    renderAll();
 </script>
 </body>
 </html>

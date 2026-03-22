@@ -7,12 +7,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif;
             background: #000;
@@ -21,7 +16,6 @@
             color: #fff;
             padding: 20px;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -39,7 +33,6 @@
                               radial-gradient(1px 1px at 80% 70%, rgba(255,120,50,.4), transparent);
             z-index: -1;
         }
-
         .back-home {
             position: fixed;
             top: 20px;
@@ -54,11 +47,7 @@
             z-index: 1000;
             transition: 0.2s;
         }
-        .back-home:hover {
-            background: #ff6600;
-            color: #000;
-        }
-
+        .back-home:hover { background: #ff6600; color: #000; }
         .container {
             max-width: 1600px;
             margin: 0 auto;
@@ -68,52 +57,14 @@
             border: 1px solid rgba(255,102,0,0.3);
             padding: 30px 20px;
         }
-
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            color: #ffb066;
-            margin-bottom: 5px;
-        }
-        .sub {
-            text-align: center;
-            color: #ffaa77;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
-
-        .section {
-            margin-bottom: 50px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid rgba(255,102,0,0.3);
-        }
-        .section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-        .section-title {
-            font-size: 1.6rem;
-            color: #ffaa66;
-            margin-bottom: 20px;
-            padding-left: 15px;
-            border-left: 4px solid #ff6600;
-        }
-
-        .row-split {
-            display: flex;
-            gap: 25px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        .top-list-wrapper {
-            flex: 1.2;
-            min-width: 280px;
-        }
-        .tier-wrapper {
-            flex: 2.5;
-            min-width: 450px;
-        }
-
+        h1 { text-align: center; font-size: 2rem; color: #ffb066; margin-bottom: 5px; }
+        .sub { text-align: center; color: #ffaa77; margin-bottom: 30px; font-size: 0.9rem; }
+        .section { margin-bottom: 50px; padding-bottom: 30px; border-bottom: 2px solid rgba(255,102,0,0.3); }
+        .section:last-child { border-bottom: none; margin-bottom: 0; }
+        .section-title { font-size: 1.6rem; color: #ffaa66; margin-bottom: 20px; padding-left: 15px; border-left: 4px solid #ff6600; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .row-split { display: flex; gap: 25px; margin-bottom: 25px; flex-wrap: wrap; }
+        .top-list-wrapper { flex: 1.2; min-width: 280px; }
+        .tier-wrapper { flex: 2.5; min-width: 450px; }
         .card {
             background: rgba(0,0,0,0.5);
             border-radius: 20px;
@@ -123,20 +74,8 @@
             display: flex;
             flex-direction: column;
         }
-        .card h3 {
-            color: #ffaa66;
-            margin-bottom: 15px;
-            border-left: 3px solid #ff6600;
-            padding-left: 12px;
-            flex-shrink: 0;
-        }
-
-        .time-range-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
+        .card h3 { color: #ffaa66; margin-bottom: 15px; border-left: 3px solid #ff6600; padding-left: 12px; flex-shrink: 0; }
+        .time-range-selector { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .time-btn {
             background: rgba(0,0,0,0.5);
             border: 1px solid #ff6600;
@@ -146,16 +85,8 @@
             cursor: pointer;
             font-size: 0.8rem;
         }
-        .time-btn.active {
-            background: #ff6600;
-            color: #000;
-        }
-
-        .top-list {
-            max-height: 400px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .time-btn.active { background: #ff6600; color: #000; }
+        .top-list { max-height: 400px; overflow-y: auto; flex: 1; }
         .top-item {
             background: #111;
             border-radius: 12px;
@@ -166,50 +97,19 @@
             gap: 12px;
             border: 1px solid #ff6600;
         }
-        .top-rank {
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #ffaa66;
-            width: 35px;
-        }
-        .top-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            background: #2a2a2a;
-            object-fit: cover;
-        }
-        .top-info {
-            flex: 1;
-        }
-        .top-name {
-            font-weight: bold;
-            font-size: 0.85rem;
-        }
-        .top-artist {
-            font-size: 0.7rem;
-            color: #ffaa77;
-        }
-        .tier-badge {
-            display: inline-block;
-            font-weight: bold;
-            font-size: 0.65rem;
-            padding: 2px 6px;
-            border-radius: 12px;
-            margin-left: 8px;
-        }
+        .top-rank { font-size: 0.9rem; font-weight: bold; color: #ffaa66; width: 35px; }
+        .top-img { width: 40px; height: 40px; border-radius: 8px; background: #2a2a2a; object-fit: cover; }
+        .top-info { flex: 1; }
+        .top-name { font-weight: bold; font-size: 0.85rem; }
+        .top-artist { font-size: 0.7rem; color: #ffaa77; }
+        .tier-badge { display: inline-block; font-weight: bold; font-size: 0.65rem; padding: 2px 6px; border-radius: 12px; margin-left: 8px; }
         .tier-badge.S { background: #ffaa33; color: #000; }
         .tier-badge.A { background: #cc8844; color: #000; }
         .tier-badge.B { background: #aa6633; color: #fff; }
         .tier-badge.C { background: #884422; color: #fff; }
         .tier-badge.D { background: #662211; color: #fff; }
         .tier-badge.F { background: #441100; color: #fff; }
-
-        .tier-container {
-            max-height: 400px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .tier-container { max-height: 400px; overflow-y: auto; flex: 1; }
         .tier-row {
             background: rgba(0,0,0,0.5);
             margin-bottom: 12px;
@@ -234,7 +134,6 @@
         .tier-label.C { background: #3a2a1a; color: #fff; }
         .tier-label.D { background: #2a1a0a; color: #fff; }
         .tier-label.F { background: #1a0a05; color: #aaa; }
-
         .tier-items {
             flex: 1;
             display: flex;
@@ -244,10 +143,7 @@
             overflow-x: auto;
             overflow-y: hidden;
         }
-        .tier-items.drag-over {
-            background: rgba(255,102,0,0.25);
-        }
-
+        .tier-items.drag-over { background: rgba(255,102,0,0.25); }
         .tier-card {
             width: 80px;
             text-align: center;
@@ -258,7 +154,6 @@
             border: 1px solid #ff6600;
             cursor: grab;
             flex-shrink: 0;
-            transition: 0.1s;
         }
         .tier-card:active { cursor: grabbing; }
         .tier-card.dragging { opacity: 0.4; }
@@ -266,7 +161,6 @@
         .tier-card-name { font-size: 0.6rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
         .tier-card-artist { font-size: 0.5rem; color: #ffaa77; white-space: nowrap; overflow: hidden; pointer-events: none; }
         .tier-rank-icon { position: absolute; top: 3px; right: 3px; background: #ff6600; color: #000; font-weight: bold; font-size: 0.55rem; padding: 2px 5px; border-radius: 10px; pointer-events: none; }
-
         .drag-library {
             display: flex;
             flex-wrap: wrap;
@@ -290,21 +184,8 @@
         .drag-item-img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; background: #2a2a2a; pointer-events: none; }
         .drag-item-name { font-size: 0.65rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
         .drag-item-artist { font-size: 0.55rem; color: #ffaa77; pointer-events: none; }
-
-        .add-form {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .add-form input {
-            background: #111;
-            border: 1px solid #ff6600;
-            border-radius: 30px;
-            padding: 8px 15px;
-            color: #fff;
-            outline: none;
-        }
+        .add-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .add-form input { background: #111; border: 1px solid #ff6600; border-radius: 30px; padding: 8px 15px; color: #fff; outline: none; }
         .image-upload-area {
             border: 2px dashed #ff6600;
             border-radius: 16px;
@@ -313,68 +194,20 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .image-preview {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin-top: 5px;
-        }
-        .btn-add {
-            background: #ff6600;
-            border: none;
-            padding: 8px;
-            border-radius: 30px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .reset-btn {
-            background: #ff6600;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 30px;
-            color: #000;
-            margin-top: 12px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        .spotify-login-area {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .btn-spotify {
-            background: #ff6600;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 40px;
-            color: #000;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        .status {
-            text-align: center;
-            margin-top: 10px;
-            color: #ffaa66;
-        }
-        .refresh-btn {
-            background: rgba(255,102,0,0.3);
-            border: 1px solid #ff6600;
-            padding: 6px 15px;
-            border-radius: 30px;
-            color: #ffaa66;
-            cursor: pointer;
-            font-size: 0.75rem;
-            margin-left: 10px;
-        }
+        .image-preview { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; margin-top: 5px; }
+        .btn-add { background: #ff6600; border: none; padding: 8px; border-radius: 30px; color: #000; font-weight: bold; cursor: pointer; }
+        .reset-btn { background: #ff6600; border: none; padding: 6px 16px; border-radius: 30px; color: #000; margin-top: 12px; cursor: pointer; font-size: 0.8rem; }
+        .spotify-login-area { text-align: center; margin-bottom: 20px; }
+        .btn-spotify { background: #ff6600; border: none; padding: 10px 25px; border-radius: 40px; color: #000; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        .status { text-align: center; margin-top: 10px; color: #ffaa66; }
+        .refresh-btn { background: rgba(255,102,0,0.3); border: 1px solid #ff6600; padding: 6px 15px; border-radius: 30px; color: #ffaa66; cursor: pointer; font-size: 0.75rem; }
     </style>
 </head>
 <body>
 <a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại</a>
 <div class="container">
     <h1><i class="fab fa-spotify"></i> Spotify Tier Maker</h1>
-    <div class="sub">Kéo thả bài hát / nghệ sĩ vào bảng xếp hạng S→F | Có thể kéo giữa các tier và từ tier về thư viện</div>
+    <div class="sub">Kéo thả bài hát / nghệ sĩ vào bảng xếp hạng S→F | Cập nhật từ 3 mốc thời gian</div>
 
     <div class="spotify-login-area" id="spotifyLoginArea">
         <button class="btn-spotify" id="loginSpotifyBtn"><i class="fab fa-spotify"></i> Đăng nhập Spotify</button>
@@ -388,7 +221,6 @@
                 <i class="fas fa-music"></i> Bài Hát
                 <button id="refreshSongsBtn" class="refresh-btn"><i class="fas fa-sync-alt"></i> Cập nhật từ Spotify</button>
             </div>
-            
             <div class="row-split">
                 <div class="top-list-wrapper">
                     <div class="card">
@@ -409,12 +241,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="card" style="margin-top: 5px;">
                 <h3><i class="fas fa-music"></i> Thư viện bài hát (kéo thả vào bảng hoặc kéo từ bảng về đây)</h3>
                 <div id="songsLibrary" class="drag-library"></div>
             </div>
-
             <div class="card">
                 <h3><i class="fas fa-plus-circle"></i> Thêm bài hát tự định nghĩa</h3>
                 <div class="add-form">
@@ -436,7 +266,6 @@
                 <i class="fas fa-user"></i> Nghệ Sĩ
                 <button id="refreshArtistsBtn" class="refresh-btn"><i class="fas fa-sync-alt"></i> Cập nhật từ Spotify</button>
             </div>
-            
             <div class="row-split">
                 <div class="top-list-wrapper">
                     <div class="card">
@@ -457,12 +286,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="card" style="margin-top: 5px;">
                 <h3><i class="fas fa-user"></i> Thư viện nghệ sĩ (kéo thả vào bảng hoặc kéo từ bảng về đây)</h3>
                 <div id="artistsLibrary" class="drag-library"></div>
             </div>
-
             <div class="card">
                 <h3><i class="fas fa-plus-circle"></i> Thêm nghệ sĩ tự định nghĩa</h3>
                 <div class="add-form">
@@ -480,23 +307,15 @@
 </div>
 
 <script>
-    // Spotify Config
     const CLIENT_ID = "cd0524eb368f45ceb21721b9543bd5d6";
     const CLIENT_SECRET = "1a9856d20b41437d9c56a29d29e55f53";
     const REDIRECT_URI = window.location.origin + window.location.pathname;
     let spotifyToken = null;
     
-    // Dữ liệu chính - lưu tất cả bài hát/nghệ sĩ đã từng xuất hiện
     let allSongs = JSON.parse(localStorage.getItem('tier_all_songs')) || [];
     let allArtists = JSON.parse(localStorage.getItem('tier_all_artists')) || [];
     let songRanking = JSON.parse(localStorage.getItem('songTierRanking')) || {};
     let artistRanking = JSON.parse(localStorage.getItem('artistTierRanking')) || {};
-    
-    // State hiển thị top list hiện tại
-    let currentSongRange = "medium_term";
-    let currentArtistRange = "medium_term";
-    let currentTopSongs = [];
-    let currentTopArtists = [];
 
     function saveAll() {
         localStorage.setItem('tier_all_songs', JSON.stringify(allSongs));
@@ -505,37 +324,186 @@
         localStorage.setItem('artistTierRanking', JSON.stringify(artistRanking));
     }
 
-    // Hợp nhất danh sách mới từ Spotify vào allSongs/allArtists (giữ lại ranking cũ)
-    function mergeSongs(newSongs) {
-        const existingIds = new Set(allSongs.map(s => s.id));
-        for (const song of newSongs) {
-            if (!existingIds.has(song.id)) {
-                allSongs.push(song);
-            }
-        }
-        // Cập nhật popularity cho các bài đã có
-        for (const newSong of newSongs) {
-            const existing = allSongs.find(s => s.id === newSong.id);
-            if (existing) existing.popularity = newSong.popularity;
-        }
-        saveAll();
-    }
-
-    function mergeArtists(newArtists) {
-        const existingIds = new Set(allArtists.map(a => a.id));
-        for (const artist of newArtists) {
-            if (!existingIds.has(artist.id)) {
-                allArtists.push(artist);
-            }
-        }
+    // Gộp nghệ sĩ theo ID, nếu custom có tên trùng với Spotify thì gộp lại
+    function mergeArtistsWithId(newArtists) {
         for (const newArtist of newArtists) {
             const existing = allArtists.find(a => a.id === newArtist.id);
-            if (existing) existing.popularity = newArtist.popularity;
+            if (existing) {
+                existing.popularity = newArtist.popularity;
+                if (newArtist.image) existing.image = newArtist.image;
+                continue;
+            }
+            // Kiểm tra trùng tên để gộp custom vào Spotify
+            const byName = allArtists.find(a => a.name.toLowerCase() === newArtist.name.toLowerCase() && !a.id.startsWith('custom_'));
+            if (byName && byName.id === newArtist.id) {
+                byName.popularity = newArtist.popularity;
+                if (newArtist.image) byName.image = newArtist.image;
+                // Chuyển ranking từ custom sang official nếu có
+                if (artistRanking[byName.id] === undefined && artistRanking[`custom_${byName.name}_old`]) {
+                    artistRanking[byName.id] = artistRanking[`custom_${byName.name}_old`];
+                    delete artistRanking[`custom_${byName.name}_old`];
+                }
+            } else {
+                allArtists.push(newArtist);
+            }
         }
         saveAll();
     }
 
-    // Lấy top N theo thời gian từ allSongs/allArtists
+    async function fetchFromSpotify(endpoint, limit = 50) {
+        if (!spotifyToken) return [];
+        try {
+            const res = await fetch(`https://api.spotify.com/v1/me/${endpoint}?limit=${limit}`, {
+                headers: { 'Authorization': `Bearer ${spotifyToken}` }
+            });
+            const data = await res.json();
+            return data.items;
+        } catch(e) { return []; }
+    }
+
+    async function fetchAllTimeRanges(type) {
+        const ranges = ['short_term', 'medium_term', 'long_term'];
+        const allItems = [];
+        const idSet = new Set();
+        for (const range of ranges) {
+            const items = await fetchFromSpotify(`${type}/top?time_range=${range}`, 50);
+            for (const item of items) {
+                if (!idSet.has(item.id)) {
+                    idSet.add(item.id);
+                    allItems.push(item);
+                }
+            }
+        }
+        return allItems;
+    }
+
+    async function refreshAllSongs() {
+        if (!spotifyToken) return;
+        const items = await fetchAllTimeRanges('tracks');
+        const newSongs = items.map(t => ({
+            id: t.id,
+            name: t.name,
+            artist: t.artists[0].name,
+            image: t.album.images[0]?.url || "",
+            popularity: t.popularity || 0
+        }));
+        // Gộp vào allSongs dựa trên ID
+        for (const newSong of newSongs) {
+            const existing = allSongs.find(s => s.id === newSong.id);
+            if (existing) {
+                existing.popularity = newSong.popularity;
+                if (newSong.image) existing.image = newSong.image;
+            } else {
+                allSongs.push(newSong);
+            }
+        }
+        saveAll();
+        refreshDisplay();
+    }
+
+    async function refreshAllArtists() {
+        if (!spotifyToken) return;
+        const items = await fetchAllTimeRanges('artists');
+        const newArtists = items.map(a => ({
+            id: a.id,
+            name: a.name,
+            image: a.images[0]?.url || "",
+            popularity: a.popularity || 0
+        }));
+        mergeArtistsWithId(newArtists);
+        refreshDisplay();
+    }
+
+    async function searchAndAddArtist() {
+        const name = document.getElementById('customArtistNameOnly').value.trim();
+        if (!name) { alert('Vui lòng nhập tên nghệ sĩ'); return; }
+        if (allArtists.some(a => a.name.toLowerCase() === name.toLowerCase())) {
+            alert('Nghệ sĩ này đã có trong danh sách!');
+            return;
+        }
+        let artistData = null;
+        if (spotifyToken) {
+            try {
+                const searchRes = await fetch(
+                    `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=artist&limit=1`,
+                    { headers: { 'Authorization': `Bearer ${spotifyToken}` } }
+                );
+                const searchData = await searchRes.json();
+                if (searchData.artists.items.length > 0) {
+                    const spotifyArtist = searchData.artists.items[0];
+                    artistData = {
+                        id: spotifyArtist.id,
+                        name: spotifyArtist.name,
+                        image: spotifyArtist.images[0]?.url || "",
+                        popularity: spotifyArtist.popularity || 50
+                    };
+                }
+            } catch(e) { console.error(e); }
+        }
+        if (!artistData) {
+            artistData = {
+                id: `custom_artist_${Date.now()}`,
+                name: name,
+                image: currentArtistImage || "",
+                popularity: 50
+            };
+        }
+        allArtists.push(artistData);
+        saveAll();
+        document.getElementById('customArtistNameOnly').value = '';
+        document.getElementById('artistImagePreview').style.display = 'none';
+        currentArtistImage = null;
+        refreshDisplay();
+        alert(`Đã thêm nghệ sĩ "${artistData.name}"`);
+    }
+
+    async function searchAndAddSong() {
+        const name = document.getElementById('customSongName').value.trim();
+        const artistName = document.getElementById('customArtistName').value.trim();
+        if (!name || !artistName) { alert('Vui lòng nhập tên bài hát và nghệ sĩ'); return; }
+        if (allSongs.some(s => s.name.toLowerCase() === name.toLowerCase() && s.artist.toLowerCase() === artistName.toLowerCase())) {
+            alert('Bài hát này đã có trong danh sách!');
+            return;
+        }
+        let songData = null;
+        if (spotifyToken) {
+            try {
+                const searchRes = await fetch(
+                    `https://api.spotify.com/v1/search?q=track:${encodeURIComponent(name)} artist:${encodeURIComponent(artistName)}&type=track&limit=1`,
+                    { headers: { 'Authorization': `Bearer ${spotifyToken}` } }
+                );
+                const searchData = await searchRes.json();
+                if (searchData.tracks.items.length > 0) {
+                    const spotifySong = searchData.tracks.items[0];
+                    songData = {
+                        id: spotifySong.id,
+                        name: spotifySong.name,
+                        artist: spotifySong.artists[0].name,
+                        image: spotifySong.album.images[0]?.url || "",
+                        popularity: spotifySong.popularity || 50
+                    };
+                }
+            } catch(e) { console.error(e); }
+        }
+        if (!songData) {
+            songData = {
+                id: `custom_song_${Date.now()}`,
+                name: name,
+                artist: artistName,
+                image: currentSongImage || "",
+                popularity: 50
+            };
+        }
+        allSongs.push(songData);
+        saveAll();
+        document.getElementById('customSongName').value = '';
+        document.getElementById('customArtistName').value = '';
+        document.getElementById('songImagePreview').style.display = 'none';
+        currentSongImage = null;
+        refreshDisplay();
+        alert(`Đã thêm bài hát "${songData.name}"`);
+    }
+
     function getTopSongs(limit = 50) {
         let sorted = [...allSongs];
         sorted.sort((a,b) => (b.popularity || 0) - (a.popularity || 0));
@@ -548,84 +516,10 @@
         return sorted.slice(0, limit).map((a, idx) => ({ ...a, rank: idx+1 }));
     }
 
-    // Spotify API calls
-    async function fetchSongsByTimeRange(range) {
-        if (!spotifyToken) return [];
-        try {
-            const res = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=50&time_range=${range}`, {
-                headers: { 'Authorization': `Bearer ${spotifyToken}` }
-            });
-            const data = await res.json();
-            return data.items.map(t => ({
-                id: t.id,
-                name: t.name,
-                artist: t.artists[0].name,
-                image: t.album.images[0]?.url || "",
-                popularity: t.popularity || 0
-            }));
-        } catch(e) { console.error(e); return []; }
-    }
-
-    async function fetchArtistsByTimeRange(range) {
-        if (!spotifyToken) return [];
-        try {
-            const res = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=50&time_range=${range}`, {
-                headers: { 'Authorization': `Bearer ${spotifyToken}` }
-            });
-            const data = await res.json();
-            return data.items.map(a => ({
-                id: a.id,
-                name: a.name,
-                image: a.images[0]?.url || "",
-                popularity: a.popularity || 0
-            }));
-        } catch(e) { console.error(e); return []; }
-    }
-
-    // Cập nhật toàn bộ từ 3 mốc thời gian
-    async function refreshAllSongs() {
-        if (!spotifyToken) return;
-        const ranges = ['short_term', 'medium_term', 'long_term'];
-        let allNewSongs = [];
-        for (const range of ranges) {
-            const songs = await fetchSongsByTimeRange(range);
-            allNewSongs.push(...songs);
-        }
-        // Loại trùng theo id
-        const uniqueMap = new Map();
-        for (const song of allNewSongs) {
-            if (!uniqueMap.has(song.id) || uniqueMap.get(song.id).popularity < song.popularity) {
-                uniqueMap.set(song.id, song);
-            }
-        }
-        mergeSongs(Array.from(uniqueMap.values()));
-        refreshDisplay();
-    }
-
-    async function refreshAllArtists() {
-        if (!spotifyToken) return;
-        const ranges = ['short_term', 'medium_term', 'long_term'];
-        let allNewArtists = [];
-        for (const range of ranges) {
-            const artists = await fetchArtistsByTimeRange(range);
-            allNewArtists.push(...artists);
-        }
-        const uniqueMap = new Map();
-        for (const artist of allNewArtists) {
-            if (!uniqueMap.has(artist.id) || uniqueMap.get(artist.id).popularity < artist.popularity) {
-                uniqueMap.set(artist.id, artist);
-            }
-        }
-        mergeArtists(Array.from(uniqueMap.values()));
-        refreshDisplay();
-    }
-
-    // Render functions
     function renderTopSongs() {
         const container = document.getElementById('topSongsList');
         if (!container) return;
         const tops = getTopSongs(50);
-        currentTopSongs = tops;
         container.innerHTML = tops.map(song => {
             const tier = songRanking[song.id];
             const badge = tier ? `<span class="tier-badge ${tier}">${tier}</span>` : '';
@@ -644,7 +538,6 @@
         const container = document.getElementById('topArtistsList');
         if (!container) return;
         const tops = getTopArtists(20);
-        currentTopArtists = tops;
         container.innerHTML = tops.map(artist => {
             const tier = artistRanking[artist.id];
             const badge = tier ? `<span class="tier-badge ${tier}">${tier}</span>` : '';
@@ -676,7 +569,6 @@
             const row = document.createElement('div'); row.className = 'tier-row';
             const label = document.createElement('div'); label.className = `tier-label ${tierId}`; label.textContent = tierId;
             const itemsDiv = document.createElement('div'); itemsDiv.className = 'tier-items'; itemsDiv.setAttribute('data-tier-id', tierId);
-            
             itemsDiv.addEventListener('dragover', e => { e.preventDefault(); itemsDiv.classList.add('drag-over'); });
             itemsDiv.addEventListener('dragleave', () => itemsDiv.classList.remove('drag-over'));
             itemsDiv.addEventListener('drop', e => {
@@ -691,7 +583,6 @@
                 saveAll();
                 refreshDisplay();
             });
-            
             const itemsInTier = Object.entries(ranking).filter(([id,t]) => t === tierId).map(([id]) => id);
             itemsInTier.forEach(id => {
                 const item = items.find(i => i.id === id);
@@ -715,7 +606,6 @@
         const container = document.getElementById(containerId);
         if (!container) return;
         container.innerHTML = '';
-        
         container.addEventListener('dragover', e => { e.preventDefault(); container.classList.add('drag-over'); });
         container.addEventListener('dragleave', () => container.classList.remove('drag-over'));
         container.addEventListener('drop', e => {
@@ -730,7 +620,6 @@
             saveAll();
             refreshDisplay();
         });
-        
         const rankedIds = Object.keys(isSong ? songRanking : artistRanking);
         const unranked = items.filter(item => !rankedIds.includes(item.id));
         unranked.forEach(item => {
@@ -754,7 +643,6 @@
         renderTier('artistTierContainer', allArtists, artistRanking, false);
     }
 
-    // Custom add
     let currentSongImage = null, currentArtistImage = null;
     function setupImageUpload(zoneId, fileInputId, previewId, setter) {
         const zone = document.getElementById(zoneId); const fileInput = document.getElementById(fileInputId); const preview = document.getElementById(previewId);
@@ -766,36 +654,10 @@
         function handleFile(file) { const reader = new FileReader(); reader.onload = ev => { setter(ev.target.result); preview.src = ev.target.result; preview.style.display = 'block'; }; reader.readAsDataURL(file); }
     }
 
-    function addCustomSong() {
-        const name = document.getElementById('customSongName').value.trim();
-        const artist = document.getElementById('customArtistName').value.trim();
-        if(!name || !artist) { alert('Vui lòng nhập tên bài hát và nghệ sĩ'); return; }
-        const newId = `custom_song_${Date.now()}`;
-        allSongs.push({ id: newId, name, artist, image: currentSongImage || "", popularity: 80 });
-        saveAll();
-        document.getElementById('customSongName').value = ''; document.getElementById('customArtistName').value = '';
-        document.getElementById('songImagePreview').style.display = 'none'; currentSongImage = null;
-        refreshDisplay();
-        alert('Đã thêm bài hát');
-    }
-
-    function addCustomArtist() {
-        const name = document.getElementById('customArtistNameOnly').value.trim();
-        if(!name) { alert('Vui lòng nhập tên nghệ sĩ'); return; }
-        const newId = `custom_artist_${Date.now()}`;
-        allArtists.push({ id: newId, name, image: currentArtistImage || "", popularity: 80 });
-        saveAll();
-        document.getElementById('customArtistNameOnly').value = '';
-        document.getElementById('artistImagePreview').style.display = 'none'; currentArtistImage = null;
-        refreshDisplay();
-        alert('Đã thêm nghệ sĩ');
-    }
-
     function resetSongTier() { if(confirm('Đặt lại xếp hạng bài hát?')) { songRanking = {}; saveAll(); refreshDisplay(); } }
     function resetArtistTier() { if(confirm('Đặt lại xếp hạng nghệ sĩ?')) { artistRanking = {}; saveAll(); refreshDisplay(); } }
     function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m] || m); }
 
-    // Spotify login flow
     function loginSpotify() {
         const scope = 'user-read-recently-played user-top-read user-read-private';
         const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scope)}&show_dialog=true`;
@@ -823,7 +685,6 @@
         } catch(e) { console.error(e); }
     }
 
-    // Khởi tạo
     const urlParams = new URLSearchParams(window.location.search);
     const authCode = urlParams.get('code');
     if (authCode) {
@@ -847,20 +708,18 @@
     document.getElementById('loginSpotifyBtn').onclick = loginSpotify;
     document.getElementById('refreshSongsBtn').onclick = () => refreshAllSongs();
     document.getElementById('refreshArtistsBtn').onclick = () => refreshAllArtists();
-    document.getElementById('addCustomSongBtn').onclick = addCustomSong;
-    document.getElementById('addCustomArtistBtn').onclick = addCustomArtist;
+    document.getElementById('addCustomSongBtn').onclick = searchAndAddSong;
+    document.getElementById('addCustomArtistBtn').onclick = searchAndAddArtist;
     document.getElementById('resetSongTierBtn').onclick = resetSongTier;
     document.getElementById('resetArtistTierBtn').onclick = resetArtistTier;
 
     setupImageUpload('imageDropZoneSong', 'songImageInput', 'songImagePreview', (img) => currentSongImage = img);
     setupImageUpload('imageDropZoneArtist', 'artistImageInput', 'artistImagePreview', (img) => currentArtistImage = img);
-    
-    // Time range chỉ để hiển thị top list hiện tại (không ảnh hưởng đến danh sách tổng)
+
     document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
         btn.onclick = () => {
             document.querySelectorAll('#songTimeRange .time-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            // Chỉ hiển thị lại top list dựa trên popularity, không fetch lại API
             renderTopSongs();
         };
     });

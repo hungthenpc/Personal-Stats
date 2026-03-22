@@ -394,24 +394,50 @@
     }
     
     function getTopSongs(limit = 50) {
-        let sorted = [...allSongs];
-        sorted.sort((a, b) => {
-            let popA = songPopularity[currentSongRange]?.[a.id] || 0;
-            let popB = songPopularity[currentSongRange]?.[b.id] || 0;
-            return popB - popA;
-        });
-        return sorted.slice(0, limit).map((s, idx) => ({ ...s, rank: idx + 1 }));
+    let sorted = [...allSongs];
+
+    let popData = songPopularity[currentSongRange];
+
+    // fallback nếu lỗi
+    if (!popData) {
+        console.warn("Sai range → fallback medium_term");
+        popData = songPopularity["medium_term"];
     }
+
+    sorted.sort((a, b) => {
+        let popA = popData[a.id] || 0;
+        let popB = popData[b.id] || 0;
+        return popB - popA;
+    });
+
+    return sorted.slice(0, limit).map((s, idx) => ({
+        ...s,
+        rank: idx + 1
+    }));
+}
     
     function getTopArtists(limit = 20) {
-        let sorted = [...allArtists];
-        sorted.sort((a, b) => {
-            let popA = artistPopularity[currentArtistRange]?.[a.id] || 0;
-            let popB = artistPopularity[currentArtistRange]?.[b.id] || 0;
-            return popB - popA;
-        });
-        return sorted.slice(0, limit).map((a, idx) => ({ ...a, rank: idx + 1 }));
+    let sorted = [...allArtists];
+
+    let popData = artistPopularity[currentArtistRange];
+
+    // fallback nếu lỗi
+    if (!popData) {
+        console.warn("Sai artist range → fallback medium_term");
+        popData = artistPopularity["medium_term"];
     }
+
+    sorted.sort((a, b) => {
+        let popA = popData[a.id] || 0;
+        let popB = popData[b.id] || 0;
+        return popB - popA;
+    });
+
+    return sorted.slice(0, limit).map((a, idx) => ({
+        ...a,
+        rank: idx + 1
+    }));
+}
     
     async function refreshAllSongs() {
         if (!spotifyToken) { alert('Vui lòng đăng nhập Spotify trước'); return; }
@@ -786,21 +812,35 @@
     setupImageUpload('imageDropZoneArtist', 'artistImageInput', 'artistImagePreview', (img) => currentArtistImage = img);
     
     document.querySelectorAll('#songTimeRange .time-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('#songTimeRange .time-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentSongRange = btn.getAttribute('data-range');
-            renderTopSongs();
-        };
-    });
+    btn.onclick = () => {
+        document.querySelectorAll('#songTimeRange .time-btn')
+            .forEach(b => b.classList.remove('active'));
+
+        btn.classList.add('active');
+
+        currentSongRange = btn.dataset.range;
+
+        console.log("Đổi sang:", currentSongRange);
+        console.log("Data:", songPopularity[currentSongRange]);
+
+        renderTopSongs(); // update list
+    };
+});
     document.querySelectorAll('#artistTimeRange .time-btn').forEach(btn => {
-        btn.onclick = () => {
-            document.querySelectorAll('#artistTimeRange .time-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentArtistRange = btn.getAttribute('data-range');
-            renderTopArtists();
-        };
-    });
+    btn.onclick = () => {
+        document.querySelectorAll('#artistTimeRange .time-btn')
+            .forEach(b => b.classList.remove('active'));
+
+        btn.classList.add('active');
+
+        currentArtistRange = btn.dataset.range;
+
+        console.log("Artist range:", currentArtistRange);
+        console.log("Artist data:", artistPopularity[currentArtistRange]);
+
+        renderTopArtists();
+    };
+});
     
     // Khởi tạo lần đầu
     renderTopSongs();

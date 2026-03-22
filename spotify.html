@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Spotify Ranking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-     <link rel="shortcut icon" href="favicon.ico">
+    <link rel="shortcut icon" href="favicon.ico">
     <style>
         /* (GIỮ NGUYÊN CSS NHƯ CODE GỐC, KHÔNG THAY ĐỔI) */
         * {
@@ -147,6 +147,31 @@
             overflow-y: auto;
             flex: 1;
         }
+        /* CSS cho scrollbar */
+        .top-list::-webkit-scrollbar,
+        .tier-container::-webkit-scrollbar,
+        .drag-library::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .top-list::-webkit-scrollbar-track,
+        .tier-container::-webkit-scrollbar-track,
+        .drag-library::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 10px;
+        }
+        .top-list::-webkit-scrollbar-thumb,
+        .tier-container::-webkit-scrollbar-thumb,
+        .drag-library::-webkit-scrollbar-thumb {
+            background: #ff6600;
+            border-radius: 10px;
+        }
+        .top-list::-webkit-scrollbar-thumb:hover,
+        .tier-container::-webkit-scrollbar-thumb:hover,
+        .drag-library::-webkit-scrollbar-thumb:hover {
+            background: #ff8844;
+        }
+        
         .top-item {
             background: #111;
             border-radius: 12px;
@@ -483,7 +508,7 @@
                         <div class="time-range-selector" id="artistTimeRange">
                             <button class="time-btn" data-range="short_term">4 tuần</button>
                             <button class="time-btn active" data-range="medium_term">6 tháng</button>
-                            <button class="time-btn" data-range="long_term">1 nămn</button>
+                            <button class="time-btn" data-range="long_term">1 năm</button>
                         </div>
                         <div id="topArtistsList" class="top-list"></div>
                     </div>
@@ -535,6 +560,7 @@
     let currentSongRange = "medium_term";
     let currentArtistRange = "medium_term";
     let currentTopSongs = []; // lưu top 50 đang hiển thị của mốc hiện tại
+    let currentTopArtists = []; // lưu top artists đang hiển thị
 
     function saveCombined() {
         localStorage.setItem('combinedSongs', JSON.stringify(combinedSongs));
@@ -578,7 +604,7 @@
             return;
         }
         
-        // Chuyển đổi dữ liệu từ Spotify
+        // Chuyển đổi dữ liệu từ Spotify (hiển thị đầy đủ 50 bài)
         const topSongs = items.map((item, idx) => ({
             id: item.id,
             name: item.name,
@@ -588,7 +614,7 @@
         }));
         currentTopSongs = topSongs;
         
-        // Cập nhật combinedSongs: thêm những bài chưa có
+        // Cập nhật combinedSongs: thêm những bài chưa có (lấy FULL 50 bài)
         for (const song of topSongs) {
             if (!combinedSongs.find(s => s.id === song.id)) {
                 combinedSongs.push({
@@ -615,27 +641,29 @@
         container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải...</p></div>';
         
         const items = await fetchTopArtists(range);
-if (!items.length) {
-    container.innerHTML = '<div class="status">Không thể tải dữ liệu</div>';
-    return;
-}
-
-// Xác định limit dựa vào range
-let limit = 50;
-if (range === 'short_term') {
-    limit = 20; // 4 tuần chỉ lấy top 20
-}
-
-// Chỉ lấy số lượng theo limit
-const limitedItems = items.slice(0, limit);
-
-const topArtists = limitedItems.map((item, idx) => ({
-    id: item.id,
-    name: item.name,
-    image: item.images[0]?.url || '',
-    rank: idx + 1
-}));
-        for (const artist of topArtists) {
+        if (!items.length) {
+            container.innerHTML = '<div class="status">Không thể tải dữ liệu</div>';
+            return;
+        }
+        
+        // Chuyển đổi dữ liệu - HIỂN THỊ ĐẦY ĐỦ 50 NGHỆ SĨ (không giới hạn)
+        const allArtists = items.map((item, idx) => ({
+            id: item.id,
+            name: item.name,
+            image: item.images[0]?.url || '',
+            rank: idx + 1
+        }));
+        currentTopArtists = allArtists;
+        
+        // Xác định số lượng sẽ thêm vào combinedArtists dựa vào range
+        let addLimit = 50;
+        if (range === 'short_term') {
+            addLimit = 20; // 4 tuần chỉ thêm top 20 vào danh sách tổng hợp
+        }
+        
+        // Chỉ thêm số lượng theo addLimit vào combinedArtists
+        const artistsToAdd = allArtists.slice(0, addLimit);
+        for (const artist of artistsToAdd) {
             if (!combinedArtists.find(a => a.id === artist.id)) {
                 combinedArtists.push({
                     id: artist.id,
@@ -646,7 +674,8 @@ const topArtists = limitedItems.map((item, idx) => ({
         }
         saveCombined();
         
-        renderTopArtistsList(topArtists);
+        // Render top list với ĐẦY ĐỦ 50 nghệ sĩ (không giới hạn)
+        renderTopArtistsList(allArtists);
         renderLibrary('artistsLibrary', combinedArtists, false);
         renderTier('artistTierContainer', combinedArtists, artistRanking, false);
     }
@@ -791,21 +820,18 @@ const topArtists = limitedItems.map((item, idx) => ({
     }
 
     function refreshAllUI() {
-        // Giữ nguyên top list theo range hiện tại, nhưng cần hiển thị lại (nếu có currentTopSongs)
+        // Giữ nguyên top list theo range hiện tại
         if (currentTopSongs.length) {
             renderTopSongsList(currentTopSongs);
-        } else {
-            // Nếu chưa có dữ liệu, load lại
-            loadAndDisplayTopSongs(currentSongRange);
+        }
+        if (currentTopArtists.length) {
+            renderTopArtistsList(currentTopArtists);
         }
         // Cập nhật thư viện và tier
         renderLibrary('songsLibrary', combinedSongs, true);
         renderLibrary('artistsLibrary', combinedArtists, false);
         renderTier('songTierContainer', combinedSongs, songRanking, true);
         renderTier('artistTierContainer', combinedArtists, artistRanking, false);
-        // Nếu có top artists hiện tại, hiển thị lại (cần lưu lại)
-        // Ở đây tạm thời load lại top artists theo range hiện tại
-        loadAndDisplayTopArtists(currentArtistRange);
     }
 
     // Thêm custom

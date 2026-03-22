@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Spotify Tier Maker - Cosmic Ranking</title>
+    <title>Spotify Ranking</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+     <link rel="shortcut icon" href="favicon.ico">
     <style>
         /* (GIỮ NGUYÊN CSS NHƯ CODE GỐC, KHÔNG THAY ĐỔI) */
         * {
@@ -416,11 +417,10 @@
     </style>
 </head>
 <body>
-<a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Trang chủ</a>
+<a href="index.html" class="back-home"><i class="fas fa-arrow-left"></i> Quay lại</a>
 <div class="container">
-    <h1><i class="fab fa-spotify"></i> Spotify Tier Maker</h1>
-    <div class="sub">Kéo thả bài hát / nghệ sĩ vào bảng xếp hạng S→F | Có thể kéo giữa các tier và từ tier về thư viện</div>
-
+    <h1><i class="fab fa-spotify"></i> Spotify Ranking</h1>
+   
     <div class="spotify-login-area" id="spotifyLoginArea">
         <button class="btn-spotify" id="loginSpotifyBtn"><i class="fab fa-spotify"></i> Đăng nhập Spotify</button>
         <div id="loginStatus" class="status"></div>
@@ -438,27 +438,27 @@
                         <div class="time-range-selector" id="songTimeRange">
                             <button class="time-btn" data-range="short_term">4 tuần</button>
                             <button class="time-btn active" data-range="medium_term">6 tháng</button>
-                            <button class="time-btn" data-range="long_term">Mọi thời gian</button>
+                            <button class="time-btn" data-range="long_term">1 năm</button>
                         </div>
                         <div id="topSongsList" class="top-list"></div>
                     </div>
                 </div>
                 <div class="tier-wrapper">
                     <div class="card">
-                        <h3><i class="fas fa-trophy"></i> Xếp hạng bài hát (S → F)</h3>
+                        <h3><i class="fas fa-trophy"></i> Xếp hạng bài hát</h3>
                         <div id="songTierContainer" class="tier-container"></div>
-                        <button id="resetSongTierBtn" class="reset-btn"><i class="fas fa-undo-alt"></i> Đặt lại xếp hạng bài hát</button>
+                        <button id="resetSongTierBtn" class="reset-btn"><i class="fas fa-undo-alt"></i> Đặt lại</button>
                     </div>
                 </div>
             </div>
 
             <div class="card" style="margin-top: 5px;">
-                <h3><i class="fas fa-music"></i> Thư viện bài hát (kéo thả vào bảng hoặc kéo từ bảng về đây)</h3>
+                <h3><i class="fas fa-music"></i> Danh sách bài hát</h3>
                 <div id="songsLibrary" class="drag-library"></div>
             </div>
 
             <div class="card">
-                <h3><i class="fas fa-plus-circle"></i> Thêm bài hát tự định nghĩa</h3>
+                <h3><i class="fas fa-plus-circle"></i> Thêm bài hát</h3>
                 <div class="add-form">
                     <input type="text" id="customSongName" placeholder="Tên bài hát">
                     <input type="text" id="customArtistName" placeholder="Tên nghệ sĩ">
@@ -479,31 +479,31 @@
             <div class="row-split">
                 <div class="top-list-wrapper">
                     <div class="card">
-                        <h3><i class="fas fa-chart-line"></i> Top Nghệ Sĩ Yêu Thích</h3>
+                        <h3><i class="fas fa-chart-line"></i> Top 50 Nghệ Sĩ Yêu Thích</h3>
                         <div class="time-range-selector" id="artistTimeRange">
                             <button class="time-btn" data-range="short_term">4 tuần</button>
                             <button class="time-btn active" data-range="medium_term">6 tháng</button>
-                            <button class="time-btn" data-range="long_term">Mọi thời gian</button>
+                            <button class="time-btn" data-range="long_term">1 nămn</button>
                         </div>
                         <div id="topArtistsList" class="top-list"></div>
                     </div>
                 </div>
                 <div class="tier-wrapper">
                     <div class="card">
-                        <h3><i class="fas fa-trophy"></i> Xếp hạng nghệ sĩ (S → F)</h3>
+                        <h3><i class="fas fa-trophy"></i> Xếp hạng nghệ sĩ</h3>
                         <div id="artistTierContainer" class="tier-container"></div>
-                        <button id="resetArtistTierBtn" class="reset-btn"><i class="fas fa-undo-alt"></i> Đặt lại xếp hạng nghệ sĩ</button>
+                        <button id="resetArtistTierBtn" class="reset-btn"><i class="fas fa-undo-alt"></i> Đặt lại</button>
                     </div>
                 </div>
             </div>
 
             <div class="card" style="margin-top: 5px;">
-                <h3><i class="fas fa-user"></i> Thư viện nghệ sĩ (kéo thả vào bảng hoặc kéo từ bảng về đây)</h3>
+                <h3><i class="fas fa-user"></i> Danh sách nghệ sĩ</h3>
                 <div id="artistsLibrary" class="drag-library"></div>
             </div>
 
             <div class="card">
-                <h3><i class="fas fa-plus-circle"></i> Thêm nghệ sĩ tự định nghĩa</h3>
+                <h3><i class="fas fa-plus-circle"></i> Thêm nghệ sĩ </h3>
                 <div class="add-form">
                     <input type="text" id="customArtistNameOnly" placeholder="Tên nghệ sĩ">
                     <div id="imageDropZoneArtist" class="image-upload-area">
@@ -615,18 +615,26 @@
         container.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Đang tải...</p></div>';
         
         const items = await fetchTopArtists(range);
-        if (!items.length) {
-            container.innerHTML = '<div class="status">Không thể tải dữ liệu</div>';
-            return;
-        }
-        
-        const topArtists = items.map((item, idx) => ({
-            id: item.id,
-            name: item.name,
-            image: item.images[0]?.url || '',
-            rank: idx + 1
-        }));
-        
+if (!items.length) {
+    container.innerHTML = '<div class="status">Không thể tải dữ liệu</div>';
+    return;
+}
+
+// Xác định limit dựa vào range
+let limit = 50;
+if (range === 'short_term') {
+    limit = 20; // 4 tuần chỉ lấy top 20
+}
+
+// Chỉ lấy số lượng theo limit
+const limitedItems = items.slice(0, limit);
+
+const topArtists = limitedItems.map((item, idx) => ({
+    id: item.id,
+    name: item.name,
+    image: item.images[0]?.url || '',
+    rank: idx + 1
+}));
         for (const artist of topArtists) {
             if (!combinedArtists.find(a => a.id === artist.id)) {
                 combinedArtists.push({
